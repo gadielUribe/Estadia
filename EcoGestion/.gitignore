@@ -1,0 +1,29 @@
+# Entorno virtual
+venv/
+.env
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Archivos de migraciones (si usas sqlite local y no quieres compartirlo)
+*.sqlite3
+
+# Archivos de logs
+*.log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+
+# Archivos de cobertura/test
+htmlcov/
+.coverage
+.cache
+.pytest_cache/
