@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'EcoGest',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '8246',
         'HOST': '127.0.0.1',
         'PORT': '',
     }
