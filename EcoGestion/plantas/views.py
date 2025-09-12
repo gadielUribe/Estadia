@@ -7,7 +7,14 @@ def inicio(request):
 
 def crear(request):
     form = plantaForm()
-    return render(request, 'arboles/create.html',
-        {
-            'form': plantaForm
-        })
+    if request.method == 'GET': 
+        return render(request, 'arboles/create.html',
+            {
+                'form': plantaForm
+            })
+    else:
+        print(request.POST)
+        return render(request, 'arboles/create.html',
+            {
+                'form': plantaForm
+            })

@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %} Creacion planta {% endblock %}
+{% block title %}Creacion planta{% endblock %}
 
 {% block content %}
 
     <h1>Hola, estás en la página para crear un pinche árbol.</h1>
     
-    <form action="">
+    <form method="POST">
+        {% csrf_token %}
         {{form.as_p}}
         <button type="submit">Crear árbol</button>
     </form>
     
-
 {% endblock %}
