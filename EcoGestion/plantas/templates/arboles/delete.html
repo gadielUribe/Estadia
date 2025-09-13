@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar planta{% endblock %}
+
+{% block content %}
+
+    <h1>Hola, estás en la página para eliminar un pinche árbol.</h1>
+    
+    <p>Deseas eliminar arbol <strong>#{{ arbol.id_planta }} - {{ arbol.nombre_cientifico }}</strong></p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Eliminar árbol</button>
+        <a href="{% url 'inicio' %}"> Volver a Inicio </a>
+    </form>
+    
+{% endblock %} 

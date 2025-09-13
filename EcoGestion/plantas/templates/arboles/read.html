@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalles plantas{% endblock %}
+
+{% block content %}
+
+    <h1>Hola, estás en la página para ver el detalle de un pinche árbol.</h1>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Nombre Científico</th>
+                <th>Fecha de Plantación</th>
+                <th>Imagen</th>
+                <th>Riego</th>
+                <th>Poda</th>
+                <th>Fumigacion</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in plantas %}
+            <tr>
+                <td>{{ p.id_planta }}</td>
+                <td>{{ p.descripcion }}</td>
+                <td>{{ p.nombre_cientifico }}</td>
+                <td>{{ p.fecha_plantacion }}</td>
+                <td>{{ p.imagen_url}}</td>
+                <td>{{ p.periodicidad_riego}}</td>
+                <td>{{ p.periodicidad_poda}}</td>
+                <td>{{ p.periodicidad_fumigacion}}</td>
+                <td>{{ p.latitud }}</td>
+                <td>{{ p.longitud }}</td>
+                <td>
+                    <a href="{% url 'editar' p.id_planta %}" class="btn btn-primary">Editar</a>
+                    <a href="{% url 'eliminar' p.id_planta %}" class="btn btn-primary">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br><h2>Crear arbol</h2>
+    <a href="{% url 'crear' %}">Crear</a>
+        
+{% endblock %} 
