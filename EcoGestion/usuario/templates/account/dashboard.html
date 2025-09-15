@@ -3,6 +3,11 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <h2>Bienvenido al Dashboard</h2>
-    <p>Has iniciado sesión correctamente.</p>
+    <h1>Dashboard</h1>
+    <p>Bienvenido
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" formaction="{% url 'logout' %}">Cerrar sesión</button>
+        </form>
+    </p>
 {% endblock %}
