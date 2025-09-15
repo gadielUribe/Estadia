@@ -126,3 +126,23 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+
+# Configuración del backend de correo electrónico· EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = 'VUGO222163@UPEMOR.EDU.MX'
+#EMAIL_HOST_PASSWORD = 'VUGO222163GA'
+
+# Configuración de email para restauración de contraseña
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Cambia esto por tu servidor SMTP
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'gadielvillaf@gmail.com'  # Cambia esto por tu email
+EMAIL_HOST_PASSWORD = 'dczd zcke bjzm vfhe'     # Cambia esto por tu contraseña
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
