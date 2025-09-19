@@ -41,6 +41,13 @@ INSTALLED_APPS = [
     'plantas.apps.PlantasConfig',
 ]
 
+AUTH_USER_MODEL = 'usuario.Usuario'
+
+AUTHENTICATION_BACKENDS = [
+    'usuario.backends.MatriculaBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -79,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'EcoGest',
         'USER': 'root',
-        'PASSWORD': '8246',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }

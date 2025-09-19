@@ -1,13 +1,24 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
-
 {% block content %}
-    <h1>Dashboard</h1>
-    <p>Bienvenido
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit" formaction="{% url 'logout' %}">Cerrar sesión</button>
-        </form>
-    </p>
+<h2>Bienvenido, {{ request.user.nombre_completo }}</h2>
+<p>Tu rol: {{ request.user.get_rol_display }}</p>
+
+{% if request.user.rol == 'administrador' %}
+  <a href="{% url 'usuario_create' %}" class="btn btn-success mb-3">Agregar usuario</a>
+{% endif %}
+
+<ul>
+  {% if request.user.rol == 'administrador' %}
+    <li><a href="{% url 'usuario_list' %}">Administrar usuarios</a></li>
+    <li><a href="#">Gestión de especies</a></li>
+    <li><a href="#">Tareas de mantenimiento</a></li>
+  {% elif request.user.rol == 'gestor' %}
+    <li><a href="#">Gestión de especies</a></li>
+    <li><a href="#">Tareas de mantenimiento</a></li>
+  {% elif request.user.rol == 'mantenimiento' %}
+    <li><a href="#">Ver tareas asignadas</a></li>
+  {% endif %}
+  <li><a href="{% url 'logout' %}">Cerrar sesión</a></li>
+</ul>
 {% endblock %}
