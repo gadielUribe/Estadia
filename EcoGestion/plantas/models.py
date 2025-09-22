@@ -17,7 +17,7 @@ class plantaArbol(models.Model):
 
     # Información de la tabla
     class Meta:
-        db_table = "PlantaArbol"
+        db_table = 'PlantaArbol'
         managed = False
 
     # Representación en cadena del objeto
