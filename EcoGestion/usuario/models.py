@@ -2,12 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 class UsuarioManager(BaseUserManager):
-    def create_user(self, matricula, correo, nombre_completo, password=None, rol='mantenimiento'):
-        if not matricula or not correo:
+    def create_user(self, matricula, email, nombre_completo, password=None, rol='mantenimiento'):
+        if not matricula or not email:
             raise ValueError('El usuario debe tener matrícula y correo')
         user = self.model(
             matricula=matricula,
-            correo=self.normalize_email(correo),
+            email=self.normalize_email(email),
             nombre_completo=nombre_completo,
             rol=rol
         )
@@ -15,10 +15,10 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, matricula, correo, nombre_completo, password):
+    def create_superuser(self, matricula, email, nombre_completo, password):
         user = self.create_user(
             matricula=matricula,
-            correo=correo,
+            email=email,
             nombre_completo=nombre_completo,
             password=password,
             rol='administrador'
