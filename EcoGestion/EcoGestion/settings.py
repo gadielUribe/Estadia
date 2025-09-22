@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,9 +26,13 @@ SECRET_KEY = 'django-insecure-god5hezg+gr@o+sm!*z&-yhla9603z&^hhui*cx^(*)oq^usb4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://192.168.1.123:8000"
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,14 +44,34 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'plantas.apps.PlantasConfig',
+    'chat.apps.ChatConfig',
+    'channels',
+    
 ]
 
+
 AUTH_USER_MODEL = 'usuario.Usuario'
+ASGI_APPLICATION = 'EcoGestion.asgi.application'
+
+ASGI_APPLICATION = 'EcoGestion.asgi.application'
+
+CHANNEL_LAYERS = {
+  "default": {
+    "BACKEND": "channels_redis.core.RedisChannelLayer",
+    "CONFIG": {"hosts": [("127.0.0.1", 6379)]},  
+  }
+}
+
+ALLOWED_HOSTS = ['*']  # Mi IP LAN
+
 
 AUTHENTICATION_BACKENDS = [
     'usuario.backends.MatriculaBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+ASGI_APPLICATION = 'EcoGestion.asgi.application'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -76,6 +101,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'EcoGestion.wsgi.application'
+
+ASGI_APPLICATION = "EcoGestion.asgi.application"
 
 
 # Database
@@ -115,9 +142,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City'
 
 USE_I18N = True
 
@@ -139,13 +166,6 @@ LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
 
-# Configuración del backend de correo electrónico· EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_PORT = 587
-#EMAIL_USE_TLS = True
-#EMAIL_HOST_USER = 'VUGO222163@UPEMOR.EDU.MX'
-#EMAIL_HOST_PASSWORD = 'VUGO222163GA'
-
 # Configuración de email para restauración de contraseña
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Cambia esto por tu servidor SMTP
@@ -154,3 +174,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'gadielvillaf@gmail.com'  # Cambia esto por tu email
 EMAIL_HOST_PASSWORD = 'dczd zcke bjzm vfhe'     # Cambia esto por tu contraseña
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+    },
+}

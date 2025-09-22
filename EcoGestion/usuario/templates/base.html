@@ -19,10 +19,10 @@
             <a class="nav-link {% if section == 'dashboard' %}active{% endif %}" aria-current="page" href="{% url 'dashboard' %}">Mi Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if section == 'images' %}active{% endif %}" href="#">Menu 1</a>
+            <a class="nav-link {% if section == 'chat_general' %}active{% endif %}" href="{% url 'chat_general' %}">Chat general</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if section == 'people' %}active{% endif %}" href="#">Menu 2</a>
+            <a class="nav-link {% if section == 'chat_privado' %}active{% endif %}" href="{% url 'chat_privado' request.user.id_usuario %}">Chat privado</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'password_change' %}">Cambiar contraseña</a>
