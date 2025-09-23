@@ -9,6 +9,7 @@ class ChatGeneral(models.Model):
 
     class Meta:
         db_table = 'ChatGeneral'
+        managed = False
 
 class ChatPrivado(models.Model):
     id_chat = models.AutoField(primary_key=True)
@@ -19,3 +20,4 @@ class ChatPrivado(models.Model):
 
     class Meta:
         db_table = 'ChatPrivado'
+        managed = False

@@ -44,9 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'plantas.apps.PlantasConfig',
+    'respaldo.apps.RespaldoConfig',
     'chat.apps.ChatConfig',
     'channels',
-    
+    'dbbackup',
 ]
 
 
@@ -113,10 +114,26 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'EcoGest',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '8246',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
+}
+
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+    'dbbackup': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        'OPTIONS': {
+            'location': BASE_DIR / 'respaldo' / 'backup',
+        },
+    },
 }
 
 
