@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Respaldos de Base de Datos</h1>
+
+<div>
+  <form method="post" action="{% url 'backup_now' %}">
+    {% csrf_token %}
+    <button>Crear respaldo</button>
+  </form>
+
+  <form method="post" action="{% url 'restore_latest' %}" onsubmit="return confirm('Esto restaurará la BD con el último respaldo. ¿Continuar?');">
+    {% csrf_token %}
+    <button>Restaurar último</button>
+  </form>
+
+  <form method="post" action="{% url 'upload' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="file" required>
+    <button>Subir respaldo</button>
+  </form>
+</div>
+
+{% if messages %}
+  <ul>
+    {% for m in messages %}
+      <li>{{ m }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Archivo</th>
+      <th>Tamaño</th>
+      <th>Modificado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in files %}
+      <tr>
+        <td>{{ f.name }}</td>
+        <td>{{ f.size|filesizeformat }}</td>
+        <td>{{ f.mtime_str }}</td>
+        <td>
+          <a href="{% url 'download' f.name %}">Descargar</a>
+          <form method="post" action="{% url 'restore_file' f.name %}" onsubmit="return confirm('¿Restaurar {{ f.name }}? Esta acción es irreversible.');">
+            {% csrf_token %}
+            <button>Restaurar</button>
+          </form>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td>No hay respaldos en la carpeta configurada.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
