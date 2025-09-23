@@ -6,24 +6,39 @@
 <input id="chat-message-input" type="text" size="80">
 <button id="chat-message-submit" class="btn btn-primary">Enviar</button>
 <script>
-const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/chat/general/'
-);
+  const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+  const host   = window.location.host; 
+  const chatSocket = new WebSocket(`${scheme}://${host}/ws/chat/general/`);
 
-chatSocket.onmessage = function(e) {
+  const chatLog = document.getElementById('chat-log');
+  const input   = document.getElementById('chat-message-input');
+  const btn     = document.getElementById('chat-message-submit');
+
+  chatSocket.onopen = () => console.log("WS abierto");
+  chatSocket.onclose = (e) => console.warn("WS cerrado", e);
+  chatSocket.onerror = (e) => console.error("WS error", e);
+
+  chatSocket.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    const chatLog = document.querySelector('#chat-log');
-    chatLog.innerHTML += '<p><b>' + data.usuario_nombre + ':</b> ' + data.mensaje + '</p>';
+    // adapta a tu payload actual
+    const nombre = data.usuario_nombre ?? data.emisor_nombre ?? "Usuario";
+    const p = document.createElement('p');
+    p.innerHTML = `<b>${nombre}:</b> ${data.mensaje}`;
+    chatLog.appendChild(p);
     chatLog.scrollTop = chatLog.scrollHeight;
-};
+  };
 
-document.querySelector('#chat-message-submit').onclick = function(e) {
-    const input = document.querySelector('#chat-message-input');
-    const mensaje = input.value;
-    if (mensaje.trim() !== "") {
-        chatSocket.send(JSON.stringify({'mensaje': mensaje}));
-        input.value = '';
+  btn.onclick = (e) => {
+    e.preventDefault();
+    const mensaje = input.value.trim();
+    if (!mensaje) return;
+    if (chatSocket.readyState !== WebSocket.OPEN) {
+      console.warn("WS no está OPEN, estado:", chatSocket.readyState);
+      return;
     }
-};
+    chatSocket.send(JSON.stringify({ mensaje }));
+    input.value = "";
+  };
 </script>
+
 {% endblock %}

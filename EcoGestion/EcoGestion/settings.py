@@ -31,7 +31,8 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://192.168.1.123:8000"
+    "http://192.168.1.123:8000",
+    "http://187.214.167.93:8000",
 ]
 # Application definition
 
@@ -114,7 +115,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'EcoGest',
         'USER': 'root',
-        'PASSWORD': '8246',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
