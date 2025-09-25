@@ -64,7 +64,7 @@ def backup_now(request):
         messages.success(request, 'Respaldo creado correctamente.')
     except Exception as e:
         messages.error(request, f'Error al crear respaldo: {e}')
-    return redirect('inicio')
+    return redirect('respaldo_inicio')
 
 @login_required
 @user_passes_test(_is_staff)
@@ -73,7 +73,7 @@ def restore_latest(request):
     files = _list_backups()
     if not files:
         messages.error(request, 'No hay archivos de respaldo.')
-        return redirect('inicio')
+        return redirect('respaldo_inicio')
 
     latest = files[0]
     return _restore_common(request, latest.name)
@@ -94,7 +94,7 @@ def _restore_common(request, filename: str):
         messages.success(request, f'Restauración completada desde: {filename}')
     except Exception as e:
         messages.error(request, f'Error al restaurar {filename}: {e}')
-    return redirect('inicio')
+    return redirect('respaldo_inicio')
 
 @login_required
 @user_passes_test(_is_staff)
@@ -111,7 +111,7 @@ def upload_backup(request):
     file = request.FILES.get('file')
     if not file:
         messages.error(request, 'Selecciona un archivo.')
-        return redirect('inicio')
+        return redirect('respaldo_inicio')
 
     dest = _backup_dir()
     dest.mkdir(parents=True, exist_ok=True)
@@ -120,4 +120,4 @@ def upload_backup(request):
         for chunk in file.chunks():
             dst.write(chunk)
     messages.success(request, f'Archivo {file.name} subido a {dest}.')
-    return redirect('inicio')
+    return redirect('respaldo_inicio')

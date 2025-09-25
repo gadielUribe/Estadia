@@ -37,6 +37,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "django_cleanup.apps.CleanupConfig",
     'usuario.apps.UsuarioConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -115,7 +116,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'EcoGest',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '8246',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -200,3 +201,10 @@ CHANNEL_LAYERS = {
         "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
     },
 }
+
+# Configuración imagenes
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
+
+

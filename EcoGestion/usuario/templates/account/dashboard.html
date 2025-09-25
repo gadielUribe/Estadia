@@ -11,8 +11,9 @@
 <ul>
   {% if request.user.rol == 'administrador' %}
     <li><a href="{% url 'usuario_list' %}">Administrar usuarios</a></li>
-    <li><a href="#">Gestión de especies</a></li>
+    <li><a href="{% url 'planta_inicio' %}">Gestión de especies</a></li>
     <li><a href="#">Tareas de mantenimiento</a></li>
+    <li><a href="{% url 'respaldo_inicio' %}">Respaldo BD</a></li>
   {% elif request.user.rol == 'gestor' %}
     <li><a href="#">Gestión de especies</a></li>
     <li><a href="#">Tareas de mantenimiento</a></li>
