@@ -10,7 +10,7 @@ def inicio(request):
 # Crear un nuevo árbol o planta
 def crear(request):
     if request.method == 'POST': 
-        form = plantaForm(request.POST)
+        form = plantaForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('crear')
@@ -23,10 +23,10 @@ def crear(request):
 def editar(request, id_arbol):
     arbol = get_object_or_404(plantaArbol, pk=id_arbol)
     if request.method == 'POST':
-        form = plantaForm(request.POST, instance=arbol)
+        form = plantaForm(request.POST, request.FILES, instance=arbol)
         if form.is_valid():
             form.save() 
-            return redirect('inicio')
+            return redirect('planta_inicio')
     else:
         form = plantaForm(instance=arbol)
     return render(request, 'arboles/update.html', {'form':form, 'arbol':arbol})
@@ -36,7 +36,7 @@ def eliminar(request, id_arbol):
     arbol = get_object_or_404(plantaArbol, pk=id_arbol)
     if request.method == 'POST':
         arbol.delete()
-        return redirect('inicio')
+        return redirect('planta_inicio')
         
     return render(request, 'arboles/delete.html', {'arbol':arbol})
     

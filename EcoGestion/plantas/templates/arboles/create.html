@@ -6,11 +6,11 @@
 
     <h1>Hola, estás en la página para crear un pinche árbol.</h1>
     
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{form.as_p}}
         <button type="submit" class="btn btn-primary">Crear árbol</button>
-        <a href="{% url 'inicio' %}"> Volver a Inicio </a>
+        <a href="{% url 'planta_inicio' %}"> Volver a Inicio </a>
     </form>
     
 {% endblock %}

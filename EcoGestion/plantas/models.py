@@ -8,7 +8,7 @@ class plantaArbol(models.Model):
     descripcion = models.CharField(verbose_name="Descripción", max_length=600, null=False)
     nombre_cientifico = models.CharField(verbose_name="NombreCientífico", max_length=100, null=False)
     fecha_plantacion = models.DateField(verbose_name="FechaPlantación", null=True)
-    imagen_url= models.CharField(verbose_name="ImagenURL", max_length=300, null=True)
+    imagen_url= models.ImageField(upload_to='plantas/%Y/%m/',blank=True, null=True)
     periodicidad_riego = models.IntegerField(verbose_name="PeriodicidadRiego", null=False)
     periodicidad_poda = models.IntegerField(verbose_name="PeriodicidadPoda", null=False)
     periodicidad_fumigacion = models.IntegerField(verbose_name="PeriodicidadFumigación", null=False)

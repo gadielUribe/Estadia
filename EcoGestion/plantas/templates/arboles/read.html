@@ -29,7 +29,13 @@
                 <td>{{ p.descripcion }}</td>
                 <td>{{ p.nombre_cientifico }}</td>
                 <td>{{ p.fecha_plantacion }}</td>
-                <td>{{ p.imagen_url}}</td>
+                <td>
+                    {% if p.imagen_url %}
+                        <img src="{{ p.imagen_url.url }}" alt="" style="height:64px; width:auto;">
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
                 <td>{{ p.periodicidad_riego}}</td>
                 <td>{{ p.periodicidad_poda}}</td>
                 <td>{{ p.periodicidad_fumigacion}}</td>
