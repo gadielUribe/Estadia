@@ -1,11 +1,24 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import plantaForm
 from .models import plantaArbol
+import folium
 
 # Pagina de Incio para CRUD de plantas y árboles
 def inicio(request):
     plantas = plantaArbol.objects.all().order_by('id_planta')
-    return render(request, 'arboles/read.html', {'plantas': plantas})
+    m = folium.Map(location=[18.889647,-99.1397134], zoom_start=18) #Ubicacion Mapa
+
+    for p in plantas:
+        if (p.lat is not None and p.lng is not None): #Que haya cordenadas
+            folium.Marker(
+                [float(p.lat), float(p.lng)],
+                popup=f"ID: {p.id_planta}" + f" Ubicacion: {p.descripcion_ubicacion}" + f" Procedencia: {p.procedencia}" + f" LLegada: {p.fecha_llegada}",
+                #tooltip=getattr(p, "nombre", "Planta")
+            ).add_to(m)
+
+    maps = {'map':m._repr_html_()}
+    
+    return render(request, 'arboles/read.html', {'plantas': plantas, 'maps':maps})
 
 # Crear un nuevo árbol o planta
 def crear(request):

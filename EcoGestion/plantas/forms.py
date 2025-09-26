@@ -13,8 +13,11 @@ class plantaForm(forms.ModelForm):
             'periodicidad_riego',
             'periodicidad_poda',
             'periodicidad_fumigacion',
-            'latitud',
-            'longitud',
+            'descripcion_ubicacion',
+            'procedencia',
+            'fecha_llegada',
+            'lat',
+            'lng',
         ]
 
      
