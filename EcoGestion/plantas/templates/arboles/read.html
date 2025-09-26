@@ -20,6 +20,7 @@
                 <th>Latitud</th>
                 <th>Longitud</th>
                 <th>Acciones</th>
+                
             </tr>
         </thead>
         <tbody>
@@ -39,8 +40,8 @@
                 <td>{{ p.periodicidad_riego}}</td>
                 <td>{{ p.periodicidad_poda}}</td>
                 <td>{{ p.periodicidad_fumigacion}}</td>
-                <td>{{ p.latitud }}</td>
-                <td>{{ p.longitud }}</td>
+                <td>{{ p.lat }}</td>
+                <td>{{ p.lng }}</td>
                 <td>
                     <a href="{% url 'editar' p.id_planta %}" class="btn btn-primary">Editar</a>
                     <a href="{% url 'eliminar' p.id_planta %}" class="btn btn-primary">Eliminar</a>
@@ -52,5 +53,7 @@
 
     <br><h2>Crear arbol</h2>
     <a href="{% url 'crear' %}">Crear</a>
+
+    {{ maps.map|safe }}
         
 {% endblock %} 
