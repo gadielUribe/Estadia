@@ -19,5 +19,14 @@ class plantaForm(forms.ModelForm):
             'lat',
             'lng',
         ]
+        widgets = {
+            'lat': forms.HiddenInput(),
+            'lng': forms.HiddenInput(),
+        }
 
+    def clean(self):
+        cleaned = super().clean()
+        if not cleaned.get('lat') or not cleaned.get('lng'):
+            raise forms.ValidationError("Selecciona la ubicacion")
+        return cleaned
      
