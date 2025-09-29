@@ -4,13 +4,46 @@
 
 {% block content %}
 
-    <h1>Hola, estás en la página para editar un pinche árbol.</h1>
-    
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button type="submit">Editar árbol</button>
-        <a href="{% url 'planta_inicio' %}"> Volver a Inicio </a>
-    </form>
-    
-{% endblock %} 
+  <h1>Hola, estás en la página para editar un pinche árbol.</h1>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}  {# incluye lat/lng (ocultos) #}
+    <div><strong>Selecciona la ubicación en el mapa:</strong></div>
+    <div id="map" style="height: 60vh;"></div>
+
+    <button type="submit" class="btn btn-primary">Editar árbol</button>
+    <a href="{% url 'planta_inicio' %}">Volver a Inicio</a>
+  </form>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const latInput = document.getElementById('id_lat');
+    const lngInput = document.getElementById('id_lng');
+
+    const map = L.map('map').setView([18.889647, -99.1397134], 17);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    let marker = null;
+    function placeMarker(latlng) {
+      if (!marker) {
+        marker = L.marker(latlng, {draggable:true}).addTo(map);
+        marker.on('dragend', e => {
+          const {lat, lng} = e.target.getLatLng();
+          latInput.value = lat.toFixed(6);
+          lngInput.value = lng.toFixed(6);
+        });
+      } else {
+        marker.setLatLng(latlng);
+      }
+      latInput.value = latlng.lat.toFixed(6);
+      lngInput.value = latlng.lng.toFixed(6);
+    }
+
+    map.on('click', e => placeMarker(e.latlng));
+  </script>
+{% endblock %}
