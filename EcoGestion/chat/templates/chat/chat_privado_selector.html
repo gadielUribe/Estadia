@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Seleccionar usuario{% endblock %}
+{% block content %}
+<h2>Selecciona un usuario para chatear</h2>
+
+<ul>
+  {% for u in usuarios %}
+    <li>
+      <a href="{% url 'chat_privado' u.id_usuario %}">{{ u.nombre_completo }}</a>
+    </li>
+  {% empty %}
+    <li>No hay otros usuarios disponibles.</li>
+  {% endfor %}
+  <li class="mt-2"><a href="{% url 'chat_general' %}">Ir al chat general</a></li>
+  <li class="mt-2"><a href="{% url 'dashboard' %}">Volver al dashboard</a></li>
+</ul>
+{% endblock %}
+

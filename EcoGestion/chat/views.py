@@ -7,6 +7,21 @@ def chat_general(request):
     return render(request, 'chat/chat_general.html')
 
 @login_required
+def chat_privado_selector(request):
+    usuarios = Usuario.objects.exclude(id_usuario=request.user.id_usuario)
+    return render(request, 'chat/chat_privado_selector.html', {
+        'usuarios': usuarios,
+    })
+
+@login_required
 def chat_privado(request, receptor_id):
     receptor = get_object_or_404(Usuario, id_usuario=receptor_id)
-    return render(request, 'chat/chat_privado.html', {'receptor': receptor})
+    # Evitar chat consigo mismo: redirigir al selector
+    if receptor.id_usuario == request.user.id_usuario:
+        from django.shortcuts import redirect
+        return redirect('chat_privado_selector')
+    usuarios = Usuario.objects.exclude(id_usuario=request.user.id_usuario)
+    return render(request, 'chat/chat_privado.html', {
+        'receptor': receptor,
+        'usuarios': usuarios,
+    })
