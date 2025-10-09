@@ -23,7 +23,7 @@
 
   <!-- SIEMPRE visibles para cualquier usuario autenticado -->
   <li><a href="{% url 'chat_general' %}">Chat general</a></li>
-  <li><a href="{% url 'chat_privado' request.user.id_usuario %}">Chat privado</a></li>
+  <li><a href="{% url 'chat_privado_selector' %}">Chat privado</a></li>
   
   <li><a href="{% url 'logout' %}">Cerrar sesión</a></li>
 </ul>

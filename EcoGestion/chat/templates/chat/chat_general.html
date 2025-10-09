@@ -6,39 +6,47 @@
 <input id="chat-message-input" type="text" size="80">
 <button id="chat-message-submit" class="btn btn-primary">Enviar</button>
 <script>
-  const scheme = window.location.protocol === "https:" ? "wss" : "ws";
-  const host   = window.location.host; 
+  const scheme = location.protocol === "https:" ? "wss" : "ws";
+  const host   = location.host;
   const chatSocket = new WebSocket(`${scheme}://${host}/ws/chat/general/`);
 
-  const chatLog = document.getElementById('chat-log');
-  const input   = document.getElementById('chat-message-input');
-  const btn     = document.getElementById('chat-message-submit');
+  const log   = document.getElementById('chat-log');           // <div id="chat-log"> ... </div>
+  const input = document.getElementById('chat-message-input');
+  const btn   = document.getElementById('chat-message-submit');
 
-  chatSocket.onopen = () => console.log("WS abierto");
-  chatSocket.onclose = (e) => console.warn("WS cerrado", e);
-  chatSocket.onerror = (e) => console.error("WS error", e);
+  function addLine({usuario_nombre, mensaje, timestamp}) {
+    const p = document.createElement('p');
+    const hora = new Date(timestamp).toLocaleTimeString();
+    p.innerHTML = `<b>${usuario_nombre}</b> <small>${hora}</small>: ${mensaje}`;
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+  }
 
   chatSocket.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    // adapta a tu payload actual
-    const nombre = data.usuario_nombre ?? data.emisor_nombre ?? "Usuario";
-    const p = document.createElement('p');
-    p.innerHTML = `<b>${nombre}:</b> ${data.mensaje}`;
-    chatLog.appendChild(p);
-    chatLog.scrollTop = chatLog.scrollHeight;
-  };
 
-  btn.onclick = (e) => {
-    e.preventDefault();
-    const mensaje = input.value.trim();
-    if (!mensaje) return;
-    if (chatSocket.readyState !== WebSocket.OPEN) {
-      console.warn("WS no está OPEN, estado:", chatSocket.readyState);
+    if (data.type === "history") {
+      // pintar historial inicial
+      log.innerHTML = "";                // limpia
+      data.messages.forEach(addLine);    // ya viene ordenado ascendente
       return;
     }
+
+    if (data.type === "message") {
+      addLine(data);
+      return;
+    }
+  };
+
+  btn.onclick = (ev) => {
+    ev.preventDefault();
+    const mensaje = input.value.trim();
+    if (!mensaje) return;
+    if (chatSocket.readyState !== WebSocket.OPEN) return;
     chatSocket.send(JSON.stringify({ mensaje }));
     input.value = "";
   };
 </script>
+
 
 {% endblock %}

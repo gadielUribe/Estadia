@@ -1,30 +1,64 @@
 {% extends "base.html" %}
 {% block title %}Chat Privado{% endblock %}
 {% block content %}
+
+<div class="mb-3">
+  <h4>Conversar con:</h4>
+  <ul>
+    {% for u in usuarios %}
+      <li><a href="{% url 'chat_privado' u.id_usuario %}">{{ u.nombre_completo }}</a></li>
+    {% empty %}
+      <li>No hay otros usuarios</li>
+    {% endfor %}
+  </ul>
+  <hr>
+</div>
+
 <h2>Chat con {{ receptor.nombre_completo }}</h2>
 <div id="chat-log" style="height:300px;overflow:auto;border:1px solid #ccc;"></div>
 <input id="chat-message-input" type="text" size="80">
 <button id="chat-message-submit" class="btn btn-primary">Enviar</button>
+
 <script>
-const receptorId = "{{ receptor.id_usuario }}";
-const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/chat/privado/' + receptorId + '/'
-);
+  const receptorId = "{{ receptor.id_usuario }}";
+  const scheme = location.protocol === "https:" ? "wss" : "ws";
+  const host   = location.host;
+  const chatSocket = new WebSocket(`${scheme}://${host}/ws/chat/privado/${receptorId}/`);
 
-chatSocket.onmessage = function(e) {
+  const log   = document.getElementById('chat-log');
+  const input = document.getElementById('chat-message-input');
+  const btn   = document.getElementById('chat-message-submit');
+
+  function addLine({emisor_nombre, mensaje, timestamp}) {
+    const p = document.createElement('p');
+    const hora = timestamp ? new Date(timestamp).toLocaleTimeString() : '';
+    p.innerHTML = `<b>${emisor_nombre}</b> <small>${hora}</small>: ${mensaje}`;
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  chatSocket.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    const chatLog = document.querySelector('#chat-log');
-    chatLog.innerHTML += '<p><b>' + data.emisor_nombre + ':</b> ' + data.mensaje + '</p>';
-    chatLog.scrollTop = chatLog.scrollHeight;
-};
 
-document.querySelector('#chat-message-submit').onclick = function(e) {
-    const input = document.querySelector('#chat-message-input');
-    const mensaje = input.value;
-    if (mensaje.trim() !== "") {
-        chatSocket.send(JSON.stringify({'mensaje': mensaje}));
-        input.value = '';
+    if (data.type === 'history') {
+      log.innerHTML = '';
+      (data.messages || []).forEach(addLine);
+      return;
     }
-};
+
+    if (data.type === 'message') {
+      addLine(data);
+      return;
+    }
+  };
+
+  btn.onclick = (ev) => {
+    ev.preventDefault();
+    const mensaje = input.value.trim();
+    if (!mensaje) return;
+    if (chatSocket.readyState !== WebSocket.OPEN) return;
+    chatSocket.send(JSON.stringify({ mensaje }));
+    input.value = '';
+  };
 </script>
 {% endblock %}
