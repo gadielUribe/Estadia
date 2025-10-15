@@ -26,7 +26,15 @@ SECRET_KEY = 'django-insecure-god5hezg+gr@o+sm!*z&-yhla9603z&^hhui*cx^(*)oq^usb4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+<<<<<<< Updated upstream
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+=======
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if h.strip()]
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "http://localhost,http://127.0.0.1"
+).split(",") if o.strip()]
+>>>>>>> Stashed changes
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
@@ -111,6 +119,7 @@ ASGI_APPLICATION = "EcoGestion.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+<<<<<<< Updated upstream
 DATABASES = { 
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -119,24 +128,27 @@ DATABASES = {
         'PASSWORD': '8246',
         'HOST': '127.0.0.1',
         'PORT': '3306',
+=======
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQL_DATABASE", "EcoGest"),
+        "USER": os.getenv("MYSQL_USER", "EcoUser"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD", "User_pass"),
+        "HOST": os.getenv("MYSQL_HOST", "db"),
+        "PORT": os.getenv("MYSQL_PORT", "3306"),
+>>>>>>> Stashed changes
     }
 }
 
-
 STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-    },
-    'staticfiles': {
-        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
-    },
-    'dbbackup': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-        'OPTIONS': {
-            'location': BASE_DIR / 'respaldo' / 'backup',
-        },
-    },
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
+
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "respaldo" / "backup"}
+DBBACKUP_CLEANUP_KEEP = 5
 
 
 # Password validation
