@@ -38,8 +38,8 @@ Puedes definir un archivo `.env` (en el mismo directorio que `docker-compose.yml
 | --- | --- | --- |
 | `DJANGO_ALLOWED_HOSTS` | Lista separada por comas de hosts permitidos | `localhost,127.0.0.1` |
 | `MYSQL_DATABASE` | Nombre de la base de datos | `EcoGest` |
-| `MYSQL_USER` | Usuario de la base de datos | `root` |
-| `MYSQL_PASSWORD` | Contraseña del usuario | `example` |
+| `MYSQL_USER` | Usuario de la base de datos | `EcoUser` |
+| `MYSQL_PASSWORD` | Contraseña del usuario | `User_pass` |
 | `MYSQL_HOST` | Host de MySQL | `db` |
 | `MYSQL_PORT` | Puerto de MySQL | `3306` |
 | `REDIS_HOST` | Host de Redis | `redis` |
