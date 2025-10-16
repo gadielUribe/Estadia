@@ -1,0 +1,57 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "EcoGest"
+      MYSQL_ROOT_PASSWORD: "example"
+      MYSQL_USER: "EcoUser"
+      MYSQL_PASSWORD: "User_pass"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "EcoUser", "-pUser_pass"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             daphne -b 0.0.0.0 -p 8000 EcoGestion.asgi:application"
+    volumes:
+      - .:/app
+      - media_data:/app/media
+      - backup_data:/app/respaldo/backup
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,172.23.50.37,192.168.1.70
+      DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost,http://127.0.0.1,http://172.23.50.37:8000,http://192.168.1.70:8000
+      MYSQL_DATABASE: "EcoGest"
+      MYSQL_USER: "EcoUser"
+      MYSQL_PASSWORD: "User_pass"
+      MYSQL_HOST: "db"
+      MYSQL_PORT: "3306"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  mysql_data:
+  media_data:
+  backup_data:
