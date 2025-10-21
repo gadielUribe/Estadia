@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Asignaciones{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Asignaciones de herramientas</h1>
+  <div>
+    <a href="{% url 'herramientas:herramienta_list' %}" class="btn btn-outline-secondary btn-sm">Volver a herramientas</a>
+    <a href="{% url 'herramientas:asignar_herramienta' %}" class="btn btn-primary btn-sm">Nueva asignación</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Herramienta</th>
+            <th>Tarea</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>Asignado por</th>
+            <th style="width:110px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for a in asignaciones %}
+          <tr>
+            <td>{{ a.herramienta.nombre }}</td>
+            <td>#{{ a.tarea_id }}</td>
+            <td>{{ a.tarea_descripcion|default:'—' }}</td>
+            <td>{{ a.fecha_asignacion|date:'Y-m-d H:i' }}</td>
+            <td>{{ a.asignado_por|default:'—' }}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'herramientas:asignacion_delete' a.pk %}">Eliminar</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">Sin asignaciones</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

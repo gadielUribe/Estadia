@@ -26,22 +26,17 @@ SECRET_KEY = 'django-insecure-god5hezg+gr@o+sm!*z&-yhla9603z&^hhui*cx^(*)oq^usb4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-<<<<<<< Updated upstream
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
-=======
 ALLOWED_HOSTS = [h.strip() for h in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if h.strip()]
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv(
-    "DJANGO_CSRF_TRUSTED_ORIGINS",
-    "http://localhost,http://127.0.0.1"
-).split(",") if o.strip()]
->>>>>>> Stashed changes
 
-CSRF_TRUSTED_ORIGINS = [
+# Orígenes confiables CSRF combinando variables de entorno y defaults locales
+_csrf_env = [o.strip() for o in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
+CSRF_TRUSTED_ORIGINS = list({
+    *(_csrf_env or []),
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://192.168.1.123:8000",
     "http://187.214.167.93:8000",
-]
+})
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,6 +51,7 @@ INSTALLED_APPS = [
     'plantas.apps.PlantasConfig',
     'respaldo.apps.RespaldoConfig',
     'chat.apps.ChatConfig',
+    'herramientas.apps.HerramientasConfig',
     'channels',
     'dbbackup',
 ]
@@ -64,16 +60,12 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'usuario.Usuario'
 ASGI_APPLICATION = 'EcoGestion.asgi.application'
 
-ASGI_APPLICATION = 'EcoGestion.asgi.application'
-
 CHANNEL_LAYERS = {
   "default": {
     "BACKEND": "channels_redis.core.RedisChannelLayer",
-    "CONFIG": {"hosts": [("127.0.0.1", 6379)]},  
+    "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
   }
 }
-
-ALLOWED_HOSTS = ['*']  # Mi IP LAN
 
 
 AUTHENTICATION_BACKENDS = [
@@ -86,6 +78,7 @@ ASGI_APPLICATION = 'EcoGestion.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -113,31 +106,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'EcoGestion.wsgi.application'
 
-ASGI_APPLICATION = "EcoGestion.asgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-<<<<<<< Updated upstream
-DATABASES = { 
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'EcoGest',
-        'USER': 'root',
-        'PASSWORD': '8246',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-=======
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.getenv("MYSQL_DATABASE", "EcoGest"),
-        "USER": os.getenv("MYSQL_USER", "EcoUser"),
-        "PASSWORD": os.getenv("MYSQL_PASSWORD", "User_pass"),
-        "HOST": os.getenv("MYSQL_HOST", "db"),
+        "USER": os.getenv("MYSQL_USER", "root"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD", ""),
+        "HOST": os.getenv("MYSQL_HOST", "127.0.0.1"),
         "PORT": os.getenv("MYSQL_PORT", "3306"),
->>>>>>> Stashed changes
     }
 }
 
@@ -185,7 +165,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES['staticfiles']['BACKEND'] = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

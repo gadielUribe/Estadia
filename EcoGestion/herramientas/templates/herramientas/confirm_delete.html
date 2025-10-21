@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar herramienta{% endblock %}
+{% block content %}
+<h1 class="h4">Eliminar herramienta</h1>
+<p>¿Seguro que deseas eliminar "{{ herramienta.nombre }}"?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <a href="{% url 'herramientas:herramienta_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+  <button type="submit" class="btn btn-danger">Eliminar</button>
+  </form>
+{% endblock %}
+
