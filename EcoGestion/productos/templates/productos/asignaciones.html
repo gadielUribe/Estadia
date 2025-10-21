@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Asignaciones de productos{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Asignaciones de productos</h1>
+  <div>
+    <a href="{% url 'productos:producto_list' %}" class="btn btn-outline-secondary btn-sm">Volver a productos</a>
+    {% if request.user.rol in 'administrador gestor' %}
+    <a href="{% url 'productos:asignar_producto' %}" class="btn btn-primary btn-sm">Nueva asignación</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Tarea</th>
+            <th>Fecha</th>
+            <th>Asignado por</th>
+            <th style="width:110px">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for a in asignaciones %}
+          <tr>
+            <td>{{ a.producto.nombre }}</td>
+            <td>{{ a.cantidad }}</td>
+            <td>#{{ a.tarea_id }}</td>
+            <td>{{ a.fecha_asignacion|date:'Y-m-d H:i' }}</td>
+            <td>{{ a.asignado_por|default:'—' }}</td>
+            <td>
+              {% if request.user.rol in 'administrador gestor' %}
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'productos:asignacion_delete' a.pk %}">Eliminar</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">Sin asignaciones</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

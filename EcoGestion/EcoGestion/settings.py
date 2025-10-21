@@ -13,22 +13,18 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-god5hezg+gr@o+sm!*z&-yhla9603z&^hhui*cx^(*)oq^usb4'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
 ALLOWED_HOSTS = [h.strip() for h in os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",") if h.strip()]
 
-# Orígenes confiables CSRF combinando variables de entorno y defaults locales
+
 _csrf_env = [o.strip() for o in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
 CSRF_TRUSTED_ORIGINS = list({
     *(_csrf_env or []),
@@ -37,7 +33,6 @@ CSRF_TRUSTED_ORIGINS = list({
     "http://192.168.1.123:8000",
     "http://187.214.167.93:8000",
 })
-# Application definition
 
 INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
@@ -52,6 +47,7 @@ INSTALLED_APPS = [
     'respaldo.apps.RespaldoConfig',
     'chat.apps.ChatConfig',
     'herramientas.apps.HerramientasConfig',
+    'productos.apps.ProductosConfig',
     'channels',
     'dbbackup',
 ]
@@ -107,8 +103,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'EcoGestion.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
@@ -131,9 +125,6 @@ DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "respaldo" / "backup"}
 DBBACKUP_CLEANUP_KEEP = 5
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -150,9 +141,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'America/Mexico_City'
@@ -162,15 +150,11 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES['staticfiles']['BACKEND'] = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -179,7 +163,7 @@ LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
 
-# Configuración de email para restauración de contraseña
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Cambia esto por tu servidor SMTP
 EMAIL_PORT = 587
@@ -196,7 +180,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Configuración imagenes
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'

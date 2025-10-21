@@ -15,11 +15,14 @@
     <li><a href="#">Tareas de mantenimiento</a></li>
     <li><a href="{% url 'respaldo_inicio' %}">Respaldo BD</a></li>
     <li><a href="{% url 'herramientas:herramienta_list' %}">Herramientas</a></li>
+    <li><a href="{% url 'productos:producto_list' %}">Productos</a></li>
   {% elif request.user.rol == 'gestor' %}
     <li><a href="#">Gestión de especies</a></li>
+    <li><a href="{% url 'productos:producto_list' %}">Productos</a></li>
     <li><a href="#">Tareas de mantenimiento</a></li>
   {% elif request.user.rol == 'mantenimiento' %}
     <li><a href="#">Ver tareas asignadas</a></li>
+    <li><a href="{% url 'productos:producto_list' %}">Productos (existencias)</a></li>
   {% endif %}
 
   <!-- SIEMPRE visibles para cualquier usuario autenticado -->
@@ -29,4 +32,6 @@
   <li><a href="{% url 'logout' %}">Cerrar sesión</a></li>
 </ul>
 {% endblock %}
+
+
 
