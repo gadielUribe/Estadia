@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
             options={
                 'db_table': 'Producto',
                 'ordering': ['nombre'],
-                'managed': False,
             },
         ),
         migrations.CreateModel(
@@ -53,7 +52,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'Existencia',
-                'managed': True,
             },
         ),
     ]

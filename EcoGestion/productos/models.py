@@ -11,7 +11,6 @@ class Producto(models.Model):
     class Meta:
         db_table = 'Producto'
         ordering = ['nombre']
-        managed = False  # Tabla ya existe en la BD
 
     def __str__(self):
         return self.nombre
@@ -32,7 +31,6 @@ class Existencia(models.Model):
 
     class Meta:
         db_table = 'Existencia'
-        managed = True  # Permite que Django cree la tabla si no existe
 
 
 class AsignacionProducto(models.Model):
