@@ -23,3 +23,6 @@ urlpatterns = [
 
 if settings.DEBUG:  # solo en desarrollo
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Servir estáticos desde STATIC_ROOT sin WhiteNoise (entorno local/Daphne)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

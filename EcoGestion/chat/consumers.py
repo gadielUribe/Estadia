@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 
-from .models import ChatGeneral, ChatPrivado # y ChatPrivado si luego haces privado
+from .models import ChatGeneral, ChatPrivado 
 
 def serialize_general(m):
     return {
@@ -61,7 +61,6 @@ class GeneralChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({"type": "message", **event["payload"]}))
 
-    # ------- helpers DB -------
     @database_sync_to_async
     def get_last_messages(self, limit=50):
         qs = (ChatGeneral.objects
