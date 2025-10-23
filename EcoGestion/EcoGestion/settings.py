@@ -56,13 +56,15 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'usuario.Usuario'
 ASGI_APPLICATION = 'EcoGestion.asgi.application'
 
-CHANNEL_LAYERS = {
-  "default": {
-    "BACKEND": "channels_redis.core.RedisChannelLayer",
-    "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
-  }
-}
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [(REDIS_HOST, REDIS_PORT)]},
+    }
+}
 
 AUTHENTICATION_BACKENDS = [
     'usuario.backends.MatriculaBackend',
@@ -101,15 +103,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'EcoGestion.wsgi.application'
 
-
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.getenv("MYSQL_DATABASE", "EcoGest"),
-        "USER": os.getenv("MYSQL_USER", "root"),
-        "PASSWORD": os.getenv("MYSQL_PASSWORD", ""),
-        "HOST": os.getenv("MYSQL_HOST", "127.0.0.1"),
+        "USER": os.getenv("MYSQL_USER", "EcoUser"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD", "User_pass"),
+        "HOST": os.getenv("MYSQL_HOST", "db"),
         "PORT": os.getenv("MYSQL_PORT", "3306"),
     }
 }
@@ -169,14 +169,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'gadielvillaf@gmail.com'  # Cambia esto por tu email
 EMAIL_HOST_PASSWORD = 'dczd zcke bjzm vfhe'     # Cambia esto por tu contraseña
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
-    },
-}
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
