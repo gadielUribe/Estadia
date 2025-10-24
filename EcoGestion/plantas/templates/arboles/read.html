@@ -4,7 +4,7 @@
 
 {% block content %}
 
-    <h1>Hola, estás en la página para ver el detalle de un pinche árbol.</h1>
+    <h1>Hola, estás en la página para ver el detalle de un árbol.</h1>
     
     <table class="table">
         <thead>
@@ -19,40 +19,45 @@
                 <th>Fumigacion</th>
                 <th>Latitud</th>
                 <th>Longitud</th>
-                <th>Acciones</th>
-                
+                {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+                    <th>Acciones</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
             {% for p in plantas %}
-            <tr>
-                <td>{{ p.id_planta }}</td>
-                <td>{{ p.descripcion }}</td>
-                <td>{{ p.nombre_cientifico }}</td>
-                <td>{{ p.fecha_plantacion }}</td>
-                <td>
-                    {% if p.imagen_url %}
-                        <img src="{{ p.imagen_url.url }}" alt="" style="height:64px; width:auto;">
-                    {% else %}
-                        —
+                <tr>
+                    <td>{{ p.id_planta }}</td>
+                    <td>{{ p.descripcion }}</td>
+                    <td>{{ p.nombre_cientifico }}</td>
+                    <td>{{ p.fecha_plantacion }}</td>
+                    <td>
+                        {% if p.imagen_url %}
+                            <img src="{{ p.imagen_url.url }}" alt="" style="height:64px; width:auto;">
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ p.periodicidad_riego}}</td>
+                    <td>{{ p.periodicidad_poda}}</td>
+                    <td>{{ p.periodicidad_fumigacion}}</td>
+                    <td>{{ p.lat }}</td>
+                    <td>{{ p.lng }}</td>
+                    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+                        <td>
+                            <a href="{% url 'editar' p.id_planta %}" class="btn btn-primary">Editar</a>
+                            <a href="{% url 'eliminar' p.id_planta %}" class="btn btn-primary">Eliminar</a>
+                        </td>
                     {% endif %}
-                </td>
-                <td>{{ p.periodicidad_riego}}</td>
-                <td>{{ p.periodicidad_poda}}</td>
-                <td>{{ p.periodicidad_fumigacion}}</td>
-                <td>{{ p.lat }}</td>
-                <td>{{ p.lng }}</td>
-                <td>
-                    <a href="{% url 'editar' p.id_planta %}" class="btn btn-primary">Editar</a>
-                    <a href="{% url 'eliminar' p.id_planta %}" class="btn btn-primary">Eliminar</a>
-                </td>
-            </tr>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <br><h2>Crear arbol</h2>
-    <a href="{% url 'crear' %}">Crear</a>
+    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+        <br><h2>Crear arbol</h2>
+        <a href="{% url 'crear' %}">Crear</a>
+    {% endif %}
 
     {{ maps.map|safe }}
         

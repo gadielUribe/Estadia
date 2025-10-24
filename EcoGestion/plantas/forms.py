@@ -20,6 +20,8 @@ class plantaForm(forms.ModelForm):
             'lng',
         ]
         widgets = {
+            'fecha_plantacion': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_llegada': forms.DateInput(attrs={'type': 'date'}),
             'lat': forms.HiddenInput(),
             'lng': forms.HiddenInput(),
         }

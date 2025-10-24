@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import plantaForm
 from .models import plantaArbol
 import folium
 
+def es_privilegio(user):
+    return user.is_authenticated and getattr(user, "rol", None) in ["administrador", "gestor"]
+
 # Pagina de Incio para CRUD de plantas y árboles
+@login_required
 def inicio(request):
     plantas = plantaArbol.objects.all().order_by('id_planta')
     m = folium.Map(location=[18.889647,-99.1397134], zoom_start=18) #Ubicacion Mapa
@@ -21,6 +26,8 @@ def inicio(request):
     return render(request, 'arboles/read.html', {'plantas': plantas, 'maps':maps})
 
 # Crear un nuevo árbol o planta
+@login_required
+@user_passes_test(es_privilegio)
 def crear(request):
     if request.method == 'POST': 
         form = plantaForm(request.POST, request.FILES)
@@ -33,6 +40,8 @@ def crear(request):
     return render(request, 'arboles/create.html', {'form': form})
 
 # Editar un árbol o planta existente
+@login_required
+@user_passes_test(es_privilegio)
 def editar(request, id_arbol):
     arbol = get_object_or_404(plantaArbol, pk=id_arbol)
     if request.method == 'POST':
@@ -45,6 +54,8 @@ def editar(request, id_arbol):
     return render(request, 'arboles/update.html', {'form':form, 'arbol':arbol})
 
 # Eliminar un árbol o planta existente
+@login_required
+@user_passes_test(es_privilegio)
 def eliminar(request, id_arbol):
     arbol = get_object_or_404(plantaArbol, pk=id_arbol)
     if request.method == 'POST':
