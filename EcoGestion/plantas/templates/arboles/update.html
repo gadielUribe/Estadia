@@ -4,11 +4,11 @@
 
 {% block content %}
 
-  <h1>Hola, estás en la página para editar un pinche árbol.</h1>
+  <h1>Hola, estás en la página para editar un árbol.</h1>
 
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}  {# incluye lat/lng (ocultos) #}
+    {{ form.as_p }}
     <div><strong>Selecciona la ubicación en el mapa:</strong></div>
     <div id="map" style="height: 60vh;"></div>
 

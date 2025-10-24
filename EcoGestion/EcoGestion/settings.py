@@ -151,7 +151,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'static'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -174,4 +174,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
-
+# Tiempo máximo de inactividad antes de cerrar sesión
+SESSION_COOKIE_AGE = 1800  # 30 minutos en segundos
+# Cerrar sesión al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
