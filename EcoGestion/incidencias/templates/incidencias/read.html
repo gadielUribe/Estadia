@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle incidencias{% endblock %}
+
+{% block content %}
+
+    <h1>Pagina de reportes de incidencias ambientales</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Fecha de Reporte</th>
+                <th>Área del Campus</th>
+                <th>ID Árbol</th>
+                <th>Estado</th>
+                <th>ID Usuario</th>
+                {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+                    <th>Acciones</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in incidencia %}
+                <tr>
+                    <td>{{ i.id_incidencia }}</td>
+                    <td>{{ i.titulo }}</td>
+                    <td>{{ i.descripcion }}</td>
+                    <td>{{ i.fecha_reporte }}</td>
+                    <td>{{ i.area_campus }}</td>
+                    <td>{{ i.id_planta.id_planta }}</td>
+                    <td>{{ i.estado }}</td>
+                    <td>{{ i.id_usuario.nombre_completo }}</td>
+                    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+                        <td>
+                            <a href="{% url 'editar_incidencia' i.id_incidencia %}" class="btn btn-primary">Editar</a>
+                            <a href="{% url 'eliminar_incidencia' i.id_incidencia %}" class="btn btn-primary">Eliminar</a>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+        <br><h2>Crear incidencia</h2>
+        <a href="{% url 'crear_incidencia' %}" class="btn btn-primary">Crear</a>
+    {% endif %}
+
+{% endblock %}

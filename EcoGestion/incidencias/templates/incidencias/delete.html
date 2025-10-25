@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar incidencia{% endblock %}
+
+{% block content %}
+
+    <h1>Eliminar incidente</h1>
+
+    <p>¿Deseas eliminar la incidencia <strong>#{{ incidencia.id_incidencia }} - {{ incidencia.titulo }}</strong>?</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Eliminar incidencia</button>
+        <a href="{% url 'incidencia_inicio' %}"> Volver a Inicio </a>
+    </form>
+
+{% endblock %} 

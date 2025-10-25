@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'chat.apps.ChatConfig',
     'herramientas.apps.HerramientasConfig',
     'productos.apps.ProductosConfig',
+    'incidencias.apps.IncidenciasConfig',
     'channels',
     'dbbackup',
 ]
