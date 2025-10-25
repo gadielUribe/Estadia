@@ -45,8 +45,8 @@
                     <td>{{ p.lng }}</td>
                     {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
                         <td>
-                            <a href="{% url 'editar' p.id_planta %}" class="btn btn-primary">Editar</a>
-                            <a href="{% url 'eliminar' p.id_planta %}" class="btn btn-primary">Eliminar</a>
+                            <a href="{% url 'planta_editar' p.id_planta %}" class="btn btn-primary">Editar</a>
+                            <a href="{% url 'planta_eliminar' p.id_planta %}" class="btn btn-primary">Eliminar</a>
                         </td>
                     {% endif %}
                 </tr>
@@ -56,7 +56,7 @@
 
     {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
         <br><h2>Crear arbol</h2>
-        <a href="{% url 'crear' %}">Crear</a>
+        <a href="{% url 'planta_crear' %}" class="btn btn-primary">Crear</a>
     {% endif %}
 
     {{ maps.map|safe }}

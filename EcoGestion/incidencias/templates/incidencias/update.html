@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Actualizacion incidencia{% endblock %}
+
+{% block content %}
+
+    <h1>Actualizar incidencia</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">Actualizar incidencia</button>
+        <a href="{% url 'incidencia_inicio' %}">Volver a Inicio</a>
+    </form>
+
+{% endblock %}

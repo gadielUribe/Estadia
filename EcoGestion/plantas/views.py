@@ -33,7 +33,7 @@ def crear(request):
         form = plantaForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('crear')
+            return redirect('planta_inicio')
     else:
         form = plantaForm()
 
