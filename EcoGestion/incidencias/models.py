@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class incidenciaAmbiental(models.Model):
     ESTADOS = [
         ('pendiente', 'Pendiente'),

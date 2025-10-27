@@ -17,7 +17,6 @@ def chat_privado_selector(request):
 @login_required
 def chat_privado(request, receptor_id):
     receptor = get_object_or_404(Usuario, id_usuario=receptor_id)
-    # Evitar chat consigo mismo: redirigir al selector
     if receptor.id_usuario == request.user.id_usuario:
         from django.shortcuts import redirect
         return redirect('chat_privado_selector')

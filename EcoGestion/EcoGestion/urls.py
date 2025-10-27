@@ -15,6 +15,7 @@ urlpatterns = [
     path('incidencias/', include('incidencias.urls')),
     path('herramientas/', include('herramientas.urls')),
     path('productos/', include('productos.urls')),
+    path('voluntarios/', include('voluntarios.urls')),
     path('backup/', include('respaldo.urls')),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
