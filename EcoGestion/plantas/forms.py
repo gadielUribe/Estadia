@@ -6,22 +6,19 @@ class plantaForm(forms.ModelForm):
     class Meta:
         model = plantaArbol
         fields = [
-            'descripcion',
+            'nombre_comun',
             'nombre_cientifico',
+            'descripcion',
             'fecha_plantacion',
             'imagen_url',
             'periodicidad_riego',
             'periodicidad_poda',
             'periodicidad_fumigacion',
-            'descripcion_ubicacion',
-            'procedencia',
-            'fecha_llegada',
             'lat',
             'lng',
         ]
         widgets = {
             'fecha_plantacion': forms.DateInput(attrs={'type': 'date'}),
-            'fecha_llegada': forms.DateInput(attrs={'type': 'date'}),
             'lat': forms.HiddenInput(),
             'lng': forms.HiddenInput(),
         }
