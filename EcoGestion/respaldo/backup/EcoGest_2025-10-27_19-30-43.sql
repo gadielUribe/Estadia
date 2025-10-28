@@ -86,6 +86,43 @@ UNLOCK TABLES;
 commit;
 
 --
+-- Table structure for table `AsignacionVoluntario`
+--
+
+DROP TABLE IF EXISTS `AsignacionVoluntario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `AsignacionVoluntario` (
+  `id_asignacion` int NOT NULL AUTO_INCREMENT,
+  `tarea_id` int unsigned NOT NULL,
+  `actividad` varchar(150) NOT NULL,
+  `evento_id` int unsigned DEFAULT NULL,
+  `evento_nombre` varchar(150) NOT NULL,
+  `fecha_asignacion` datetime(6) NOT NULL,
+  `asignado_por_id` int DEFAULT NULL,
+  `voluntario_id` int NOT NULL,
+  PRIMARY KEY (`id_asignacion`),
+  KEY `AsignacionVoluntario_asignado_por_id_0d9cd0ab_fk_usuario_u` (`asignado_por_id`),
+  KEY `AsignacionVoluntario_voluntario_id_f691d1db_fk_Voluntari` (`voluntario_id`),
+  CONSTRAINT `AsignacionVoluntario_asignado_por_id_0d9cd0ab_fk_usuario_u` FOREIGN KEY (`asignado_por_id`) REFERENCES `usuario_usuario` (`id_usuario`),
+  CONSTRAINT `AsignacionVoluntario_voluntario_id_f691d1db_fk_Voluntari` FOREIGN KEY (`voluntario_id`) REFERENCES `Voluntario` (`id_voluntario`),
+  CONSTRAINT `AsignacionVoluntario_chk_1` CHECK ((`tarea_id` >= 0)),
+  CONSTRAINT `AsignacionVoluntario_chk_2` CHECK ((`evento_id` >= 0))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `AsignacionVoluntario`
+--
+
+LOCK TABLES `AsignacionVoluntario` WRITE;
+/*!40000 ALTER TABLE `AsignacionVoluntario` DISABLE KEYS */;
+set autocommit=0;
+/*!40000 ALTER TABLE `AsignacionVoluntario` ENABLE KEYS */;
+UNLOCK TABLES;
+commit;
+
+--
 -- Table structure for table `ChatGeneral`
 --
 
@@ -100,7 +137,7 @@ CREATE TABLE `ChatGeneral` (
   PRIMARY KEY (`id_mensaje`),
   KEY `ChatGeneral_usuario_id_b4ceebb0_fk_usuario_usuario_id_usuario` (`usuario_id`),
   CONSTRAINT `ChatGeneral_usuario_id_b4ceebb0_fk_usuario_usuario_id_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuario_usuario` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -110,9 +147,6 @@ CREATE TABLE `ChatGeneral` (
 LOCK TABLES `ChatGeneral` WRITE;
 /*!40000 ALTER TABLE `ChatGeneral` DISABLE KEYS */;
 set autocommit=0;
-INSERT INTO `ChatGeneral` VALUES
-(1,'vdfvxdv','2025-10-23 04:07:19.409045',1),
-(2,'dfsxf','2025-10-23 04:23:29.148362',1);
 /*!40000 ALTER TABLE `ChatGeneral` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -135,7 +169,7 @@ CREATE TABLE `ChatPrivado` (
   KEY `ChatPrivado_receptor_id_c1856882_fk_usuario_usuario_id_usuario` (`receptor_id`),
   CONSTRAINT `ChatPrivado_emisor_id_9a615525_fk_usuario_usuario_id_usuario` FOREIGN KEY (`emisor_id`) REFERENCES `usuario_usuario` (`id_usuario`),
   CONSTRAINT `ChatPrivado_receptor_id_c1856882_fk_usuario_usuario_id_usuario` FOREIGN KEY (`receptor_id`) REFERENCES `usuario_usuario` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -145,9 +179,6 @@ CREATE TABLE `ChatPrivado` (
 LOCK TABLES `ChatPrivado` WRITE;
 /*!40000 ALTER TABLE `ChatPrivado` DISABLE KEYS */;
 set autocommit=0;
-INSERT INTO `ChatPrivado` VALUES
-(1,'casczc','2025-10-23 04:07:57.117841',1,2),
-(2,'dfse','2025-10-23 04:08:10.996837',2,1);
 /*!40000 ALTER TABLE `ChatPrivado` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -216,16 +247,14 @@ DROP TABLE IF EXISTS `PlantaArbol`;
 /*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `PlantaArbol` (
   `id_planta` int NOT NULL AUTO_INCREMENT,
-  `descripcion` varchar(600) NOT NULL,
+  `nombre_comun` varchar(50) NOT NULL,
   `nombre_cientifico` varchar(100) NOT NULL,
+  `descripcion` varchar(600) NOT NULL,
   `fecha_plantacion` date DEFAULT NULL,
   `imagen_url` varchar(100) DEFAULT NULL,
-  `periodicidad_riego` int NOT NULL,
-  `periodicidad_poda` int NOT NULL,
-  `periodicidad_fumigacion` int NOT NULL,
-  `descripcion_ubicacion` varchar(200) DEFAULT NULL,
-  `procedencia` varchar(200) DEFAULT NULL,
-  `fecha_llegada` date DEFAULT NULL,
+  `periodicidad_riego` varchar(40) NOT NULL,
+  `periodicidad_poda` varchar(40) NOT NULL,
+  `periodicidad_fumigacion` varchar(40) NOT NULL,
   `lat` double DEFAULT NULL,
   `lng` double DEFAULT NULL,
   PRIMARY KEY (`id_planta`)
@@ -267,6 +296,36 @@ LOCK TABLES `Producto` WRITE;
 /*!40000 ALTER TABLE `Producto` DISABLE KEYS */;
 set autocommit=0;
 /*!40000 ALTER TABLE `Producto` ENABLE KEYS */;
+UNLOCK TABLES;
+commit;
+
+--
+-- Table structure for table `Voluntario`
+--
+
+DROP TABLE IF EXISTS `Voluntario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Voluntario` (
+  `id_voluntario` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(80) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `telefono` varchar(25) NOT NULL,
+  `tipo_participacion` varchar(20) NOT NULL,
+  `fecha_registro` datetime(6) NOT NULL,
+  PRIMARY KEY (`id_voluntario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Voluntario`
+--
+
+LOCK TABLES `Voluntario` WRITE;
+/*!40000 ALTER TABLE `Voluntario` DISABLE KEYS */;
+set autocommit=0;
+/*!40000 ALTER TABLE `Voluntario` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
 
@@ -341,7 +400,7 @@ CREATE TABLE `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -407,7 +466,23 @@ INSERT INTO `auth_permission` VALUES
 (53,'Can add existencia',14,'add_existencia'),
 (54,'Can change existencia',14,'change_existencia'),
 (55,'Can delete existencia',14,'delete_existencia'),
-(56,'Can view existencia',14,'view_existencia');
+(56,'Can view existencia',14,'view_existencia'),
+(57,'Can add voluntario',15,'add_voluntario'),
+(58,'Can change voluntario',15,'change_voluntario'),
+(59,'Can delete voluntario',15,'delete_voluntario'),
+(60,'Can view voluntario',15,'view_voluntario'),
+(61,'Can add asignacion voluntario',16,'add_asignacionvoluntario'),
+(62,'Can change asignacion voluntario',16,'change_asignacionvoluntario'),
+(63,'Can delete asignacion voluntario',16,'delete_asignacionvoluntario'),
+(64,'Can view asignacion voluntario',16,'view_asignacionvoluntario'),
+(65,'Can add incidencia ambiental',17,'add_incidenciaambiental'),
+(66,'Can change incidencia ambiental',17,'change_incidenciaambiental'),
+(67,'Can delete incidencia ambiental',17,'delete_incidenciaambiental'),
+(68,'Can view incidencia ambiental',17,'view_incidenciaambiental'),
+(69,'Can add backup audit',18,'add_backupaudit'),
+(70,'Can change backup audit',18,'change_backupaudit'),
+(71,'Can delete backup audit',18,'delete_backupaudit'),
+(72,'Can view backup audit',18,'view_backupaudit');
 /*!40000 ALTER TABLE `auth_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -461,7 +536,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -480,12 +555,16 @@ INSERT INTO `django_content_type` VALUES
 (5,'contenttypes','contenttype'),
 (11,'herramientas','asignacionherramienta'),
 (10,'herramientas','herramienta'),
+(17,'incidencias','incidenciaambiental'),
 (7,'plantas','plantaarbol'),
 (13,'productos','asignacionproducto'),
 (14,'productos','existencia'),
 (12,'productos','producto'),
+(18,'respaldo','backupaudit'),
 (6,'sessions','session'),
-(1,'usuario','usuario');
+(1,'usuario','usuario'),
+(16,'voluntarios','asignacionvoluntario'),
+(15,'voluntarios','voluntario');
 /*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -503,7 +582,7 @@ CREATE TABLE `django_migrations` (
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -514,32 +593,36 @@ LOCK TABLES `django_migrations` WRITE;
 /*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
 set autocommit=0;
 INSERT INTO `django_migrations` VALUES
-(1,'contenttypes','0001_initial','2025-10-23 03:55:35.771992'),
-(2,'contenttypes','0002_remove_content_type_name','2025-10-23 03:55:36.251686'),
-(3,'auth','0001_initial','2025-10-23 03:55:37.209659'),
-(4,'auth','0002_alter_permission_name_max_length','2025-10-23 03:55:37.425737'),
-(5,'auth','0003_alter_user_email_max_length','2025-10-23 03:55:37.441220'),
-(6,'auth','0004_alter_user_username_opts','2025-10-23 03:55:37.458622'),
-(7,'auth','0005_alter_user_last_login_null','2025-10-23 03:55:37.475218'),
-(8,'auth','0006_require_contenttypes_0002','2025-10-23 03:55:37.490506'),
-(9,'auth','0007_alter_validators_add_error_messages','2025-10-23 03:55:37.507397'),
-(10,'auth','0008_alter_user_username_max_length','2025-10-23 03:55:37.527483'),
-(11,'auth','0009_alter_user_last_name_max_length','2025-10-23 03:55:37.542802'),
-(12,'auth','0010_alter_group_name_max_length','2025-10-23 03:55:37.578221'),
-(13,'auth','0011_update_proxy_permissions','2025-10-23 03:55:37.595599'),
-(14,'auth','0012_alter_user_first_name_max_length','2025-10-23 03:55:37.610632'),
-(15,'usuario','0001_initial','2025-10-23 03:55:38.638493'),
-(16,'admin','0001_initial','2025-10-23 03:55:39.096495'),
-(17,'admin','0002_logentry_remove_auto_add','2025-10-23 03:55:39.114881'),
-(18,'admin','0003_logentry_add_action_flag_choices','2025-10-23 03:55:39.130868'),
-(19,'chat','0001_initial','2025-10-23 03:55:39.859385'),
-(20,'chat','0002_alter_chatgeneral_options_alter_chatprivado_options','2025-10-23 03:55:39.879300'),
-(21,'herramientas','0001_initial','2025-10-23 03:55:40.434590'),
-(22,'plantas','0001_initial','2025-10-23 03:55:40.512662'),
-(23,'productos','0001_initial','2025-10-23 03:55:41.352102'),
-(24,'sessions','0001_initial','2025-10-23 03:55:41.478732'),
-(25,'usuario','0002_alter_usuario_correo','2025-10-23 03:55:41.494806'),
-(26,'usuario','0003_rename_correo_usuario_email','2025-10-23 03:55:41.570996');
+(1,'contenttypes','0001_initial','2025-10-28 01:24:40.697016'),
+(2,'contenttypes','0002_remove_content_type_name','2025-10-28 01:24:41.197481'),
+(3,'auth','0001_initial','2025-10-28 01:24:42.161355'),
+(4,'auth','0002_alter_permission_name_max_length','2025-10-28 01:24:42.383655'),
+(5,'auth','0003_alter_user_email_max_length','2025-10-28 01:24:42.401910'),
+(6,'auth','0004_alter_user_username_opts','2025-10-28 01:24:42.416967'),
+(7,'auth','0005_alter_user_last_login_null','2025-10-28 01:24:42.434123'),
+(8,'auth','0006_require_contenttypes_0002','2025-10-28 01:24:42.449345'),
+(9,'auth','0007_alter_validators_add_error_messages','2025-10-28 01:24:42.464944'),
+(10,'auth','0008_alter_user_username_max_length','2025-10-28 01:24:42.478614'),
+(11,'auth','0009_alter_user_last_name_max_length','2025-10-28 01:24:42.494662'),
+(12,'auth','0010_alter_group_name_max_length','2025-10-28 01:24:42.536096'),
+(13,'auth','0011_update_proxy_permissions','2025-10-28 01:24:42.553782'),
+(14,'auth','0012_alter_user_first_name_max_length','2025-10-28 01:24:42.567224'),
+(15,'usuario','0001_initial','2025-10-28 01:24:43.762758'),
+(16,'admin','0001_initial','2025-10-28 01:24:44.270751'),
+(17,'admin','0002_logentry_remove_auto_add','2025-10-28 01:24:44.291789'),
+(18,'admin','0003_logentry_add_action_flag_choices','2025-10-28 01:24:44.312154'),
+(19,'chat','0001_initial','2025-10-28 01:24:45.043609'),
+(20,'chat','0002_alter_chatgeneral_options_alter_chatprivado_options','2025-10-28 01:24:45.071930'),
+(21,'herramientas','0001_initial','2025-10-28 01:24:45.612904'),
+(22,'plantas','0001_initial','2025-10-28 01:24:45.691984'),
+(23,'incidencias','0001_initial','2025-10-28 01:24:46.178244'),
+(24,'plantas','0002_alter_plantaarbol_periodicidad_fumigacion_and_more','2025-10-28 01:24:46.707362'),
+(25,'productos','0001_initial','2025-10-28 01:24:47.504318'),
+(26,'sessions','0001_initial','2025-10-28 01:24:47.636595'),
+(27,'usuario','0002_alter_usuario_correo','2025-10-28 01:24:47.658732'),
+(28,'usuario','0003_rename_correo_usuario_email','2025-10-28 01:24:47.725403'),
+(29,'voluntarios','0001_initial','2025-10-28 01:24:48.200337'),
+(30,'respaldo','0001_initial','2025-10-28 01:25:13.974281');
 /*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -568,8 +651,76 @@ LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
 set autocommit=0;
 INSERT INTO `django_session` VALUES
-('6dawvs5kbk4zfae3scozfnm4xjb9ps2j','.eJxVi7sOwiAUht-F2TSFU26O7j4D-XuAQDSaQJmM725NOuj6XV4iYGwljJ5aqFGchRSnX7aCb-nxFaMPtPqcDtKnK7ZWedxxOZq_saCX_YrsvF1k0mDFvHDUlLMBkpJqNWTgHc_WKhCBpTJRkqVdak95zk6J9wcl4zUK:1vBmca:_BHUWlxvYZINl0GjXJDQC6l5znSxVziIkPeahU-ds90','2025-11-06 04:08:16.529559');
+('18bl7mpa2fz18fo6a4gpa0joeiqvwwm5','.eJxVi0sOwiAQQO_C2jRMWz7j0n3PQIZhCESjCZSV8e5q0oVu3-epAo29hNGlhZrUWYE6_bJIfJX7V4w-qNXHdJA-bbS3yuNGl6P5Gwv18rlklkg6CyPmZQVwlA0Dr9kn0ILeORu1B7ALISAYKzbOHDMnJs9s1OsNKUM12g:1vDYTK:oml0eOVj7f4wJSE5ROZyEh7wZh9ddK6pjUA3sTlHQ4g','2025-10-28 01:56:02.013848');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
+UNLOCK TABLES;
+commit;
+
+--
+-- Table structure for table `incidencias_incidenciaambiental`
+--
+
+DROP TABLE IF EXISTS `incidencias_incidenciaambiental`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `incidencias_incidenciaambiental` (
+  `id_incidencia` int NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(150) NOT NULL,
+  `descripcion` varchar(600) NOT NULL,
+  `fecha_reporte` datetime(6) NOT NULL,
+  `area_campus` varchar(100) NOT NULL,
+  `estado` varchar(40) NOT NULL,
+  `id_planta_id` int DEFAULT NULL,
+  `id_usuario_id` int DEFAULT NULL,
+  PRIMARY KEY (`id_incidencia`),
+  KEY `incidencias_incidenc_id_planta_id_59911b84_fk_PlantaArb` (`id_planta_id`),
+  KEY `incidencias_incidenc_id_usuario_id_99be9da7_fk_usuario_u` (`id_usuario_id`),
+  CONSTRAINT `incidencias_incidenc_id_planta_id_59911b84_fk_PlantaArb` FOREIGN KEY (`id_planta_id`) REFERENCES `PlantaArbol` (`id_planta`),
+  CONSTRAINT `incidencias_incidenc_id_usuario_id_99be9da7_fk_usuario_u` FOREIGN KEY (`id_usuario_id`) REFERENCES `usuario_usuario` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `incidencias_incidenciaambiental`
+--
+
+LOCK TABLES `incidencias_incidenciaambiental` WRITE;
+/*!40000 ALTER TABLE `incidencias_incidenciaambiental` DISABLE KEYS */;
+set autocommit=0;
+/*!40000 ALTER TABLE `incidencias_incidenciaambiental` ENABLE KEYS */;
+UNLOCK TABLES;
+commit;
+
+--
+-- Table structure for table `respaldo_backupaudit`
+--
+
+DROP TABLE IF EXISTS `respaldo_backupaudit`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `respaldo_backupaudit` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `action` varchar(10) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `run_at` datetime(6) NOT NULL,
+  `log` longtext NOT NULL,
+  `user_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `respaldo_backupaudit_user_id_65c9ebaa_fk_usuario_u` (`user_id`),
+  CONSTRAINT `respaldo_backupaudit_user_id_65c9ebaa_fk_usuario_u` FOREIGN KEY (`user_id`) REFERENCES `usuario_usuario` (`id_usuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `respaldo_backupaudit`
+--
+
+LOCK TABLES `respaldo_backupaudit` WRITE;
+/*!40000 ALTER TABLE `respaldo_backupaudit` DISABLE KEYS */;
+set autocommit=0;
+INSERT INTO `respaldo_backupaudit` VALUES
+(1,'BACKUP','EcoGest_2025-10-27_19-26-21.sql','2025-10-28 01:26:21.534850','OK mysqldump\n',1);
+/*!40000 ALTER TABLE `respaldo_backupaudit` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
 
@@ -594,7 +745,7 @@ CREATE TABLE `usuario_usuario` (
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `matricula` (`matricula`),
   UNIQUE KEY `correo` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -605,8 +756,7 @@ LOCK TABLES `usuario_usuario` WRITE;
 /*!40000 ALTER TABLE `usuario_usuario` DISABLE KEYS */;
 set autocommit=0;
 INSERT INTO `usuario_usuario` VALUES
-('pbkdf2_sha256$1000000$llbUf5ZP5zZVilgoToJxU8$CBLwvpjY0aTDp57olGqwn+1Jh5r/9YwUnNs6PRE414M=','2025-10-23 04:08:16.517461',1,1,'aoco220155','aoco220155@upemor.edu.mx','aoco220155','administrador',1,1),
-('pbkdf2_sha256$1000000$ESEJxSeGclNwH6BigkU93O$wqxY2UF9ShscMtAU4VeFyWZXziY79zkq5nPeXsTHXyM=','2025-10-23 04:08:05.526269',0,2,'vugo222163','vugo222163@upemor.edu.mx','vugo222163','gestor',1,0);
+('pbkdf2_sha256$1000000$6p3nQfLAZnITsBtNZwbTIW$5OjUn2FlVOc5cgoqfiHxNcqgRa+gxBXEIHpNA1Bqf1E=','2025-10-28 01:26:02.000052',1,1,'aoco220155','aoco220155@upemor.edu.mx','aoco220155','administrador',1,1);
 /*!40000 ALTER TABLE `usuario_usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
@@ -670,6 +820,14 @@ set autocommit=0;
 /*!40000 ALTER TABLE `usuario_usuario_user_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 commit;
+
+--
+-- Dumping events for database 'EcoGest'
+--
+
+--
+-- Dumping routines for database 'EcoGest'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -680,4 +838,4 @@ commit;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-10-22 22:27:08
+-- Dump completed on 2025-10-27 19:30:43
