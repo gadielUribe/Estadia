@@ -29,8 +29,7 @@ def inicio(request):
     if q:
         qs = qs.filter(
             Q(nombre_comun__icontains=q) |
-            Q(nombre_cientifico__icontains=q) |
-            Q(descripcion__icontains=q)
+            Q(nombre_cientifico__icontains=q)
         )
 
     d_from = _parse_date(f_from)

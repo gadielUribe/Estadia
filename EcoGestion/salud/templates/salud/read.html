@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Historial de salud de ejemplares</h1>
+
+<form method="get" id="filtrosForm">
+    <div>
+        <label>Búsqueda por nombre</label>
+        <input type="text" name="q" value="{{ q }}" placeholder="Nombre común / científico" id="buscarInput">
+    </div>
+     <div>
+        <label>Estado</label>
+        <select name="estado">
+          <option value="">Todos</option>
+          <option value="verde" {% if estado == 'verde' %}selected{% endif %}>Verde</option>
+          <option value="amarillo" {% if estado == 'amarillo' %}selected{% endif %}>Amarillo</option>
+          <option value="rojo" {% if estado == 'rojo' %}selected{% endif %}>Rojo</option>
+        </select>
+    </div>
+    <div>
+        <label>Fecha desde</label>
+        <input type="date" name="desde" value="{{ desde }}">
+    </div>
+    <div>
+        <label>Fecha hasta</label>
+        <input type="date" name="hasta" value="{{ hasta }}">
+    </div>
+    <div>
+        <button type="submit">Filtrar</button>
+        <a href="{% url 'salud_inicio' %}">Limpiar</a>
+    </div>
+</form>
+
+<div>
+  <a href="{% url 'salud_crear' %}">Nuevo registro</a>
+</div>
+
+<p>Resultados: {{ total }}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Planta</th>
+      <th>Estado</th>
+      <th>Usuario</th>
+      <th>Observaciones</th>
+      {% if request.user.rol in 'administrador gestor' %}<th>Acciones</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in registros %}
+      <tr>
+        <td>{{ r.fecha_actualizacion|date:"Y-m-d H:i" }}</td>
+        <td>
+          {% if r.planta %}<strong>{{ r.planta.nombre_comun }}</strong><br>
+          <small><em>{{ r.planta.nombre_cientifico }}</em></small>{% else %}-{% endif %}
+        </td>
+        <td>
+          {% if r.estado_salud == 'verde' %}
+            <span>Verde</span>
+          {% elif r.estado_salud == 'amarillo' %}
+            <span>Amarillo</span>
+          {% else %}
+            <span>Rojo</span>
+          {% endif %}
+        </td>
+        <td>{% if r.usuario %}{{ r.usuario.nombre_completo }} ({{ r.usuario.matricula }}){% else %}-{% endif %}</td>
+        <td >{{ r.observaciones }}</td>
+        {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+        <td>
+          <a href="{% url 'salud_editar' r.id_registro %}">Editar</a>
+          <a href="{% url 'salud_eliminar' r.id_registro %}">Eliminar</a>
+          {% if r.planta %}
+            <a href="{% url 'salud_historial_planta' r.planta.id_planta %}">Historial</a>
+            <br>
+            <small><em>{{ r.planta.nombre_cientifico }}</em></small>
+          {% else %}-{% endif %}
+        </td>
+        {% endif %}
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Sin registros.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script src="{% static 'js/filtro.js' %}"></script>
+{% endblock %}

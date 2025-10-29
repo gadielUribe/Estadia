@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Nuevo registro de salud</h1>
+<form method="post">
+  {% csrf_token %}
+  <div>
+    <label >Planta</label>
+    {{ form.planta }}
+  </div>
+  <div>
+    <label>Estado</label>
+    {{ form.estado_salud }}
+  </div>
+  <div>
+    <label>Observaciones</label>
+    {{ form.observaciones }}
+  </div>
+  <button>Guardar</button>
+  <a href="{% url 'salud_inicio' %}">Cancelar</a>
+</form>
+{% endblock %}

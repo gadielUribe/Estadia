@@ -14,3 +14,11 @@ class incidenciaAmbiental(models.Model):
     id_planta = models.ForeignKey('plantas.plantaArbol', on_delete=models.CASCADE, verbose_name="IDÁrbol", null=True)
     estado = models.CharField(verbose_name="Estado", choices=ESTADOS, default='pendiente', max_length=40)
     id_usuario = models.ForeignKey('usuario.Usuario', on_delete=models.CASCADE, verbose_name="IDUsuario", null=True)
+
+    class Meta:
+        db_table = 'IncidenciaAmbiental'
+
+    # Representación en cadena del objetoz
+    def __str__(self):
+        texto = "{0} - {1}"
+        return texto.format(self.id_incidencia, self.titulo)
