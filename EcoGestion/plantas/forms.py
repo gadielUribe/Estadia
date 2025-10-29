@@ -1,7 +1,7 @@
 from django import forms
 from .models import plantaArbol
 
-# Formulario basado en el modelo plantaArbol
+
 class plantaForm(forms.ModelForm):
     class Meta:
         model = plantaArbol

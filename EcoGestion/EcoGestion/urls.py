@@ -14,6 +14,7 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path('incidencias/', include('incidencias.urls')),
     path('herramientas/', include('herramientas.urls')),
+    path('salud/', include('salud.urls')), 
     path('productos/', include('productos.urls')),
     path('voluntarios/', include('voluntarios.urls')),
     path('backup/', include('respaldo.urls')),
