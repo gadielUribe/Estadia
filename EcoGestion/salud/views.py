@@ -1,6 +1,8 @@
 from datetime import datetime
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import get_user_model
+from notificaciones.signals import notificar
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.timezone import localtime
@@ -125,13 +127,36 @@ def eliminar(request, id_registro):
     return render(request, 'salud/delete.html', {'registro': reg})
 
 def _notificar_si_riesgo(reg: SaludRegistro):
-    if reg.estado_salud in ('amarillo','rojo'):
-        
-        try:
-            from notificaciones.services import enviar_alerta_salud
-            enviar_alerta_salud(planta=reg.planta, registro=reg)
-        except Exception:
-            pass
+    # solo notificamos si es amarillo o rojo
+    if reg.estado_salud not in ('amarillo', 'rojo'):
+        return
+
+    User = get_user_model()
+    # todos los admins (ajusta si tu campo se llama distinto)
+    admins = User.objects.filter(rol='administrador', is_active=True)
+
+    # por si no hay admins, no truena
+    if not admins.exists():
+        return
+
+    # mensaje de la notificación
+    mensaje = (
+        f"La planta '{reg.planta}' fue registrada con estado '{reg.estado_salud}'. "
+        "Requiere atención prioritaria."
+    )
+
+    # nivel según color
+    nivel = 'warning' if reg.estado_salud == 'amarillo' else 'error'
+
+    # enviamos una notificación por admin
+    for admin in admins:
+        notificar.send(
+            sender=reg.usuario,        # quién hizo el cambio (el que registró la salud)
+            destiny=admin,             # a quién le llega (admin)
+            verbo=mensaje,
+            target=reg.planta,         
+            level=nivel,
+        )
 
 @login_required
 @user_passes_test(es_admin_gestor_mantenimiento)
