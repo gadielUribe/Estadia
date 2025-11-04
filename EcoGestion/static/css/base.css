@@ -1,0 +1,144 @@
+/* Reseteo básico y fuente por defecto */
+body {
+  margin: 0;
+  font-family: "Work Sans", "Noto Sans", sans-serif;
+}
+
+/* Estilos de la barra de navegación principal */
+nav {
+  background: linear-gradient(to right, #6a67c8, #32d46e);
+  padding: 10px 24px;
+  color: white;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Contenedor flex principal dentro de <nav> */
+nav > div {
+  display: flex;
+  justify-content: space-between; /* Empuja el logo a la izq. y los links/botones a la der. */
+  align-items: center; /* Centra todo verticalmente */
+  width: 100%;
+  height: 50px;
+}
+
+/* --- Lado Izquierdo: Logo y Título --- */
+
+/* Enlace del logo/título */
+nav > div > a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.nav-icon {
+  width: 26px;  /* Ajusta este tamaño si lo deseas */
+  height: 26px;
+  margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+/* --- Lado Derecho: Links y Acciones --- */
+
+
+nav > div > div {
+  display: flex;
+  align-items: center;
+  gap: 30px; /* Espacio entre la lista de links, la campana y el botón */
+  font-weight: bold;
+}
+
+/* Lista de links de navegación (ul) */
+nav ul {
+  display: flex;
+  align-items: center; /* Alinea los links con la campana */
+  list-style: none; /* Quita los puntos de la lista */
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
+
+/* Cada item de la lista (li) */
+nav ul li {
+  /* La línea vertical separadora */
+  border-right: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 0 23px; /* Espacio a los lados de cada link */
+  
+}
+
+/* Los enlaces (a) dentro de la lista */
+nav ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: 500; /* Un poco más grueso que normal */
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  opacity: 0.8;
+}
+
+/* --- Icono de Notificación (Campana) --- */
+
+
+nav ul li:last-child {
+  border-right: none; 
+  padding: 0; 
+  margin-left: 20px; /* Espacio antes de la campana */
+}
+
+nav ul li:last-child a {
+  background-color: #f7e833; /* Amarillo brillante */
+  width: 50px;
+  height: 38px;
+  display: flex;
+  border-radius: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  padding: 0;
+}
+
+nav ul li:last-child a img {
+  width: 22px;  /* Un tamaño más pequeño que el círculo de 38px */
+  height: 22px; /* Mismo tamaño para mantener la proporción */
+  object-fit: contain; /* Asegura que la imagen se escale bien */
+}
+
+nav ul li:last-child a:hover {
+  background-color: #e6d82e;
+  opacity: 1;
+}
+
+/* --- Botón de Cerrar Sesión --- */
+
+/* El formulario de logout */
+nav form {
+  margin: 0; /* Quita el margen por defecto del formulario */
+}
+
+/* El botón de "Cerrar sesión" */
+nav form button {
+  background-color: #f0f2f5; /* Color crema/blanco de la imagen */
+  color: #333; /* Texto oscuro */
+  width: 130px;
+  height: 38px;
+  border: none;
+  border-radius: 0.5rem; /* Bordes redondeados (forma de píldora) */
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+nav form button:hover {
+  background-color: #e2e4e6; /* Un gris ligero al pasar el mouse */
+}
+
+/* --- Estilos del contenido principal --- */
+main {
+  padding: 20px;
+  
+}
