@@ -1,40 +1,123 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Dashboard{% endblock %}
-{% block content %}
-<h2>Bienvenido, {{ request.user.nombre_completo }}</h2>
-<p>Tu rol: {{ request.user.get_rol_display }}</p>
 
-{% if request.user.rol == 'administrador' %}
-  <a href="{% url 'usuario_create' %}" class="btn btn-success mb-3">Agregar usuario</a>
-{% endif %}
-
-<ul>
-  {% if request.user.rol == 'administrador' %}
-    <li><a href="{% url 'usuario_list' %}">Administrar usuarios</a></li>
-    <li><a href="{% url 'planta_inicio' %}">Gestión de especies</a></li>
-    <li><a href="#">Tareas de mantenimiento</a></li>
-    <li><a href="{% url 'salud_inicio' %}">Monitoreo y Análisis de Salud de Especies</a></li>
-    <li><a href="{% url 'incidencia_inicio' %}">Incidentes ambientales</a></li>
-    <li><a href="{% url 'respaldo_inicio' %}">Respaldo BD</a></li>
-    <li><a href="{% url 'herramientas:herramienta_list' %}">Herramientas</a></li>
-    <li><a href="{% url 'productos:producto_list' %}">Productos</a></li>
-    <li><a href="{% url 'voluntarios:voluntario_list' %}">Voluntarios</a></li>
-  {% elif request.user.rol == 'gestor' %}
-    <li><a href="{% url 'planta_inicio' %}">Gestión de especies</a></li>
-    <li><a href="{% url 'productos:producto_list' %}">Productos</a></li>
-    <li><a href="{% url 'voluntarios:voluntario_list' %}">Voluntarios</a></li>
-    <li><a href="#">Tareas de mantenimiento</a></li>
-  {% elif request.user.rol == 'mantenimiento' %}
-    <li><a href="#">Ver tareas asignadas</a></li>
-    <li><a href="{% url 'planta_inicio' %}">Gestión de especies</a></li>
-    <li><a href="{% url 'productos:producto_list' %}">Productos (existencias)</a></li>
-    <li><a href="{% url 'voluntarios:voluntario_list' %}">Voluntarios</a></li>
-  {% endif %}
-
-  <!-- SIEMPRE visibles para cualquier usuario autenticado -->
-  <li><a href="{% url 'chat_general' %}">Chat general</a></li>
-  <li><a href="{% url 'chat_privado_selector' %}">Chat privado</a></li>
-
-  <li><a href="{% url 'logout' %}">Cerrar sesión</a></li>
-</ul>
+{% block extra_css %}
+  <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 {% endblock %}
+
+
+{% block content %}
+
+<div class="dashboard-header">
+  <div>
+    <h2>Bienvenido, {{ request.user.nombre_completo|default:request.user.matricula }}</h2>
+    <p>Tu rol: {{ request.user.get_rol_display }}</p>
+  </div>
+  {% if request.user.rol == 'administrador' %}
+    <a href="{% url 'usuario_create' %}" class="btn-agregar-usuario">Agregar usuario</a>
+  {% endif %}
+</div>
+
+<div class="dashboard-grid">
+
+  {% if request.user.rol == 'administrador' %}
+    <a href="{% url 'usuario_list' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-1">
+        <img src="{% static 'img/admin-user.png' %}" alt="">
+      </div>
+      <span class="card-label">Administrar usuarios</span>
+    </a>
+    
+    <a href="{% url 'planta_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-2">
+        <img src="{% static 'img/species.png' %}" alt="">
+      </div>
+      <span class="card-label">Gestión de especies</span>
+    </a>
+
+    <a href="#" class="dashboard-card">
+      <div class="card-icon-container card-color-3">
+        <img src="{% static 'img/maintenance.png' %}" alt="">
+      </div>
+      <span class="card-label">Tareas de mantenimiento</span>
+    </a>
+    
+    <a href="{% url 'incidencia_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-4">
+        <img src="{% static 'img/incident.png' %}" alt="">
+      </div>
+      <span class="card-label">Incidentes ambientales</span>
+    </a>
+
+    <a href="{% url 'respaldo_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-5">
+        <img src="{% static 'img/database.png' %}" alt="">
+      </div>
+      <span class="card-label">Respaldo BD</span>
+    </a>
+    
+    <a href="{% url 'herramientas:herramienta_list' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-6">
+        <img src="{% static 'img/tools.png' %}" alt="">
+      </div>
+      <span class="card-label">Herramientas</span>
+    </a>
+
+    <a href="{% url 'productos:producto_list' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-7">
+        <img src="{% static 'img/products.png' %}" alt="">
+      </div>
+      <span class="card-label">Productos</span>
+    </a>
+    
+    <a href="{% url 'salud_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container"> <img src="{% static 'img/health.png' %}" alt="">
+      </div>
+      <span class="card-label">Monitoreo y Salud</span>
+    </a>
+    
+    <a href="{% url 'voluntarios:voluntario_list' %}" class="dashboard-card">
+      <div class="card-icon-container"> <img src="{% static 'img/volunteers.png' %}" alt="">
+      </div>
+      <span class="card-label">Voluntarios</span>
+    </a>
+    
+  {% elif request.user.rol == 'gestor' %}
+    <a href="{% url 'planta_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-2">
+        <img src="{% static 'img/species.png' %}" alt="">
+      </div>
+      <span class="card-label">Gestión de especies</span>
+    </a>
+    <a href="{% url 'productos:producto_list' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-7">
+        <img src="{% static 'img/products.png' %}" alt="">
+      </div>
+      <span class="card-label">Productos</span>
+    </a>
+    {% elif request.user.rol == 'mantenimiento' %}
+    <a href="#" class="dashboard-card">
+      <div class="card-icon-container card-color-3">
+        <img src="{% static 'img/maintenance.png' %}" alt="">
+      </div>
+      <span class="card-label">Ver tareas asignadas</span>
+    </a>
+    {% endif %}
+
+  <a href="{% url 'chat_general' %}" class="dashboard-card">
+    <div class="card-icon-container card-color-8">
+      <img src="{% static 'img/chat-general.png' %}" alt="">
+    </div>
+    <span class="card-label">Chat general</span>
+  </a>
+
+  <a href="{% url 'chat_privado_selector' %}" class="dashboard-card">
+    <div class="card-icon-container card-color-9">
+      <img src="{% static 'img/chat-private.png' %}" alt="">
+    </div>
+    <span class="card-label">Chat privado</span>
+  </a>
+
+</div> {% endblock %}
