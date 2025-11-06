@@ -33,6 +33,9 @@
           <li class="nav-item">
             <a class="nav-link {% if section == 'chat_privado' %}active{% endif %}" href="{% url 'chat_privado' request.user.id_usuario %}">Chat privado</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'calendario:calendario' %}">Calendario</a>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link position-relative" href="{% url 'lista' %}">notify</a>
           </li>

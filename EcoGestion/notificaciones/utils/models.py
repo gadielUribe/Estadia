@@ -6,7 +6,14 @@ from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.conf import settings
 from notificaciones.signals import notificar
-from swapper import load_model
+try:
+    from swapper import load_model  # Optional dependency
+except Exception:  # pragma: no cover
+    # Fallback: resolve Django model directly when swapper is not installed
+    from django.apps import apps as _apps
+
+    def load_model(app_label, model_name):
+        return _apps.get_model(app_label, model_name)
 
 
 class NotificacionQuerySet(models.QuerySet):

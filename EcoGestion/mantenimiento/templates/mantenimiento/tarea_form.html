@@ -1,0 +1,52 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>{{ accion }} tarea de {{ tipo }}</title>
+  <style>
+    body{font-family:system-ui,Arial;padding:20px}
+    form{max-width:640px}
+    label{display:block;margin-top:10px}
+    input,select,textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:4px}
+    .row{display:flex;gap:12px}
+    .row > div{flex:1}
+    .btn{padding:6px 10px;border:1px solid #ccc;background:#f8f8f8;cursor:pointer;border-radius:4px;text-decoration:none;color:#000}
+    .btn-primary{background:#1976d2;color:#fff;border-color:#1976d2}
+  </style>
+</head>
+<body>
+  <h2>{{ accion }} tarea de {{ tipo }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label>Planta {{ form.planta }}</label>
+    <label>Tipo {{ form.tipo }}</label>
+    <label>Fecha programada {{ form.fecha_programada }}</label>
+    <div class="row">
+      <div>
+        <label>Responsable {{ form.usuario_responsable }}</label>
+      </div>
+      <div>
+        <label>Herramienta (opcional) {{ form.herramienta }}</label>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Producto (opcional) {{ form.producto }}</label>
+      </div>
+      <div>
+        <label>Observaciones {{ form.observaciones }}</label>
+      </div>
+    </div>
+
+    <hr/>
+    <label>{{ form.generar_automaticas }} {{ form.generar_automaticas.label }}</label>
+    <label>{{ form.horizonte_dias.label }} {{ form.horizonte_dias }}</label>
+
+    <div style="margin-top:12px">
+      <button class="btn btn-primary" type="submit">Guardar</button>
+      <a class="btn" href="{% url 'mantenimiento:tareas_list_tipo' tipo %}">Cancelar</a>
+    </div>
+  </form>
+</body>
+</html>

@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'incidencias.apps.IncidenciasConfig',
     'salud.apps.SaludConfig',
     'notificaciones.apps.NotificacionesConfig',
+    'calendario.apps.CalendarioConfig',
+    'mantenimiento.apps.MantenimientoConfig',
     'channels',
     'dbbackup',
 ]

@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Mantenimiento</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+    <style>
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; padding: 0; }
+        #calendar { max-width: 1100px; margin: 20px auto; padding: 0 10px; }
+        .fc-toolbar-title { font-size: 1.25rem; }
+        .btn { padding: 6px 10px; border: 1px solid #ccc; background: #f8f8f8; cursor: pointer; border-radius: 4px; }
+        .btn-primary { background: #1976d2; color: #fff; border-color: #1976d2; }
+    </style>
+</head>
+<body>
+    <div id="calendar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script>
+        const USER_ROLE = "{{ user_role }}";
+        const CAN_EDIT = {{ can_edit|yesno:"true,false" }};
+        const CAN_MARK_DONE = {{ can_mark_done|yesno:"true,false" }};
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                locale: 'es',
+                navLinks: true,
+                selectable: false,
+                editable: CAN_EDIT,
+                eventSources: [
+                    {
+                        url: '{% url "calendario:tareas_feed" %}',
+                        method: 'GET'
+                    }
+                ],
+                eventClick: async function(info) {
+                    const e = info.event;
+                    const props = e.extendedProps || {};
+                    const opciones = [];
+                    if (props.puedeMarcar) opciones.push('1. Marcar como realizada');
+                    if (props.puedeEditar) opciones.push('2. Editar fecha/tipo');
+                    if (opciones.length === 0) return;
+
+                    const sel = prompt('Elige una opción:\n' + opciones.join('\n'));
+                    if (!sel) return;
+
+                    if (sel.startsWith('1') && props.puedeMarcar) {
+                        const obs = prompt('Observaciones (opcional):');
+                        const res = await fetch(`{% url 'calendario:tarea_done' 0 %}`.replace('/0/', '/' + e.id + '/'), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: new URLSearchParams({observaciones: obs || ''})
+                        });
+                        if (res.ok) {
+                            e.setProp('backgroundColor', '#95a5a6');
+                            alert('Tarea marcada como realizada');
+                        } else {
+                            alert('No se pudo marcar la tarea');
+                        }
+                    } else if (sel.startsWith('2') && props.puedeEditar) {
+                        const nuevaFecha = prompt('Nueva fecha (YYYY-MM-DD):', e.startStr.slice(0, 10));
+                        if (!nuevaFecha) return;
+                        const nuevoTipo = prompt('Tipo (riego, poda, fumigacion) - deja vacío para conservar:', props.tipo || '');
+                        const res2 = await fetch(`{% url 'calendario:tarea_update' 0 %}`.replace('/0/', '/' + e.id + '/'), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: new URLSearchParams({
+                                fecha_programada: nuevaFecha + 'T09:00:00',
+                                tipo: (nuevoTipo || '').trim()
+                            })
+                        });
+                        if (res2.ok) {
+                            e.setStart(nuevaFecha + 'T09:00:00');
+                            if (nuevoTipo) e.setProp('title', `[${nuevoTipo}] ` + (props.planta_nombre || e.title));
+                            alert('Tarea actualizada');
+                        } else {
+                            alert('No se pudo actualizar la tarea');
+                        }
+                    }
+                }
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
+

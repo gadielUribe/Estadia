@@ -10,9 +10,10 @@ class plantaArbol(models.Model):
     descripcion = models.CharField(verbose_name="Descripción", max_length=600, null=False)
     fecha_plantacion = models.DateField(verbose_name="FechaPlantación", null=True)
     imagen_url= models.ImageField(upload_to='plantas/%Y/%m/',blank=True, null=True)
-    periodicidad_riego = models.IntegerField(verbose_name="PeriodicidadRiego", null=False)
-    periodicidad_poda = models.IntegerField(verbose_name="PeriodicidadPoda", null=False)
-    periodicidad_fumigacion = models.IntegerField(verbose_name="PeriodicidadFumigación", null=False)
+    # Periodicidades como texto (p. ej. "7", "15", "mensual")
+    periodicidad_riego = models.CharField(verbose_name="PeriodicidadRiego", max_length=40, null=False)
+    periodicidad_poda = models.CharField(verbose_name="PeriodicidadPoda", max_length=40, null=False)
+    periodicidad_fumigacion = models.CharField(verbose_name="PeriodicidadFumigación", max_length=40, null=False)
     lat = models.FloatField(verbose_name="Latitud", null=True)
     lng = models.FloatField(verbose_name="Longitud", null=True)
 
@@ -21,7 +22,7 @@ class plantaArbol(models.Model):
         db_table = 'PlantaArbol'
 
     # Representación en cadena del objetoz
-    def __str__(self):
+    def _str_(self):
         texto = "{0} - {1}"
         return texto.format(self.id_planta, self.nombre_cientifico)
 
