@@ -108,7 +108,7 @@ def notify_signals(sender, **kwargs):
     Opcional: target, level, publico, timestamp
     """
     destiny = kwargs.pop('destiny', None)
-    verbo = kwargs.pop('verbo', None)  # 👈 aquí ya es 'verbo'
+    verbo = kwargs.pop('verbo', None) 
     publico = kwargs.pop('publico', True)
     timestamp = kwargs.pop('timestamp', timezone.now())
     target = kwargs.pop('target', None)

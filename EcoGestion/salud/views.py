@@ -146,7 +146,7 @@ def _notificar_si_riesgo(reg: SaludRegistro):
     )
 
     # nivel según color
-    nivel = 'warning' if reg.estado_salud == 'amarillo' else 'error'
+    nivel = 'Atencion' if reg.estado_salud == 'amarillo' else 'Peligro'
 
     # enviamos una notificación por admin
     for admin in admins:

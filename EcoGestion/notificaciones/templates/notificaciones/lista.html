@@ -3,7 +3,7 @@
 {% block title %}Notificaciones{% endblock %}
 
 {% block content %}
-<h1 class="h3 mb-3">Notificaciones</h1>
+<h1>Notificaciones</h1>
 
 {% if notificaciones %}
   <ul class="list-group">
@@ -13,17 +13,20 @@
           <div>{{ n.verbo }}</div>
           {% if n.target %}
             {# si la noti tiene target, mostramos un poco de info #}
-            <small class="text-muted">
+            <small>
               Objeto: {{ n.target }}
             </small><br>
           {% endif %}
-          <small class="text-muted">
+          <small>
             {{ n.timestamp|date:"d/m/Y H:i" }}
           </small>
         </div>
-        {% if n.level %}
-          <span class="badge text-bg-{{ n.level }} ms-2">{{ n.level|title }}</span>
+        {% if n.level == "peligro" %}
+          <span>Peligro</span>
+        {% else %}
+          <span >{{ n.level|title }}</span>
         {% endif %}
+
       </li>
     {% endfor %}
   </ul>
