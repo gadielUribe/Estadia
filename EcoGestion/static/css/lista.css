@@ -1,0 +1,106 @@
+/* --- Encabezado de la Lista (Título y Botón) --- */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Para móviles */
+  gap: 20px; /* Espacio entre título y botón */
+  margin-bottom: 30px;
+}
+
+.list-header h2 {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* --- Estilo del botón "Nuevo" --- */
+.btn-new-item {
+  background-color: #28a745; /* Verde de Bootstrap "success" */
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 20px; /* Forma de píldora, como en el dashboard */
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.btn-new-item:hover {
+  background-color: #218838; /* Verde más oscuro */
+  transform: translateY(-2px);
+  color: white; /* Asegura que el texto siga blanco */
+}
+
+/* --- Contenedor de la Tabla --- */
+.table-wrapper {
+  background-color: #ffffff;
+  border-radius: 12px; /* Bordes redondeados como las tarjetas */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08); /* Sombra suave */
+  overflow: hidden; /* OBLIGATORIO para que la tabla respete los bordes */
+}
+
+/* --- Wrapper Responsivo --- */
+/* Esto añade scroll horizontal en pantallas pequeñas */
+.table-responsive-wrapper {
+  overflow-x: auto;
+}
+
+/* --- Estilos de la Tabla --- */
+.table-wrapper .table {
+  width: 100%;
+  margin-bottom: 0; /* Quitamos el margen de Bootstrap */
+  border-collapse: collapse; /* Bordes limpios */
+}
+
+/* Quitamos los bordes de Bootstrap */
+.table-wrapper .table th,
+.table-wrapper .table td {
+  border: none;
+  padding: 16px 20px; /* Más "aire" (padding) */
+  vertical-align: middle;
+  text-align: left;
+}
+
+/* Estilo del Encabezado (TH) */
+.table-wrapper .table th {
+  background-color: #f9fafa; /* Fondo muy claro para el header */
+  color: #667;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Estilo de las Celdas (TD) */
+.table-wrapper .table td {
+  color: #444;
+  /* Línea divisoria solo horizontal */
+  border-bottom: 1px solid #f0f0f0; 
+}
+
+/* Evita la línea en la última fila */
+.table-wrapper .table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Efecto Hover en las filas */
+.table-wrapper .table tbody tr:hover {
+  background-color: #fcfcfc; /* Un hover casi imperceptible */
+}
+
+/* --- Botones de Acciones (Editar/Eliminar) --- */
+.table-actions {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+}
+
+/* Hacemos que los botones de Bootstrap se vean un poco más limpios */
+.table-actions .btn {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 6px 12px;
+}

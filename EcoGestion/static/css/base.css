@@ -2,6 +2,9 @@
 body {
   margin: 0;
   font-family: "Work Sans", "Noto Sans", sans-serif;
+  display: flex; /* Lo convierte en contenedor flexible */
+  flex-direction: column; /* Apila los elementos (nav, main, footer) verticalmente */
+  min-height: 100vh; /* Asegura que el body ocupe al menos el 100% de la altura del navegador */
 }
 
 /* Estilos de la barra de navegación principal */
@@ -140,5 +143,46 @@ nav form button:hover {
 /* --- Estilos del contenido principal --- */
 main {
   padding: 20px;
-  
+  flex-grow: 1;
+}
+
+/* --- Estilos del Footer --- */
+
+footer {
+  padding: 40px 24px;
+}
+
+.footer-container {
+  max-width: 1200px; /* Limita el ancho, igual que el nav si lo tienes */
+  margin: 0 auto; /* Centra el contenedor */
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-between; /* Empuja un link a la izq. y otro a la der. */
+  align-items: center;
+  margin-bottom: 20px; /* Espacio entre los links y el copyright */
+  flex-wrap: wrap; /* Para que se vea bien en móviles */
+  gap: 15px;
+}
+
+.footer-links a {
+  color: #a1887f; /* Color marrón/tan de la imagen */
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+  text-decoration: underline; /* Subrayado al pasar el mouse */
+}
+
+.footer-copyright {
+  text-align: center; /* Centra el texto de copyright */
+}
+
+.footer-copyright p {
+  margin: 0;
+  color: #a1887f; /* Mismo color marrón/tan */
+  font-size: 0.9rem;
 }

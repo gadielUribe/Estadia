@@ -2,8 +2,22 @@ from django import forms
 from .models import Usuario
 
 class LoginForm(forms.Form):
-    matricula = forms.CharField(label="Matrícula")
-    password = forms.CharField(widget=forms.PasswordInput)
+    matricula = forms.CharField(
+        label="Matrícula",
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Ingresa tu matrícula'
+            }
+        )
+    )
+    password = forms.CharField(
+        label="Contraseña",
+        widget=forms.PasswordInput(
+            attrs={
+                'placeholder': 'Ingresa la contraseña'
+            }
+        )
+    )
 
 class UsuarioForm(forms.ModelForm):
     contraseña = forms.CharField(widget=forms.PasswordInput, required=False)
