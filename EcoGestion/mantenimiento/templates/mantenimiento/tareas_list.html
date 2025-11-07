@@ -1,0 +1,63 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Tareas {{ tipo|title }}</title>
+  <style>
+    body{font-family:system-ui,Arial;padding:20px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #ddd;padding:6px}
+    th{background:#f5f5f5;text-align:left}
+    .actions a{margin-right:6px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .btn{padding:6px 10px;border:1px solid #ccc;background:#f8f8f8;cursor:pointer;border-radius:4px;text-decoration:none;color:#000}
+    .btn-primary{background:#1976d2;color:#fff;border-color:#1976d2}
+  </style>
+  </head>
+<body>
+  <div class="top">
+    <h2>Tareas de {{ tipo }}</h2>
+    <div>
+      <a class="btn" href="{% url 'calendario:calendario' %}">Ver calendario</a>
+      <a class="btn btn-primary" href="{% url 'mantenimiento:tarea_create_tipo' tipo %}">Nueva tarea</a>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Planta</th>
+        <th>Fecha programada</th>
+        <th>Estado</th>
+        <th>Responsable</th>
+        <th>Herramienta</th>
+        <th>Producto</th>
+        <th>Observaciones</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tareas %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.planta.nombre_comun }}</td>
+        <td>{{ t.fecha_programada|date:'Y-m-d H:i' }}</td>
+        <td>{{ t.get_estado_display }}</td>
+        <td>{{ t.usuario_responsable|default:'-' }}</td>
+        <td>{{ t.herramienta|default:'-' }}</td>
+        <td>{{ t.producto|default:'-' }}</td>
+        <td>{{ t.observaciones|default:'-' }}</td>
+        <td class="actions">
+          <a href="{% url 'mantenimiento:tarea_update_form' t.id %}">Editar</a>
+          <a href="{% url 'mantenimiento:tarea_delete' t.id %}">Eliminar</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="9">No hay tareas registradas</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

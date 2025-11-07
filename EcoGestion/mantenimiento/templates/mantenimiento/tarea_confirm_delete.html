@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Eliminar tarea</title>
+  <style>
+    body{font-family:system-ui,Arial;padding:20px}
+    .btn{padding:6px 10px;border:1px solid #ccc;background:#f8f8f8;cursor:pointer;border-radius:4px;text-decoration:none;color:#000}
+    .btn-danger{background:#c0392b;color:#fff;border-color:#c0392b}
+  </style>
+</head>
+<body>
+  <h3>¿Eliminar la tarea #{{ tarea.id }} de {{ tarea.get_tipo_display }} para {{ tarea.planta.nombre_comun }} programada el {{ tarea.fecha_programada|date:'Y-m-d H:i' }}?</h3>
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+    <a class="btn" href="{% url 'mantenimiento:tareas_list_tipo' tarea.tipo %}">Cancelar</a>
+  </form>
+</body>
+</html>
+

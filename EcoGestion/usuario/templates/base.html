@@ -35,6 +35,31 @@
         </svg>
         <span>EcoGestión UPEMOR</span>
       </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if section == 'dashboard' %}active{% endif %}" aria-current="page" href="{% url 'dashboard' %}">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if section == 'chat_general' %}active{% endif %}" href="{% url 'chat_general' %}">Chat general</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if section == 'chat_privado' %}active{% endif %}" href="{% url 'chat_privado' request.user.id_usuario %}">Chat privado</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'calendario:calendario' %}">Calendario</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link position-relative" href="{% url 'lista' %}">notify</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'password_change' %}">Cambiar contraseña</a>
+          </li>
+          {% endif %}
 
       <div>
         {% if request.user.is_authenticated %}
