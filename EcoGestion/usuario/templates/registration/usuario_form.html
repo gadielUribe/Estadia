@@ -1,11 +1,33 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} usuario{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h2>{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} usuario</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Guardar</button>
-  <a href="{% url 'usuario_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="form-container">
+  <div class="form-wrapper">
+    
+    <div class="form-header">
+      <h2>{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} usuario</h2>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      {{ form.as_p }}
+      
+      <div class="form-actions">
+        <a href="{% url 'usuario_list' %}" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-save">Guardar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
 {% endblock %}

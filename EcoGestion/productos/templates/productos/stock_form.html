@@ -1,22 +1,44 @@
 {% extends 'base.html' %}
-{% block title %}Actualizar existencias{% endblock %}
-{% block content %}
-<h1 class="h3 mb-3">Actualizar existencias: {{ producto.nombre }}</h1>
+{% load static %}
 
-<form method="post">
-  {% csrf_token %}
-  <div class="card">
-    <div class="card-body">
-      {{ form.cantidad.label_tag }}
-      {{ form.cantidad }}
-      {% for error in form.cantidad.errors %}
-        <div class="text-danger small">{{ error }}</div>
-      {% endfor %}
+{% block title %}Actualizar existencias{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="form-container">
+  <div class="form-wrapper">
+    
+    <div class="form-header">
+      <h2>Actualizar existencias: {{ producto.nombre }}</h2>
     </div>
-    <div class="card-footer text-end">
-      <a href="{% url 'productos:producto_list' %}" class="btn btn-outline-secondary">Cancelar</a>
-      <button class="btn btn-primary" type="submit">Guardar</button>
-    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <p>
+        <label for="{{ form.cantidad.id_for_label }}">{{ form.cantidad.label }}</label>
+        {{ form.cantidad }}
+        {% for error in form.cantidad.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </p>
+      
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+          <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="form-actions">
+        <a href="{% url 'productos:producto_list' %}" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-save">Guardar</button>
+      </div>
+    </form>
+
   </div>
-</form>
+</div>
 {% endblock %}

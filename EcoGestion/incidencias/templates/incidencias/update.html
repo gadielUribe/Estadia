@@ -1,17 +1,32 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Actualizacion incidencia{% endblock %}
+{% block title %}Actualizar Incidencia{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
 
 {% block content %}
-
-    <h1>Actualizar incidencia</h1>
+<div class="form-container">
+  <div class="form-wrapper">
+    
+    <div class="form-header">
+      <h2>Actualizar incidencia</h2>
+    </div>
 
     <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-
-        <button type="submit" class="btn btn-primary">Actualizar incidencia</button>
-        <a href="{% url 'incidencia_inicio' %}">Volver a Inicio</a>
+      {% csrf_token %}
+      
+      {{ form.as_p }}
+      
+      <div class="form-actions">
+        <a href="{% url 'incidencia_inicio' %}" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-save">Actualizar Incidencia</button>
+      </div>
     </form>
 
+  </div>
+</div>
 {% endblock %}

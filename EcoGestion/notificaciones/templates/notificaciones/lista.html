@@ -1,36 +1,109 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Notificaciones{% endblock %}
 
+{% block extra_css %}
+<link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h1>Notificaciones</h1>
 
-{% if notificaciones %}
-  <ul class="list-group">
-    {% for n in notificaciones %}
-      <li class="list-group-item d-flex justify-content-between align-items-start {% if n.no_leido %}fw-bold{% endif %}">
-        <div>
-          <div>{{ n.verbo }}</div>
-          {% if n.target %}
-            {# si la noti tiene target, mostramos un poco de info #}
-            <small>
-              Objeto: {{ n.target }}
-            </small><br>
-          {% endif %}
-          <small>
-            {{ n.timestamp|date:"d/m/Y H:i" }}
-          </small>
-        </div>
-        {% if n.level == "peligro" %}
-          <span>Peligro</span>
-        {% else %}
-          <span >{{ n.level|title }}</span>
-        {% endif %}
+<div class="list-header">
+ <h2>Notificaciones</h2>
+</div>
 
-      </li>
-    {% endfor %}
+<div class="nav-container-pills">
+   <ul class="nav notif-pills">
+    <li class="nav-item">
+      <a class="nav-link {% if filtro == 'todas' %}active{% endif %}"
+      href="{% url 'notificaciones:lista' %}?f=todas">
+      Todas <span class="badge text-bg-secondary">{{ total }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if filtro == 'no_leidas' %}active{% endif %}"
+      href="{% url 'notificaciones:lista' %}?f=no_leidas">
+      No leídas <span class="badge text-bg-primary">{{ sin_leer }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if filtro == 'leidas' %}active{% endif %}"
+      href="{% url 'notificaciones:lista' %}?f=leidas">
+      Leídas <span class="badge text-bg-success">{{ leidas }}</span>
+      </a>
+    </li>
   </ul>
-{% else %}
-  <p>No tienes notificaciones.</p>
+</div>
+
+<div class="notif-batch-actions">
+<form method="post" action="{% url 'notificaciones:marcar_todo_leido' %}">
+ {% csrf_token %}
+ <input type="hidden" name="next" value="{{ request.get_full_path }}">
+ <button class="btn btn-outline-success btn-sm" type="submit">Marcar todo como leído</button>
+</form>
+<form method="post" action="{% url 'notificaciones:marcar_todo_no_leido' %}">
+ {% csrf_token %}
+ <input type="hidden" name="next" value="{{ request.get_full_path }}">
+ <button class="btn btn-outline-secondary btn-sm" type="submit">Marcar todo como no leído</button>
+ </form>
+</div>
+
+<div class="notif-list-wrapper">
+{% if notificaciones %}
+ <ul class="list-group">
+ {% for n in notificaciones %}
+ <li class="list-group-item notif-item {% if n.no_leido %}is-unread{% endif %} d-flex justify-content-between align-items-start">
+ 
+ <div class="notif-content me-3">
+ <div class="notif-verb">{{ n.verbo }}</div>
+ {% if n.target %}
+ <small class="notif-meta d-block">Objeto: {{ n.target }}</small>
+ {% endif %}
+ <small class="notif-meta">{{ n.timestamp|date:"d/m/Y H:i" }}</small>
+ </div>
+
+ <div class="notif-actions d-flex align-items-center">
+ {# Badge de nivel #}
+ {% if n.level %}
+ {% if n.level|lower == "peligro" or n.level|lower == "danger" or n.level|lower == "error" %}
+ <span class="badge text-bg-danger">Peligro</span>
+ {% elif n.level|lower == "warning" or n.level|lower == "atencion" %}
+ <span class="badge text-bg-warning text-dark">Atención</span>
+{% elif n.level|lower == "success" %}
+ <span class="badge text-bg-success">Éxito</span>
+ {% else %}
+ <span class="badge text-bg-secondary">{{ n.level|title }}</span>
 {% endif %}
+ {% endif %}
+
+ {# Botón de marcar leído / no leído (con iconos SVG) #}
+ {% if n.no_leido %}
+ <form method="post" action="{% url 'notificaciones:marcar_leida' n.pk %}">
+ {% csrf_token %}
+<input type="hidden" name="next" value="{{ request.get_full_path }}">
+<button class="btn btn-sm btn-outline-success btn-toggle-read" type="submit" title="Marcar como leído">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z"/></svg>
+                  </button>
+ </form>
+ {% else %}
+<form method="post" action="{% url 'notificaciones:marcar_no_leida' n.pk %}">
+ {% csrf_token %}
+<input type="hidden" name="next" value="{{ request.get_full_path }}">
+ <button class="btn btn-sm btn-outline-secondary btn-toggle-read" type="submit" title="Marcar como no leído">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+                </button>
+ </form>
+ {% endif %}
+ </div>
+ </li>
+ {% endfor %}
+ </ul>
+{% else %}
+ <div class="text-center p-5 text-muted">
+ No tienes notificaciones.
+ </div>
+ {% endif %}
+</div>
 {% endblock %}

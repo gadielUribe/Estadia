@@ -1,0 +1,128 @@
+/* --- Barra de Filtros --- */
+.filter-bar-wrapper {
+  margin-bottom: 25px;
+}
+
+.filter-bar-form {
+  display: flex;
+  flex-wrap: wrap; /* Para que se vea bien en móviles */
+  gap: 20px;
+  align-items: flex-end; /* Alinea los inputs y botones por la base */
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1; /* Permite que los grupos crezcan */
+}
+
+.filter-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+/* --- ESTILO MEJORADO PARA LOS INPUTS --- */
+.filter-group input[type="text"],
+.filter-group input[type="date"],
+.filter-group select {
+  padding: 10px 14px;
+  border: 1px solid #d8dde3; /* Borde más suave */
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: "Work Sans", "Noto Sans", sans-serif;
+  min-width: 180px;
+  background-color: #fdfdfd; /* Fondo sutilmente blanco */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-group input:focus {
+  outline: none;
+  border-color: #6a67c8;
+  box-shadow: 0 0 0 2px rgba(106, 103, 200, 0.2);
+}
+
+/* --- NUEVO: Icono de Lupa para el input de búsqueda --- */
+/* (Asegúrate de que tu input de búsqueda tenga id="buscarInput") */
+.filter-group input#buscarInput {
+  /* SVG de lupa codificado como URL. No necesitas archivos de imagen. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+  padding-left: 40px; /* Espacio para el icono */
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 2px; /* Alineación fina con los inputs */
+}
+
+/* --- Estilo para la imagen en la tabla --- */
+.table-plant-image {
+  height: 60px;
+  width: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+/* --- Contenedor del Mapa --- */
+.map-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  margin-top: 30px;
+  margin-left: 50px;
+  margin-right: 50px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.map-container h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 15px 0;
+}
+
+/* --- CORRECCIÓN DEL MAPA --- */
+/* Reemplaza tu regla ".map-container .folium-map" con esta: */
+.map-container .map-folium {
+  width: 100%;     /* Ocupa el 100% del ANCHO de su caja */
+  height: 35rem;    /* Define una ALTURA fija (ajusta 400px si lo quieres más pequeño) */
+  overflow: hidden; /* Oculta cualquier desbordamiento */
+  border-radius: 8px; /* Redondea las esquinas del mapa */
+}
+
+/* Esto asegura que el iframe DENTRO de la div de Folium también se comporte */
+.map-container .map-folium iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* --- Estilos para el Mapa de Leaflet (en formularios) --- */
+
+.map-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  margin-top: 10px; /* Espacio después de los campos del form */
+  margin-bottom: 12px;
+}
+
+.leaflet-map-container {
+  margin-bottom: 25px; /* Espacio antes de los botones */
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  overflow: hidden; /* Asegura que el mapa respete el border-radius */
+  border: 1px solid #ddd;
+}
+
+/* Define la altura del mapa aquí, en lugar de inline */
+#map {
+  height: 450px; 
+  width: 100%;
+}

@@ -1,30 +1,60 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Historial de {{ planta.nombre_comun }}{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/salud.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h1>Historial de salud de {{ planta.nombre_comun }} <small><em>({{ planta.nombre_cientifico }})</em></small></h1>
 
-<a href="{% url 'salud_inicio' %}">← Volver</a>
-<p>Registros totales: {{ total }}</p>
+<div class="list-header">
+  <h2>
+    Historial de salud de {{ planta.nombre_comun }} 
+    <small>({{ planta.nombre_cientifico }})</small>
+  </h2>
+  <a href="{% url 'salud_inicio' %}" class="btn-secondary-pill">← Volver</a>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Fecha de actualización</th>
-      <th>Estado</th>
-      <th>Usuario</th>
-      <th>Observaciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for h in eventos %}
-      <tr>
-        <td>{{ h.fecha_evento|date:"Y-m-d H:i" }}</td>
-        <td>{{ h.estado_salud|title }}</td>
-        <td>{% if h.usuario %}{{ h.usuario.nombre_completo }}{% else %}-{% endif %}</td>
-        <td style="white-space:pre-wrap">{{ h.observaciones|default:"—" }}</td>
-      </tr>
-    {% empty %}
-      <tr><td colspan="4">Sin registros aún.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<p class="list-total-count">Registros totales: {{ total }}</p>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha de actualización</th>
+          <th>Estado</th>
+          <th>Usuario</th>
+          <th>Observaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in eventos %}
+          <tr>
+            <td>{{ h.fecha_evento|date:"Y-m-d H:i" }}</td>
+            <td>
+              {% if h.estado_salud == 'verde' %}
+                <span class="status-badge status-verde">Verde</span>
+              {% elif h.estado_salud == 'amarillo' %}
+                <span class="status-badge status-amarillo">Amarillo</span>
+              {% elif h.estado_salud == 'rojo' %}
+                <span class="status-badge status-rojo">Rojo</span>
+              {% else %}
+                {{ h.estado_salud|title }}
+              {% endif %}
+            </td>
+            <td>{% if h.usuario %}{{ h.usuario.nombre_completo }}{% else %}-{% endif %}</td>
+            <td class="cell-pre-wrap">{{ h.observaciones|default:"—" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="text-center p-4">Sin registros aún.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

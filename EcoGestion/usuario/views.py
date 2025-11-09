@@ -64,4 +64,4 @@ def usuario_delete(request, pk):
     if request.method == 'POST':
         usuario.delete()
         return redirect('usuario_list')
-    return render(request, 'registration/usuario_confirm_delete.html', {'usuario': usuario})
+    return redirect('usuario_list')

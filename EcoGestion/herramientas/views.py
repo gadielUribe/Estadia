@@ -81,7 +81,11 @@ def asignacion_list(request):
 @user_passes_test(_is_registrador)
 def asignacion_delete(request, pk):
     asignacion = get_object_or_404(AsignacionHerramienta, pk=pk)
+    
+    # El modal SÓLO envía peticiones POST
     if request.method == 'POST':
         asignacion.delete()
-        return redirect('herramientas:asignacion_list')
-    return render(request, 'herramientas/confirm_delete_asignacion.html', {"asignacion": asignacion, "section": "herramientas"})
+        return redirect('herramientas:herramienta_list')
+        
+    # Si se accede por GET, simplemente redirige
+    return redirect('herramientas:herramienta_list')

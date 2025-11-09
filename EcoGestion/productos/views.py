@@ -121,6 +121,7 @@ def asignacion_list(request):
 @transaction.atomic
 def asignacion_delete(request, pk):
     asignacion = get_object_or_404(AsignacionProducto, pk=pk)
+    
     if request.method == 'POST':
         # Restituir existencias al eliminar la asignación
         prod = asignacion.producto
@@ -128,7 +129,12 @@ def asignacion_delete(request, pk):
         existencia, _ = Existencia.objects.get_or_create(producto=prod, defaults={'cantidad': 0})
         existencia.cantidad += asignacion.cantidad
         existencia.save()
+        
         asignacion.delete()
         messages.success(request, 'Asignación eliminada y existencias restituidas.')
         return redirect('productos:asignacion_list')
-    return render(request, 'productos/confirm_delete_asignacion.html', {'asignacion': asignacion, 'section': 'productos'})
+
+    # --- ESTE ES EL CAMBIO ---
+    # Si la petición es GET, ya no mostramos una página.
+    # Simplemente redirigimos a la lista, porque el modal se encarga de la confirmación.
+    return redirect('productos:asignacion_list')

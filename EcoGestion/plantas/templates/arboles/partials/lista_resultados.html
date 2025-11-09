@@ -1,0 +1,63 @@
+<p class="text-muted mb-2">Resultados: {{ total }}</p>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre Común</th>
+          <th>Nombre Científico</th>
+          <th>Descripción</th>
+          <th>Fecha de Plantación</th>
+          <th>Imagen</th>
+          <th>Riego</th>
+          <th>Poda</th>
+          <th>Fumigación</th>
+          <th>Estado de Salud</th>
+          <th>Ubicación</th>
+          {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+            <th>Acciones</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in plantas %}
+          <tr>
+            <td>{{ p.nombre_comun }}</td>
+            <td>{{ p.nombre_cientifico }}</td>
+            <td>{{ p.descripcion|truncatewords:10 }}</td>
+            <td>{{ p.fecha_plantacion }}</td>
+            <td>
+              {% if p.imagen_url %}
+                <img src="{{ p.imagen_url.url }}" alt="{{ p.nombre_comun }}" class="table-plant-image">
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>{{ p.periodicidad_riego}}</td>
+            <td>{{ p.periodicidad_poda}}</td>
+            <td>{{ p.periodicidad_fumigacion}}</td>
+            <td>{{ p.estado_salud }}</td>
+            <td>{{ p.lat}}, {{ p.lng }}</td>
+            {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+              <td class="table-actions">
+                <a href="{% url 'planta_editar' p.id_planta %}" class="btn btn-primary btn-sm">Editar</a>
+                <button type="button" class="btn btn-danger btn-sm"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#confirmDeleteModal"
+                        data-delete-url="{% url 'planta_eliminar' p.id_planta %}"
+                        data-user-name="{{ p.nombre_comun|default:p.nombre_cientifico }}">
+                  Eliminar
+                </button>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="10" class="text-center p-4">No se encontraron especies con esos filtros.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

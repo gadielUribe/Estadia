@@ -1,0 +1,101 @@
+/* --- Card de Acciones Superiores --- */
+.action-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  padding: 24px;
+  margin-bottom: 30px;
+}
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap; /* Para móviles */
+  gap: 15px;
+  align-items: center; /* Alinea los botones y el form */
+}
+
+/* Oculta los márgenes de los formularios dentro de la barra */
+.action-bar form {
+  margin-bottom: 0;
+}
+
+/* --- Grupo de Carga de Archivos --- */
+.upload-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.table--1 {
+  margin-left: 3rem;
+  margin-right: 3rem;
+}
+
+/* Estiliza el input de archivo de Bootstrap */
+.upload-group .form-control {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: auto; /* Permite que se encoja */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.upload-group .form-control:focus {
+  border-color: #6a67c8;
+  box-shadow: 0 0 0 2px rgba(106, 103, 200, 0.2);
+}
+
+/* --- Botones de Acción (Píldoras) --- */
+/* (Reutilizamos los estilos de form_view.css) */
+
+/* Botón de Restaurar (Amarillo) */
+.btn-restore {
+  background-color: #ffc107; /* Amarillo de Bootstrap */
+  color: #333;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-restore:hover {
+  background-color: #e0a800;
+}
+
+/* Botón de Subir (Gris) */
+.btn-upload {
+  background-color: #f3f4f6;
+  color: #333;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+.btn-upload:hover {
+  background-color: #e5e7eb;
+}
+
+/* --- Alertas de Mensajes --- */
+.alert-custom {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-left-width: 5px;
+}
+
+/* --- Estilo para la celda de Log --- */
+.log-cell {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  color: #555;
+  max-height: 100px; /* Limita la altura */
+  overflow-y: auto;  /* Añade scroll si es muy largo */
+  display: block;    /* Necesario para que max-height funcione en un <td> */
+  white-space: pre-wrap; /* Mantiene los saltos de línea */
+}

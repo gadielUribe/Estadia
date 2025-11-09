@@ -1,42 +1,87 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Chat Privado{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/chat_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/private_chat.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
 
-<div class="mb-3">
-  <h4>Conversar con:</h4>
-  <ul>
-    {% for u in usuarios %}
-      <li><a href="{% url 'chat_privado' u.id_usuario %}">{{ u.nombre_completo }}</a></li>
-    {% empty %}
-      <li>No hay otros usuarios</li>
-    {% endfor %}
-  </ul>
-  <hr>
+<div class="chat-page-layout">
+
+  <div class="chat-user-list-wrapper">
+    <h4>Conversar con:</h4>
+    <div class="chat-user-links">
+      {% for u in usuarios %}
+        <a href="{% url 'chat_privado' u.id_usuario %}" class="chat-user-link {% if u.id_usuario == receptor.id_usuario %}active{% endif %}">
+          {{ u.nombre_completo }}
+        </a>
+      {% empty %}
+        <p class="text-muted" style="padding: 0 12px;">No hay otros usuarios</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="chat-main-area">
+    
+    <div class="list-header">
+      <h2>Chat con {{ receptor.nombre_completo }}</h2>
+    </div>
+    
+    <div id="chat-log" class="chat-log-wrapper">
+      </div>
+    
+    <form id="chat-form" class="chat-input-area">
+      <input id="chat-message-input" type="text" class="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off">
+      <button id="chat-message-submit" class="btn-chat-send">Enviar</button>
+    </form>
+    
+  </div>
+
 </div>
+{% endblock %}
 
-<h2>Chat con {{ receptor.nombre_completo }}</h2>
-<div id="chat-log" style="height:300px;overflow:auto;border:1px solid #ccc;"></div>
-<input id="chat-message-input" type="text" size="80">
-<button id="chat-message-submit" class="btn btn-primary">Enviar</button>
 
+{% block extra_js %}
 <script>
   const receptorId = "{{ receptor.id_usuario }}";
   const scheme = location.protocol === "https:" ? "wss" : "ws";
   const host   = location.host;
   const chatSocket = new WebSocket(`${scheme}://${host}/ws/chat/privado/${receptorId}/`);
 
+  // Select elements
   const log   = document.getElementById('chat-log');
+  const form  = document.getElementById('chat-form');
   const input = document.getElementById('chat-message-input');
-  const btn   = document.getElementById('chat-message-submit');
 
+  // --- FUNCIÓN MEJORADA (MÁS SEGURA) ---
   function addLine({emisor_nombre, mensaje, timestamp}) {
     const p = document.createElement('p');
-    const hora = timestamp ? new Date(timestamp).toLocaleTimeString() : '';
-    p.innerHTML = `<b>${emisor_nombre}</b> <small>${hora}</small>: ${mensaje}`;
+    const hora = timestamp ? new Date(timestamp).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : '';
+    
+    // Usamos textContent para seguridad (previene inyección XSS)
+    const userEl = document.createElement('b');
+    userEl.textContent = emisor_nombre;
+    
+    const timeEl = document.createElement('small');
+    timeEl.textContent = hora;
+    
+    const msgEl = document.createTextNode(`: ${mensaje}`); 
+    
+    p.appendChild(userEl);
+    p.appendChild(timeEl);
+    p.appendChild(msgEl);
+    
     log.appendChild(p);
-    log.scrollTop = log.scrollHeight;
+    log.scrollTop = log.scrollHeight; // Auto-scroll
   }
 
+  // Message handler
   chatSocket.onmessage = (e) => {
     const data = JSON.parse(e.data);
 
@@ -52,11 +97,13 @@
     }
   };
 
-  btn.onclick = (ev) => {
+  // Form handler (sends on Enter or click)
+  form.onsubmit = (ev) => {
     ev.preventDefault();
     const mensaje = input.value.trim();
     if (!mensaje) return;
     if (chatSocket.readyState !== WebSocket.OPEN) return;
+    
     chatSocket.send(JSON.stringify({ mensaje }));
     input.value = '';
   };

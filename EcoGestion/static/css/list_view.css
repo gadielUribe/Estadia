@@ -104,3 +104,111 @@
   font-weight: 500;
   padding: 6px 12px;
 }
+
+/* --- Contenedor para múltiples botones en el header --- */
+.list-header-actions {
+  display: flex;
+  flex-wrap: wrap; /* Para móviles */
+  gap: 15px; /* Espacio entre botones */
+}
+
+/* --- Estilo para botones secundarios (ej. "Ver asignaciones") --- */
+.btn-secondary-pill {
+  background-color: #f3f4f6;
+  color: #333;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+.btn-secondary-pill:hover {
+  background-color: #e5e7eb;
+  color: #333; /* Asegura que el color no cambie */
+}
+
+/* --- Estilo para subtítulos en el encabezado --- */
+.list-header h2 small,
+.list-header h1 small {
+  font-weight: 400;
+  font-style: italic;
+  color: #777;
+  font-size: 1.2rem; /* Un poco más pequeño que el título */
+  margin-left: 5px;
+}
+
+/* --- Estilo para el contador de resultados --- */
+.list-total-count {
+  font-size: 1rem;
+  color: #777;
+  font-weight: 500;
+  /* Mueve el contador justo debajo del encabezado */
+  margin-top: -15px; 
+  margin-bottom: 20px;
+}
+
+/* 1. Pestañas de Filtro (nav-pills) */
+.notif-pills {
+  margin-bottom: 25px;
+  display: flex; /* Asegura que sea flex */
+  flex-wrap: wrap; /* Para móviles */
+  gap: 10px; /* Espacio entre píldoras */
+}
+.notif-pills .nav-link {
+  color: #555; /* Texto un poco más oscuro */
+  font-weight: 600;
+  border-radius: 20px; /* Píldora redondeada */
+  padding: 8px 16px; /* Ajuste de padding */
+  background-color: #f3f4f6; /* Fondo gris claro */
+  border: 1px solid #e0e0e0; /* Borde sutil */
+  line-height: 1.5;
+}
+.notif-pills .nav-link:hover {
+  background-color: #e5e7eb;
+}
+.notif-pills .nav-link.active {
+  color: #fff; /* Texto blanco */
+  border-color: #6a67c8;
+  background-color: #6a67c8; /* Color primario */
+}
+.notif-pills .nav-link .badge {
+  font-size: 0.75em;
+  padding: 5px 8px;
+  border-radius: 10px;
+}
+/* Insignia dentro de la píldora activa */
+.notif-pills .nav-link.active .badge {
+   background-color: #fff; /* Insignia blanca */
+   color: #6a67c8; /* Texto de color primario */
+}
+
+.notif-actions .btn-toggle-read {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  /* font-size: 1.1rem; <-- Esta línea ya no es necesaria */
+}
+
+/* NUEVO: Da tamaño a los SVG dentro de los botones */
+.notif-actions .btn-toggle-read svg {
+   width: 16px;
+   height: 16px;
+}
+
+.notif-batch-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+.notif-batch-actions .btn-sm {
+  font-size: 0.85rem;
+  padding: 5px 12px;
+  border-radius: 15px; /* Píldora pequeña */
+  font-weight: 500;
+}

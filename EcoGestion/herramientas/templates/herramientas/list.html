@@ -1,44 +1,83 @@
 {% extends 'base.html' %}
-{% block title %}Herramientas{% endblock %}
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0">Herramientas</h1>
-  <div>
-    <a href="{% url 'herramientas:asignacion_list' %}" class="btn btn-outline-secondary btn-sm">Ver asignaciones</a>
-    <a href="{% url 'herramientas:herramienta_create' %}" class="btn btn-primary btn-sm">Nueva herramienta</a>
-  </div>
-  </div>
+{% load static %}
 
-<div class="card">
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-striped mb-0">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th style="width:160px">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
+{% block title %}Herramientas{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/modal_confirm.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="list-header">
+  <h2>Herramientas</h2>
+  <div class="list-header-actions">
+    <a href="{% url 'herramientas:asignacion_list' %}" class="btn-secondary-pill">Ver asignaciones</a>
+    <a href="{% url 'herramientas:herramienta_create' %}" class="btn-new-item">Nueva herramienta</a>
+  </div>
+</div>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table mb-0"> <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th style="width:160px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for h in herramientas %}
-          <tr>
-            <td>{{ h.nombre }}</td>
-            <td>{{ h.descripcion|default:'—' }}</td>
-            <td>
-              <a class="btn btn-sm btn-outline-primary" href="{% url 'herramientas:herramienta_update' h.pk %}">Editar</a>
-              <a class="btn btn-sm btn-outline-danger" href="{% url 'herramientas:herramienta_delete' h.pk %}">Eliminar</a>
-            </td>
-          </tr>
+        <tr>
+          <td>{{ h.nombre }}</td>
+          <td>{{ h.descripcion|default:'—' }}</td>
+          <td class="table-actions"> <a class="btn btn-sm btn-primary" href="{% url 'herramientas:herramienta_update' h.pk %}">Editar</a>
+            
+            <button type="button" class="btn btn-sm btn-danger"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#confirmDeleteModal"
+                    data-delete-url="{% url 'herramientas:herramienta_delete' h.pk %}"
+                    data-user-name="{{ h.nombre }}">
+              Eliminar
+            </button>
+          </td>
+        </tr>
         {% empty %}
-          <tr>
-            <td colspan="3" class="text-center text-muted py-4">Sin herramientas registradas</td>
-          </tr>
+        <tr>
+          <td colspan="3" class="text-center p-4">Sin herramientas registradas</td>
+        </tr>
         {% endfor %}
-        </tbody>
-      </table>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirm-delete">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar esta herramienta?</p>
+        <p><strong id="userNameInModal"></strong></p>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteForm" method="post" action="">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 {% endblock %}
 
+
+{% block extra_js %}
+  <script src="{% static 'js/modal_confirm.js' %}"></script>
+{% endblock %}

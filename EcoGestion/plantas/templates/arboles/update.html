@@ -1,23 +1,93 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Actualizacion planta{% endblock %}
+{% block title %}Editar Especie{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
 
 {% block content %}
+  <div class="form-container">
+    <div class="form-wrapper">
 
-  <h1>Hola, estás en la página para editar un árbol.</h1>
+      <div class="form-header">
+        <h2>Editar especie</h2>
+      </div>
 
-  <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <div><strong>Selecciona la ubicación en el mapa:</strong></div>
-    <div id="map" style="height: 60vh;"></div>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <p>
+          <label for="{{ form.nombre_comun.id_for_label }}">Nombre Común:</label>
+          {{ form.nombre_comun }}
+        </p>
+        
+        <p>
+          <label for="{{ form.nombre_cientifico.id_for_label }}">Nombre Científico:</label>
+          {{ form.nombre_cientifico }}
+        </p>
 
-    <button type="submit" class="btn btn-primary">Editar árbol</button>
-    <a href="{% url 'planta_inicio' %}">Volver a Inicio</a>
-  </form>
+        <p>
+          <label for="{{ form.descripcion.id_for_label }}">Descripción:</label>
+          {{ form.descripcion }}
+        </p>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <p>
+          <label for="{{ form.fecha_plantacion.id_for_label }}">Fecha de Plantación:</label>
+          {{ form.fecha_plantacion }}
+        </p>
+
+        <p>
+          <label for="{{ form.imagen_url.id_for_label }}">Imagen url:</label>
+          <div class="custom-file-upload-wrapper">
+            
+            {% if form.instance and form.instance.imagen_url %}
+            <div class="file-preview-container">
+              <p>Imagen actual:</p>
+              <img src="{{ form.instance.imagen_url.url }}" alt="Imagen actual">
+            </div>
+            {% endif %}
+
+            {{ form.imagen_url }}
+          </div>
+        </p>
+
+        <p>
+          <label for="{{ form.periodicidad_riego.id_for_label }}">Periodicidad Riego:</label>
+          {{ form.periodicidad_riego }}
+        </p>
+
+        <p>
+          <label for="{{ form.periodicidad_poda.id_for_label }}">Periodicidad Poda:</label>
+          {{ form.periodicidad_poda }}
+        </p>
+        
+        <p>
+          <label for="{{ form.periodicidad_fumigacion.id_for_label }}">Periodicidad Fumigación:</label>
+          {{ form.periodicidad_fumigacion }}
+        </p>
+        
+        <p style="display: none;">{{ form.lat }}</p>
+        <p style."display: none;">{{ form.lng }}</p>
+
+
+        <div class="map-label">Actualiza la ubicación en el mapa:</div>
+        <div class="leaflet-map-container">
+          <div id="map"></div> 
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'planta_inicio' %}" class="btn-cancel">Cancelar</a>
+          <button type="submit" class="btn-save">Guardar Cambios</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
 
   <script>
     const latInput = document.getElementById('id_lat');
@@ -46,4 +116,8 @@
 
     map.on('click', e => placeMarker(e.latlng));
   </script>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 {% endblock %}
