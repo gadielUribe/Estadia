@@ -20,7 +20,7 @@ urlpatterns = [
     path('productos/', include('productos.urls')),
     path('voluntarios/', include('voluntarios.urls')),
     path('backup/', include('respaldo.urls')),
-    path('notificaciones/', include('notificaciones.urls')),
+    path("notificaciones/", include("notificaciones.urls", namespace="notificaciones")),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),

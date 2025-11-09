@@ -1,0 +1,119 @@
+/* 1. Layout principal de la página (Sidebar + Área de Chat) */
+.chat-page-layout {
+  display: grid;
+  /* Define una barra lateral de 280px y el chat ocupa el resto */
+  grid-template-columns: 280px 1fr; 
+  gap: 25px;
+  /* Altura que ocupa el 75% de la ventana, puedes ajustarlo */
+  height: 75vh; 
+}
+
+/* --- 2. Sidebar (Lista de Usuarios) --- */
+.chat-user-list-wrapper {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+  padding: 20px;
+  overflow-y: auto; /* Scroll si hay muchos usuarios */
+  height: 100%; /* Ocupa la altura de la celda del grid */
+  box-sizing: border-box; /* Para que el padding no afecte la altura */
+}
+.chat-user-list-wrapper h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+/* Contenedor de los enlaces de usuario */
+.chat-user-links {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Enlace de usuario individual */
+.chat-user-link {
+  display: block;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  word-break: break-word;
+}
+.chat-user-link:hover {
+  background-color: #f4f4f4;
+}
+
+/* Enlace del usuario "Activo" (con quien estás chateando) */
+.chat-user-link.active {
+  background-color: #6a67c8; /* Color primario del tema */
+  color: white;
+  font-weight: 600;
+}
+
+/* --- 3. Área Principal del Chat --- */
+.chat-main-area {
+  display: flex;
+  flex-direction: column; /* Apila: Encabezado, Log, Input */
+  height: 100%; /* Ocupa la altura de la celda del grid */
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  overflow: hidden; /* Clave para que el chat no se salga */
+}
+
+/* Encabezado (Chat con...) */
+.chat-main-area .list-header {
+   padding: 20px 24px;
+   margin-bottom: 0;
+   border-bottom: 1px solid #f0f0f0;
+   flex-shrink: 0; /* Evita que el encabezado se encoja */
+}
+.chat-main-area .list-header h2 {
+    font-size: 1.8rem;
+}
+
+/* El 'chat-log-wrapper' (de chat_view.css) debe llenar el espacio */
+.chat-main-area .chat-log-wrapper {
+  flex-grow: 1; /* <-- ESTA ES LA CLAVE */
+  height: auto; /* Sobreescribe la altura fija */
+  border: none;
+  box-shadow: none;
+  border-bottom: 1px solid #eee;
+  border-radius: 0;
+}
+
+/* El 'chat-input-area' (de chat_view.css) debe ir abajo */
+.chat-main-area .chat-input-area {
+  margin: 0;
+  padding: 15px 20px;
+  background-color: #f9f9f9;
+  flex-shrink: 0; /* Evita que el input se encoja */
+}
+
+/* --- 4. Diseño Responsivo --- */
+@media (max-width: 900px) {
+  .chat-page-layout {
+    grid-template-columns: 220px 1fr; /* Sidebar más pequeño */
+  }
+}
+@media (max-width: 768px) {
+  /* Apila la lista de usuarios encima del chat */
+  .chat-page-layout {
+    grid-template-columns: 1fr; 
+    height: auto; /* Altura automática */
+  }
+  .chat-user-list-wrapper {
+    height: auto;
+    margin-bottom: 20px;
+  }
+  .chat-main-area {
+     height: 70vh; /* Le da una altura fija al chat en móvil */
+  }
+}

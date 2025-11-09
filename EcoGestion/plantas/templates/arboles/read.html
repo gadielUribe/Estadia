@@ -1,86 +1,81 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Detalles plantas{% endblock %}
+{% block title %}Gestión de Especies{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/user.css' %}" rel="stylesheet">
+  <link href="{% static 'css/modal_confirm.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet">
+{% endblock %}
+
 
 {% block content %}
 
-    <h1>Hola, estás en la página para ver el detalle de un árbol.</h1>
+<div class="list-header">
+  <h2>Gestión de Especies</h2>
+  {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+    <a href="{% url 'planta_crear' %}" class="btn-new-item">Nueva Especie</a>
+  {% endif %}
+</div>
 
-    <form method="get" id="filtrosForm">
-    <div>
-        <label>Búsqueda por nombre</label>
-        <input type="text" name="q" value="{{ q }}" placeholder="Nombre común / científico" id="buscarInput">
+<div class="filter-bar-wrapper">
+  <form method="get" id="filtrosForm" class="filter-bar-form">
+    <div class="filter-group">
+      <label>Búsqueda por nombre</label>
+      <input type="text" name="q" value="{{ q }}" placeholder="Nombre común / científico" id="buscarInput">
     </div>
-    <div>
-        <label>Fecha desde</label>
-        <input type="date" name="fecha_desde" value="{{ fecha_desde }}">
+    <div class="filter-group">
+      <label>Fecha desde</label>
+      <input type="date" name="fecha_desde" value="{{ fecha_desde }}">
     </div>
-    <div>
-        <label>Fecha hasta</label>
-        <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}">
+    <div class="filter-group">
+      <label>Fecha hasta</label>
+      <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}">
     </div>
-    <div>
-        <button type="submit">Filtrar</button>
-        <a href="{% url 'planta_inicio' %}">Limpiar</a>
+    <div class="filter-group filter-actions">
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+      <a href="{% url 'planta_inicio' %}" class="btn btn-secondary">Limpiar</a>
     </div>
-    </form>
+  </form>
+</div>
 
-    <p class="text-muted mb-2">Resultados: {{ total }}</p>
-    
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nombre Común</th>
-                <th>Nombre Científico</th>
-                <th>Descripción</th>
-                <th>Fecha de Plantación</th>
-                <th>Imagen representativa</th>
-                <th>Periocidad de Riego</th>
-                <th>Periocidad de Poda</th>
-                <th>Periocidad de Fumigacion</th>
-                <th>Ubicación (Latitud y Longitud)</th>
-                {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
-                    <th>Acciones</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in plantas %}
-                <tr>
-                    <td>{{ p.nombre_comun }}</td>
-                    <td>{{ p.nombre_cientifico }}</td>
-                    <td>{{ p.descripcion }}</td>
-                    <td>{{ p.fecha_plantacion }}</td>
-                    <td>
-                        {% if p.imagen_url %}
-                            <img src="{{ p.imagen_url.url }}" alt="" style="height:64px; width:auto;">
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td>{{ p.periodicidad_riego}}</td>
-                    <td>{{ p.periodicidad_poda}}</td>
-                    <td>{{ p.periodicidad_fumigacion}}</td>
-                    <td>{{ p.lat}}, {{ p.lng }}</td>
-                    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
-                        <td>
-                            <a href="{% url 'planta_editar' p.id_planta %}" class="btn btn-primary">Editar</a>
-                            <a href="{% url 'planta_eliminar' p.id_planta %}" class="btn btn-primary">Eliminar</a>
-                        </td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div id="results">
+  {% include 'arboles/partials/lista_resultados.html' %}
+</div>
 
-    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
-        <br><h2>Crear arbol</h2>
-        <a href="{% url 'planta_crear' %}" class="btn btn-primary">Crear</a>
-    {% endif %}
-
+<div class="map-container">
+  <h3>Mapa de Especies</h3>
+  <div class="map-folium">
     {{ maps.map|safe }}
+  </div>
+</div>
 
-    <script src="{% static 'js/planta/filtro.js' %}"></script>
-        
-{% endblock %} 
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirm-delete">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar esta especie?</p>
+        <p><strong id="userNameInModal"></strong></p>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteForm" method="post" action="">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+  <script src="{% static 'js/modal_confirm.js' %}"></script>
+  <script src="{% static 'js/planta/filtro.js' %}"></script>
+{% endblock %}

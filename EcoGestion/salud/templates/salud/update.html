@@ -1,21 +1,60 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Editar Registro de Salud{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h1>Editar registro de salud</h1>
-<form method="post">
-  {% csrf_token %}
-  <div>
-    <label >Planta</label>
-    {{ form.planta }}
+<div class="form-container">
+  <div class="form-wrapper">
+    
+    <div class="form-header">
+      <h2>Editar registro de salud</h2>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <p>
+        <label for="{{ form.planta.id_for_label }}">Planta</label>
+        {{ form.planta }}
+        {% for error in form.planta.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </p>
+
+      <p>
+        <label for="{{ form.estado_salud.id_for_label }}">Estado</label>
+        {{ form.estado_salud }}
+        {% for error in form.estado_salud.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </p>
+
+      <p>
+        <label for="{{ form.observaciones.id_for_label }}">Observaciones</label>
+        {{ form.observaciones }}
+        {% for error in form.observaciones.errors %}
+          <small class="text-danger">{{ error }}</small>
+        {% endfor %}
+      </p>
+      
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+          <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="form-actions">
+        <a href="{% url 'salud_inicio' %}" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-save">Guardar</button>
+      </div>
+    </form>
+
   </div>
-  <div>
-    <label>Estado</label>
-    {{ form.estado_salud }}
-  </div>
-  <div>
-    <label>Observaciones</label>
-    {{ form.observaciones }}
-  </div>
-  <button>Guardar</button>
-  <a href="{% url 'salud_inicio' %}">Cancelar</a>
-</form>
+</div>
 {% endblock %}

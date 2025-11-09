@@ -1,0 +1,35 @@
+/* Le da un encabezado rojo a la ventana de confirmación */
+.modal-confirm-delete .modal-header {
+  background-color: #f8d7da; /* Rojo claro de Bootstrap */
+  color: #721c24; /* Texto rojo oscuro */
+  border-bottom: 1px solid #f5c6cb;
+}
+
+/* Icono de advertencia en el cuerpo */
+.modal-confirm-delete .modal-body-icon {
+  font-size: 3.5rem;
+  color: #dc3545; /* Rojo de Bootstrap */
+  text-align: center;
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* Texto del cuerpo centrado */
+.modal-confirm-delete .modal-body p {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Para el nombre del usuario que se va a borrar */
+.modal-confirm-delete .modal-body p strong {
+    color: #721c24;
+    word-break: break-word; /* Evita que nombres largos rompan el modal */
+}
+
+/* Asegura que los botones del footer estén alineados a la derecha */
+.modal-confirm-delete .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+}

@@ -1,0 +1,76 @@
+/* 1. Contenedor del Chat (la caja blanca) */
+.chat-log-wrapper {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  height: 500px; /* Le damos más altura */
+  overflow-y: auto;  /* Scroll automático */
+  padding: 20px;
+  border: 1px solid #eee;
+}
+
+/* 2. Mensajes individuales */
+.chat-log-wrapper p {
+  margin-bottom: 12px;
+  line-height: 1.5;
+  color: #333;
+  word-wrap: break-word; /* Evita que texto largo rompa la caja */
+}
+.chat-log-wrapper p:last-child {
+  margin-bottom: 0;
+}
+
+/* 3. Nombre de usuario */
+.chat-log-wrapper p b {
+  color: #000;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+/* 4. Timestamp (hora) */
+.chat-log-wrapper p small {
+  font-size: 0.8em;
+  color: #888;
+  margin-left: 5px;
+}
+
+/* 5. Área de entrada de texto (el <form>) */
+.chat-input-area {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  align-items: stretch; /* Estira el input y el botón a la misma altura */
+}
+
+/* 6. El <input> de texto */
+.chat-input {
+  flex-grow: 1; /* Ocupa el espacio disponible */
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px; /* Bordes redondeados */
+  font-size: 1rem;
+  font-family: "Work Sans", "Noto Sans", sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.chat-input:focus {
+  outline: none;
+  border-color: #6a67c8; /* Color primario del tema */
+  box-shadow: 0 0 0 2px rgba(106, 103, 200, 0.2);
+}
+
+/* 7. El botón de Enviar */
+.btn-chat-send {
+  background-color: #6a67c8; /* Color primario del tema */
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 8px; /* Coincide con el input */
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-chat-send:hover {
+  background-color: #5552a0; /* Tono más oscuro */
+}

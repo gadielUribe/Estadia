@@ -1,52 +1,89 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Chat General{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/chat_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h2>Chat General</h2>
-<div id="chat-log" style="height:300px;overflow:auto;border:1px solid #ccc;"></div>
-<input id="chat-message-input" type="text" size="80">
-<button id="chat-message-submit" class="btn btn-primary">Enviar</button>
+
+<div class="list-header">
+  <h2>Chat General</h2>
+</div>
+
+<div id="chat-log" class="chat-log-wrapper">
+  </div>
+
+<form id="chat-form" class="chat-input-area">
+  <input id="chat-message-input" type="text" class="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off">
+  <button id="chat-message-submit" class="btn-chat-send">Enviar</button>
+</form>
+
+
 <script>
   const scheme = location.protocol === "https:" ? "wss" : "ws";
   const host   = location.host;
   const chatSocket = new WebSocket(`${scheme}://${host}/ws/chat/general/`);
 
-  const log   = document.getElementById('chat-log');           // <div id="chat-log"> ... </div>
+  // Seleccionamos los elementos
+  const log   = document.getElementById('chat-log');
+  const form  = document.getElementById('chat-form');
   const input = document.getElementById('chat-message-input');
-  const btn   = document.getElementById('chat-message-submit');
 
+  // --- FUNCIÓN MEJORADA (MÁS SEGURA) ---
   function addLine({usuario_nombre, mensaje, timestamp}) {
     const p = document.createElement('p');
-    const hora = new Date(timestamp).toLocaleTimeString();
-    p.innerHTML = `<b>${usuario_nombre}</b> <small>${hora}</small>: ${mensaje}`;
+    // Formatea la hora al estilo local (ej: 14:30)
+    const hora = new Date(timestamp).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    
+    // Usamos textContent para seguridad (previene inyección XSS)
+    const userEl = document.createElement('b');
+    userEl.textContent = usuario_nombre;
+    
+    const timeEl = document.createElement('small');
+    timeEl.textContent = hora;
+    
+    // Crea un nodo de texto para el mensaje
+    const msgEl = document.createTextNode(`: ${mensaje}`); 
+    
+    p.appendChild(userEl);
+    p.appendChild(timeEl);
+    p.appendChild(msgEl);
+    
     log.appendChild(p);
-    log.scrollTop = log.scrollHeight;
+    log.scrollTop = log.scrollHeight; // Auto-scroll
   }
 
+  // Manejador de mensajes del WebSocket
   chatSocket.onmessage = (e) => {
     const data = JSON.parse(e.data);
 
     if (data.type === "history") {
-      // pintar historial inicial
-      log.innerHTML = "";                // limpia
-      data.messages.forEach(addLine);    // ya viene ordenado ascendente
+      log.innerHTML = ""; // Limpia el chat
+      data.messages.forEach(addLine); // Pinta el historial
       return;
     }
 
     if (data.type === "message") {
-      addLine(data);
+      addLine(data); // Añade un nuevo mensaje
       return;
     }
   };
 
-  btn.onclick = (ev) => {
-    ev.preventDefault();
+  // --- MANEJADOR DE FORMULARIO MEJORADO ---
+  // Se activa al hacer clic en el botón O al presionar "Enter"
+  form.onsubmit = (ev) => {
+    ev.preventDefault(); // Previene recarga de página
     const mensaje = input.value.trim();
     if (!mensaje) return;
     if (chatSocket.readyState !== WebSocket.OPEN) return;
+    
     chatSocket.send(JSON.stringify({ mensaje }));
-    input.value = "";
+    input.value = ""; // Limpia el input
   };
 </script>
-
-
 {% endblock %}

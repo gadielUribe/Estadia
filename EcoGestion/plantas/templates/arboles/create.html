@@ -1,49 +1,125 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Creacion planta{% endblock %}
+{% block title %}Crear Especie{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet"> 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
 
 {% block content %}
+  <div class="form-container">
+    <div class="form-wrapper">
 
-  <h1>Crear árbol</h1>
+      <div class="form-header">
+        <h2>Crear nueva especie</h2>
+      </div>
 
-  <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <div><strong>Selecciona la ubicación en el mapa:</strong></div>
-    <div id="map" style="height: 60vh;"></div>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <p>
+          <label for="{{ form.nombre_comun.id_for_label }}">Nombre Común:</label>
+          {{ form.nombre_comun }}
+        </p>
+        
+        <p>
+          <label for="{{ form.nombre_cientifico.id_for_label }}">Nombre Científico:</label>
+          {{ form.nombre_cientifico }}
+        </p>
 
-    <button type="submit" class="btn btn-primary">Crear árbol</button>
-    <a href="{% url 'planta_inicio' %}">Volver a Inicio</a>
-  </form>
+        <p>
+          <label for="{{ form.descripcion.id_for_label }}">Descripción:</label>
+          {{ form.descripcion }}
+        </p>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <p>
+          <label for="{{ form.fecha_plantacion.id_for_label }}">Fecha de Plantación:</label>
+          {{ form.fecha_plantacion }}
+        </de>
 
-  <script>
-    const latInput = document.getElementById('id_lat');
-    const lngInput = document.getElementById('id_lng');
+        <p>
+          <label for="{{ form.imagen_url.id_for_label }}">Imagen:</label>
+          <div class="custom-file-upload-wrapper">
+            {{ form.imagen_url }}
+          </div>
+        </p>
 
-    const map = L.map('map').setView([18.889647, -99.1397134], 17);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19, attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+        <p>
+          <label for="{{ form.periodicidad_riego.id_for_label }}">Periodicidad Riego:</label>
+          {{ form.periodicidad_riego }}
+        </p>
 
-    let marker = null;
-    function placeMarker(latlng) {
-      if (!marker) {
-        marker = L.marker(latlng, {draggable:true}).addTo(map);
-        marker.on('dragend', e => {
-          const {lat, lng} = e.target.getLatLng();
-          latInput.value = lat.toFixed(6);
-          lngInput.value = lng.toFixed(6);
-        });
-      } else {
-        marker.setLatLng(latlng);
-      }
-      latInput.value = latlng.lat.toFixed(6);
-      lngInput.value = latlng.lng.toFixed(6);
+        <p>
+          <label for="{{ form.periodicidad_poda.id_for_label }}">Periodicidad Poda:</label>
+          {{ form.periodicidad_poda }}
+        </p>
+        
+        <p>
+          <label for="{{ form.periodicidad_fumigacion.id_for_label }}">Periodicidad Fumigación:</label>
+          {{ form.periodicidad_fumigacion }}
+        </p>
+        <p>
+          <label for="{{ form.estado_salud.id_for_label }}">Estado de Salud:</label>
+          {{ form.estado_salud }}
+        </p>
+
+        <p>
+          <label for="{{ form.observaciones.id_for_label }}">Observaciones:</label>
+          {{ form.observaciones }}
+        </p>
+        
+        <p style="display: none;">{{ form.lat }}</p>
+        <p style="display: none;">{{ form.lng }}</p>
+
+
+        <div class="map-label">Selecciona la ubicación en el mapa:</div>
+        <div class="leaflet-map-container">
+          <div id="map"></div> 
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'planta_inicio' %}" class="btn-cancel">Cancelar</a>
+          <button type="submit" class="btn-save">Crear Especie</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+<script>
+  const latInput = document.getElementById('id_lat');
+  const lngInput = document.getElementById('id_lng');
+
+  const map = L.map('map').setView([18.889647, -99.1397134], 17);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  let marker = null;
+  function placeMarker(latlng) {
+    if (!marker) {
+      marker = L.marker(latlng, {draggable:true}).addTo(map);
+      marker.on('dragend', e => {
+        const {lat, lng} = e.target.getLatLng();
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+      });
+    } else {
+      marker.setLatLng(latlng);
     }
+    latInput.value = latlng.lat.toFixed(6);
+    lngInput.value = latlng.lng.toFixed(6);
+  }
 
-    map.on('click', e => placeMarker(e.latlng));
-  </script>
+  map.on('click', e => placeMarker(e.latlng));
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 {% endblock %}

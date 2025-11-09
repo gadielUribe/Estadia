@@ -1,27 +1,90 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Lista de usuarios{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/form_view.css' %} " rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h2>Usuarios</h2>
-<a href="{% url 'usuario_create' %}" class="btn btn-success mb-2">Nuevo usuario</a>
-<table class="table table-bordered">
-  <tr>
-    <th>Matrícula</th>
-    <th>Email</th>
-    <th>Nombre completo</th>
-    <th>Rol</th>
-    <th>Acciones</th>
-  </tr>
-  {% for usuario in usuarios %}
-  <tr>
-    <td>{{ usuario.matricula }}</td>
-    <td>{{ usuario.email }}</td>
-    <td>{{ usuario.nombre_completo }}</td>
-    <td>{{ usuario.get_rol_display }}</td>
-    <td>
-      <a href="{% url 'usuario_update' usuario.pk %}" class="btn btn-primary btn-sm">Editar</a>
-      <a href="{% url 'usuario_delete' usuario.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+
+<div class="list-header">
+  <h2>Usuarios</h2>
+  <a href="{% url 'usuario_create' %}" class="btn-new-item">Nuevo usuario</a>
+</div>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+
+    <table class="table"> 
+      <thead>
+        <tr>
+          <th>Matrícula</th>
+          <th>Email</th>
+          <th>Nombre completo</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+          <td>{{ usuario.matricula }}</td>
+          <td>{{ usuario.email }}</td>
+          <td>{{ usuario.nombre_completo }}</td>
+          <td>{{ usuario.get_rol_display }}</td>
+          <td class="table-actions">
+            <a href="{% url 'usuario_update' usuario.pk %}" class="btn btn-primary btn-sm">Editar</a>
+            
+            <button type="button" class="btn btn-danger btn-sm" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#confirmDeleteModal"
+                    data-delete-url="{% url 'usuario_delete' usuario.pk %}"
+                    data-user-name="{{ usuario.nombre_completo|default:usuario.matricula }}">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center p-4">No hay usuarios registrados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirm-delete">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar al usuario?</p>
+        <p><strong id="userNameInModal"></strong></p>
+      </div>
+
+      <div class="modal-footer">
+        <form id="deleteForm" method="post" action="">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/modal_confirm.js' %}"></script>
 {% endblock %}

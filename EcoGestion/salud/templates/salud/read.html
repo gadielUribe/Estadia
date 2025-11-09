@@ -1,90 +1,137 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Historial de Salud{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/modal_confirm.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet"> <link href="{% static 'css/salud.css' %}" rel="stylesheet">   {% endblock %}
+
+
 {% block content %}
-<h1>Historial de salud de ejemplares</h1>
 
-<form method="get" id="filtrosForm">
-    <div>
-        <label>Búsqueda por nombre</label>
-        <input type="text" name="q" value="{{ q }}" placeholder="Nombre común / científico" id="buscarInput">
-    </div>
-     <div>
-        <label>Estado</label>
-        <select name="estado">
-          <option value="">Todos</option>
-          <option value="verde" {% if estado == 'verde' %}selected{% endif %}>Verde</option>
-          <option value="amarillo" {% if estado == 'amarillo' %}selected{% endif %}>Amarillo</option>
-          <option value="rojo" {% if estado == 'rojo' %}selected{% endif %}>Rojo</option>
-        </select>
-    </div>
-    <div>
-        <label>Fecha desde</label>
-        <input type="date" name="desde" value="{{ desde }}">
-    </div>
-    <div>
-        <label>Fecha hasta</label>
-        <input type="date" name="hasta" value="{{ hasta }}">
-    </div>
-    <div>
-        <button type="submit">Filtrar</button>
-        <a href="{% url 'salud_inicio' %}">Limpiar</a>
-    </div>
-</form>
-
-<div>
-  <a href="{% url 'salud_crear' %}">Nuevo registro</a>
+<div class="list-header">
+  <h2>Historial de salud de ejemplares</h2>
+  <a href="{% url 'salud_crear' %}" class="btn-new-item">Nuevo registro</a>
 </div>
 
-<p>Resultados: {{ total }}</p>
+<div class="filter-bar-wrapper">
+  <form method="get" id="filtrosForm" class="filter-bar-form">
+    <div class="filter-group">
+      <label>Búsqueda por nombre</label>
+      <input type="text" name="q" value="{{ q }}" placeholder="Nombre común / científico" id="buscarInput">
+    </div>
+    <div class="filter-group">
+      <label>Estado</label>
+      <select name="estado">
+        <option value="">Todos</option>
+        <option value="verde" {% if estado == 'verde' %}selected{% endif %}>Verde</option>
+        <option value="amarillo" {% if estado == 'amarillo' %}selected{% endif %}>Amarillo</option>
+        <option value="rojo" {% if estado == 'rojo' %}selected{% endif %}>Rojo</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Fecha desde</label>
+      <input type="date" name="desde" value="{{ desde }}">
+    </div>
+    <div class="filter-group">
+      <label>Fecha hasta</label>
+      <input type="date" name="hasta" value="{{ hasta }}">
+    </div>
+    <div class="filter-group filter-actions">
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+      <a href="{% url 'salud_inicio' %}" class="btn btn-secondary">Limpiar</a>
+    </div>
+  </form>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Planta</th>
-      <th>Estado</th>
-      <th>Usuario</th>
-      <th>Observaciones</th>
-      {% if request.user.rol in 'administrador gestor' %}<th>Acciones</th>{% endif %}
-    </tr>
-  </thead>
-  <tbody>
-    {% for r in registros %}
-      <tr>
-        <td>{{ r.fecha_actualizacion|date:"Y-m-d H:i" }}</td>
-        <td>
-          {% if r.planta %}<strong>{{ r.planta.nombre_comun }}</strong><br>
-          <small><em>{{ r.planta.nombre_cientifico }}</em></small>{% else %}-{% endif %}
-        </td>
-        <td>
-          {% if r.estado_salud == 'verde' %}
-            <span>Verde</span>
-          {% elif r.estado_salud == 'amarillo' %}
-            <span>Amarillo</span>
-          {% else %}
-            <span>Rojo</span>
-          {% endif %}
-        </td>
-        <td>{% if r.usuario %}{{ r.usuario.nombre_completo }} ({{ r.usuario.matricula }}){% else %}-{% endif %}</td>
-        <td >{{ r.observaciones }}</td>
-        {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
-        <td>
-          <a href="{% url 'salud_editar' r.id_registro %}">Editar</a>
-          <a href="{% url 'salud_eliminar' r.id_registro %}">Eliminar</a>
-          {% if r.planta %}
-            <a href="{% url 'salud_historial_planta' r.planta.id_planta %}">Historial</a>
-            <br>
-            <small><em>{{ r.planta.nombre_cientifico }}</em></small>
-          {% else %}-{% endif %}
-        </td>
-        {% endif %}
-      </tr>
-    {% empty %}
-      <tr><td colspan="6">Sin registros.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<p class="text-muted mb-2">Resultados: {{ total }}</p>
 
-<script src="{% static 'js/filtro.js' %}"></script>
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Planta</th>
+          <th>Estado</th>
+          <th>Usuario</th>
+          <th>Observaciones</th>
+          {% if request.user.rol in 'administrador gestor' %}<th>Acciones</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in registros %}
+          <tr>
+            <td>{{ r.fecha_actualizacion|date:"Y-m-d H:i" }}</td>
+            <td class="plant-cell">
+              {% if r.planta %}<strong>{{ r.planta.nombre_comun }}</strong><br>
+              <small>{{ r.planta.nombre_cientifico }}</small>{% else %}-{% endif %}
+            </td>
+            <td>
+              {% if r.estado_salud == 'verde' %}
+                <span class="status-badge status-verde">Verde</span>
+              {% elif r.estado_salud == 'amarillo' %}
+                <span class="status-badge status-amarillo">Amarillo</span>
+              {% else %}
+                <span class="status-badge status-rojo">Rojo</span>
+              {% endif %}
+            </td>
+            <td>{% if r.usuario %}{{ r.usuario.nombre_completo }}{% else %}-{% endif %}</td>
+            <td >{{ r.observaciones|truncatewords:15 }}</td>
+            
+            {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+            <td class="table-actions">
+              <a href="{% url 'salud_editar' r.id_registro %}" class="btn btn-sm btn-primary">Editar</a>
+              <button type="button" class="btn btn-sm btn-danger"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#confirmDeleteModal"
+                      data-delete-url="{% url 'salud_eliminar' r.id_registro %}"
+                      data-user-name="Registro de {{ r.planta.nombre_comun }} ({{ r.fecha_actualizacion|date:'Y-m-d' }})">
+                Eliminar
+              </button>
+              {% if r.planta %}
+                <a href="{% url 'salud_historial_planta' r.planta.id_planta %}" class="btn btn-sm btn-secondary">Historial</a>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="text-center p-4">Sin registros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirm-delete">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este registro?</p>
+        <p><strong id="userNameInModal"></strong></p>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteForm" method="post" action="">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+  <script src="{% static 'js/modal_confirm.js' %}"></script>
+  <script src="{% static 'js/filtro.js' %}"></script>
 {% endblock %}

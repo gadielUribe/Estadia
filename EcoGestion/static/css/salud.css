@@ -1,0 +1,45 @@
+/* --- Contenido para static/css/salud.css --- */
+
+/* --- Insignias de Estado (Verde, Amarillo, Rojo) --- */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px; /* Forma de píldora */
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.status-badge.status-verde {
+  background-color: #28a745; /* Verde */
+  color: white;
+}
+
+.status-badge.status-amarillo {
+  background-color: #ffc107; /* Amarillo */
+  color: #333; /* Texto oscuro para legibilidad */
+}
+
+.status-badge.status-rojo {
+  background-color: #dc3545; /* Rojo */
+  color: white;
+}
+
+/* --- Estilo para la celda de la planta --- */
+.plant-cell strong {
+  color: #333;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.plant-cell small {
+  color: #777;
+  font-style: italic;
+}
+/* --- Estilo para la celda de Observaciones --- */
+.cell-pre-wrap {
+  /* Mantiene los saltos de línea y ajusta el texto */
+  white-space: pre-wrap; 
+  word-break: break-word; /* Evita que el texto largo rompa la tabla */
+  max-width: 400px; /* Limita el ancho de la celda */
+  font-size: 0.9rem;
+  color: #555;
+}

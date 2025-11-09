@@ -1,33 +1,48 @@
 {% extends 'base.html' %}
-{% block title %}Asignar herramienta{% endblock %}
-{% block content %}
-<h1 class="h3 mb-3">Asignar herramienta a tarea</h1>
+{% load static %}
 
-<form method="post" novalidate>
-  {% csrf_token %}
-  <div class="card">
-    <div class="card-body">
+{% block title %}Asignar herramienta{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="form-container">
+  <div class="form-wrapper">
+    
+    <div class="form-header">
+      <h2>Asignar herramienta a tarea</h2>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
       {% for field in form %}
-        <div class="mb-3">
-          <label class="form-label">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+        <p>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }} {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+          {% endif %}
           {% for error in field.errors %}
-            <div class="text-danger small">{{ error }}</div>
+            <small class="text-danger">{{ error }}</small>
           {% endfor %}
-        </div>
+        </p>
       {% endfor %}
+      
       {% if form.non_field_errors %}
         {% for error in form.non_field_errors %}
           <div class="alert alert-danger">{{ error }}</div>
         {% endfor %}
       {% endif %}
-    </div>
-    <div class="card-footer text-end">
-      <a href="{% url 'herramientas:asignacion_list' %}" class="btn btn-outline-secondary">Cancelar</a>
-      <button class="btn btn-primary" type="submit">Guardar</button>
-    </div>
-  </div>
-</form>
-{% endblock %}
 
+      <div class="form-actions">
+        <a href="{% url 'herramientas:asignacion_list' %}" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-save">Guardar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

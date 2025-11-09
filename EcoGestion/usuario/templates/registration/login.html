@@ -1,43 +1,40 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Iniciar sesión{% endblock %}
 
+{% block extra_css %}
+  <link href="{% static 'css/login.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <h5 class="card-header">Iniciar sesión</h5>
-        <div class="card-body">
-          {% if form.errors %}
-            <div class="alert alert-danger" role="alert">
-              Tu usuario o contraseña están incorrectos. Intenta de nuevo por favor.
-            </div>
-          {% else %}
-            <p class="text-muted">Por favor, llena el formulario para iniciar sesión:</p>
-          {% endif %}
-          <form action="{% url 'login' %}" method="post">
-              {% csrf_token %}
-              <div class="form-group mb-3">
-                <label for="{{ form.matricula.id_for_label }}">Matrícula</label>
-                {{ form.matricula }}
-              </div>
-              <div class="form-group mb-3">
-                <label for="{{ form.password.id_for_label }}">Contraseña</label>
-                {{ form.password }}
-              </div>
-              <input type="hidden" name="next" value="{{ next }}" />
-              <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-          </form>
-          <p>
-            <a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
-          </p>
-          <p>
-            
-          </p>
-        </div>
+<div class="login-page">
+  <div class="login-container">
+
+    <h2>Inicio de Sesión</h2>
+
+    {% if form.errors %}
+      <div class="alert alert-danger" role="alert">
+        Tu usuario o contraseña son incorrectos. Intenta de nuevo.
       </div>
-    </div>
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        
+        <label for="{{ form.matricula.id_for_label }}">Matrícula</label>
+        {{ form.matricula }}
+
+        <label for="{{ form.password.id_for_label }}">Contraseña</label>
+        {{ form.password }}
+
+        <a href="{% url 'password_reset' %}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        
+        <input type="hidden" name="next" value="{{ next }}">
+        
+        <button type="submit" class="btn-login">Acceder</button>
+    </form>
+
   </div>
 </div>
 {% endblock %}

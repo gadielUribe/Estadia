@@ -120,11 +120,13 @@ def editar(request, id_registro):
 @login_required
 @user_passes_test(es_admin_o_gestor)
 def eliminar(request, id_registro):
-    reg = get_object_or_404(SaludRegistro, pk=id_registro)
+    registro = get_object_or_404(SaludRegistro, pk=id_registro) # Reemplaza 'SaludRegistro' con tu modelo
+    
     if request.method == 'POST':
-        reg.delete()
-        return redirect('salud_inicio')
-    return render(request, 'salud/delete.html', {'registro': reg})
+        registro.delete()
+        return redirect('salud_inicio') # Asegúrate que esta URL sea correcta
+        
+    return redirect('salud_inicio')
 
 def _notificar_si_riesgo(reg: SaludRegistro):
     # solo notificamos si es amarillo o rojo

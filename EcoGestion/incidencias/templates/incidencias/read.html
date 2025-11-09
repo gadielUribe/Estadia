@@ -1,52 +1,103 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Detalle incidencias{% endblock %}
+{% block title %}Incidentes Ambientales{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/modal_confirm.css' %}" rel="stylesheet">
+{% endblock %}
+
 
 {% block content %}
 
-    <h1>Pagina de reportes de incidencias ambientales</h1>
+<div class="list-header">
+  <h2>Incidentes Ambientales</h2>
+  {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+    <a href="{% url 'crear_incidencia' %}" class="btn-new-item">Nuevo Incidente</a>
+  {% endif %}
+</div>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
 
     <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Fecha de Reporte</th>
-                <th>Área del Campus</th>
-                <th>ID Árbol</th>
-                <th>Estado</th>
-                <th>ID Usuario</th>
-                {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
-                    <th>Acciones</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in incidencia %}
-                <tr>
-                    <td>{{ i.id_incidencia }}</td>
-                    <td>{{ i.titulo }}</td>
-                    <td>{{ i.descripcion }}</td>
-                    <td>{{ i.fecha_reporte }}</td>
-                    <td>{{ i.area_campus }}</td>
-                    <td>{{ i.id_planta.id_planta }}</td>
-                    <td>{{ i.estado }}</td>
-                    <td>{{ i.id_usuario.nombre_completo }}</td>
-                    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
-                        <td>
-                            <a href="{% url 'editar_incidencia' i.id_incidencia %}" class="btn btn-primary">Editar</a>
-                            <a href="{% url 'eliminar_incidencia' i.id_incidencia %}" class="btn btn-primary">Eliminar</a>
-                        </td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-        </tbody>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Fecha de Reporte</th>
+          <th>Área</th>
+          <th>Planta Afectada</th>
+          <th>Estado</th>
+          <th>Reportado por</th>
+          {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+            <th>Acciones</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in incidencia %}
+          <tr>
+            <td>{{ i.id_incidencia }}</td>
+            <td>{{ i.titulo }}</td>
+            <td>{{ i.descripcion|truncatewords:10 }}</td>
+            <td>{{ i.fecha_reporte }}</td>
+            <td>{{ i.area_campus }}</td>
+            <td>{{ i.id_planta.nombre_comun|default:"N/A" }}</td>
+            <td>{{ i.estado }}</td>
+            <td>{{ i.id_usuario.nombre_completo }}</td>
+            
+            {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
+              <td class="table-actions">
+                <a href="{% url 'editar_incidencia' i.id_incidencia %}" class="btn btn-primary btn-sm">Editar</a>
+                
+                <button type="button" class="btn btn-danger btn-sm"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#confirmDeleteModal"
+                        data-delete-url="{% url 'eliminar_incidencia' i.id_incidencia %}"
+                        data-user-name="{{ i.titulo }}">
+                  Eliminar
+                </button>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9" class="text-center p-4">No hay incidentes reportados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
     
-    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
-        <br><h2>Crear incidencia</h2>
-        <a href="{% url 'crear_incidencia' %}" class="btn btn-primary">Crear</a>
-    {% endif %}
+  </div>
+</div>
 
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirm-delete">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este incidente?</p>
+        <p><strong id="userNameInModal"></strong></p>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteForm" method="post" action="">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+  <script src="{% static 'js/modal_confirm.js' %}"></script>
 {% endblock %}
