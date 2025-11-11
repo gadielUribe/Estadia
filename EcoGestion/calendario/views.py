@@ -75,7 +75,10 @@ def calendario_view(request):
 
 @login_required
 def tareas_feed(request):
-    ensure_future_tasks()
+    # Importante: no autogenerar tareas aquí para evitar que reaparezcan
+    # después de que el usuario las elimine manualmente desde el CRUD.
+    # La generación automática se hace al crear/editar (opcional) o
+    # mediante una tarea programada/management command si se desea.
 
     start_str = request.GET.get("start")
     end_str = request.GET.get("end")
@@ -99,7 +102,13 @@ def tareas_feed(request):
         qs = qs.filter(fecha_programada__lte=end)
 
     events = []
+    now = timezone.now()
     for t in qs:
+        responsable = None
+        try:
+            responsable = t.usuario_responsable.nombre_completo if t.usuario_responsable else None
+        except Exception:
+            responsable = None
         events.append(
             {
                 "id": t.id,
@@ -113,6 +122,8 @@ def tareas_feed(request):
                     "estado": t.estado,
                     "planta_id": t.planta.id_planta,
                     "planta_nombre": t.planta.nombre_comun,
+                    "vencida": (t.estado == TareaMantenimiento.ESTADO_PENDIENTE and t.fecha_programada < now),
+                    "responsable": responsable,
                     "puedeEditar": role in {"administrador", "gestor"},
                     "puedeMarcar": role in {"administrador", "gestor", "mantenimiento"},
                 },
@@ -171,4 +182,3 @@ def tarea_actualizar(request, tarea_id: int):
     if changed:
         tarea.save()
     return JsonResponse({"ok": True})
-

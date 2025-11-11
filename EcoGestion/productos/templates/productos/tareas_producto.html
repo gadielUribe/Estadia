@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Tareas con {{ producto.nombre }}{% endblock %}
+{% block content %}
+<h3>Tareas que usan el producto: {{ producto.nombre }}</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Planta</th>
+      <th>Tipo</th>
+      <th>Fecha</th>
+      <th>Estado</th>
+      <th>Responsable</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in tareas %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.planta.nombre_comun }}</td>
+        <td>{{ t.get_tipo_display }}</td>
+        <td>{{ t.fecha_programada|date:'Y-m-d H:i' }}</td>
+        <td>{{ t.get_estado_display }}</td>
+        <td>{{ t.usuario_responsable|default:'-' }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Sin tareas asignadas</td></tr>
+    {% endfor %}
+  </tbody>
+  </table>
+{% endblock %}
+

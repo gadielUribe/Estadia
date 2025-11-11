@@ -5,6 +5,7 @@ from django.db import transaction
 
 from .models import Producto, AsignacionProducto
 from .forms import ProductoForm, StockUpdateForm, AsignacionProductoForm
+from mantenimiento.models import TareaMantenimiento
 
 
 def _is_admin(user):
@@ -138,3 +139,22 @@ def asignacion_delete(request, pk):
     # Si la petición es GET, ya no mostramos una página.
     # Simplemente redirigimos a la lista, porque el modal se encarga de la confirmación.
     return redirect('productos:asignacion_list')
+
+
+@login_required
+def producto_tareas(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    tareas = (
+        TareaMantenimiento.objects.select_related('planta', 'usuario_responsable')
+        .filter(producto=producto)
+        .order_by('-fecha_programada')
+    )
+    return render(
+        request,
+        'productos/tareas_producto.html',
+        {
+            'producto': producto,
+            'tareas': tareas,
+            'section': 'productos',
+        },
+    )

@@ -7,15 +7,23 @@ from .models import TareaMantenimiento
 
 
 class TareaForm(forms.ModelForm):
-    generar_automaticas = forms.BooleanField(
+    repetir = forms.BooleanField(
         required=False,
-        label="Generar automáticamente futuras tareas según periodicidad de la planta",
+        label="Programar repetición automática",
+        help_text="Si se marca, se crearán más tareas con la misma información.",
     )
-    horizonte_dias = forms.IntegerField(
+    cada_dias = forms.IntegerField(
         required=False,
         min_value=1,
-        initial=60,
-        label="Horizonte (días) para autogenerar",
+        label="Cada cuántos días",
+        help_text="Intervalo entre cada tarea generada",
+    )
+    repeticiones = forms.IntegerField(
+        required=False,
+        min_value=1,
+        initial=3,
+        label="Cuántas veces generar",
+        help_text="Número de tareas adicionales a crear",
     )
 
     class Meta:

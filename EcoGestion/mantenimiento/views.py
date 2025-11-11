@@ -75,23 +75,23 @@ def inicio(request):
     return render(request, "mantenimiento/inicio.html", {"role": role})
 
 
-# ------- CRUD sencillo por tipo ---------
+# ------- CRUD unificado ---------
 
 @login_required
-def tareas_list_tipo(request, tipo: str):
-    if tipo not in {t[0] for t in TareaMantenimiento.TIPOS}:
-        return HttpResponseBadRequest("Tipo inválido")
-    qs = TareaMantenimiento.objects.select_related("planta", "usuario_responsable").filter(tipo=tipo)
+def tareas_list(request):
+    qs = TareaMantenimiento.objects.select_related("planta", "usuario_responsable").all()
     role = _user_role(request.user)
     if role == "mantenimiento":
         qs = qs.filter(usuario_responsable=request.user)
-    return render(request, "mantenimiento/tareas_list.html", {"tareas": qs, "tipo": tipo})
+    # filtros simples opcionales
+    tipo = request.GET.get("tipo")
+    if tipo in {t[0] for t in TareaMantenimiento.TIPOS}:
+        qs = qs.filter(tipo=tipo)
+    return render(request, "mantenimiento/tareas_list.html", {"tareas": qs, "tipo": tipo or "todas"})
 
 
 @login_required
-def tarea_create_tipo(request, tipo: str):
-    if tipo not in {t[0] for t in TareaMantenimiento.TIPOS}:
-        return HttpResponseBadRequest("Tipo inválido")
+def tarea_create(request):
     role = _user_role(request.user)
     if role not in {"administrador", "gestor"}:
         return HttpResponseForbidden("Sin permisos")
@@ -100,18 +100,22 @@ def tarea_create_tipo(request, tipo: str):
         form = TareaForm(request.POST)
         if form.is_valid():
             tarea = form.save(commit=False)
-            tarea.tipo = tipo
             tarea.save()
-
-            # autogeneración según periodicidad, si aplica
-            if form.cleaned_data.get("generar_automaticas"):
-                horizonte = form.cleaned_data.get("horizonte_dias") or _horizon_days()
-                _generar_siguientes(tarea, horizonte)
+            if form.cleaned_data.get("repetir") and form.cleaned_data.get("cada_dias") and form.cleaned_data.get("repeticiones"):
+                _generar_repetidas(
+                    tarea,
+                    int(form.cleaned_data["cada_dias"]),
+                    int(form.cleaned_data["repeticiones"]),
+                )
             messages.success(request, "Tarea creada")
-            return redirect(reverse("mantenimiento:tareas_list_tipo", args=[tipo]))
+            return redirect(reverse("mantenimiento:tareas_list"))
     else:
-        form = TareaForm(initial={"tipo": tipo})
-    return render(request, "mantenimiento/tarea_form.html", {"form": form, "tipo": tipo, "accion": "Crear"})
+        fecha = request.GET.get("fecha")
+        initial = {}
+        if fecha:
+            initial["fecha_programada"] = f"{fecha}T09:00"
+        form = TareaForm(initial=initial)
+    return render(request, "mantenimiento/tarea_form.html", {"form": form, "tipo": "tarea", "accion": "Crear"})
 
 
 @login_required
@@ -127,11 +131,14 @@ def tarea_update(request, pk: int):
         if form.is_valid():
             tarea = form.save()
             # opcionalmente generar siguientes desde nueva fecha
-            if form.cleaned_data.get("generar_automaticas"):
-                horizonte = form.cleaned_data.get("horizonte_dias") or _horizon_days()
-                _generar_siguientes(tarea, horizonte)
+            if form.cleaned_data.get("repetir") and form.cleaned_data.get("cada_dias") and form.cleaned_data.get("repeticiones"):
+                _generar_repetidas(
+                    tarea,
+                    int(form.cleaned_data["cada_dias"]),
+                    int(form.cleaned_data["repeticiones"]),
+                )
             messages.success(request, "Tarea actualizada")
-            return redirect(reverse("mantenimiento:tareas_list_tipo", args=[tarea.tipo]))
+            return redirect(reverse("mantenimiento:tareas_list"))
     else:
         form = TareaForm(instance=tarea)
     return render(request, "mantenimiento/tarea_form.html", {"form": form, "tipo": tarea.tipo, "accion": "Editar"})
@@ -146,24 +153,18 @@ def tarea_delete(request, pk: int):
     if request.method == "POST":
         tipo_val = tarea.tipo
         tarea.delete()
+        # Respuesta JSON cuando sea una petición AJAX (fetch desde listado)
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in (request.headers.get("Accept", "")):
+            return JsonResponse({"ok": True})
         messages.success(request, "Tarea eliminada")
-        return redirect(reverse("mantenimiento:tareas_list_tipo", args=[tipo_val]))
+        return redirect(reverse("mantenimiento:tareas_list"))
     return render(request, "mantenimiento/tarea_confirm_delete.html", {"tarea": tarea})
 
 
-def _generar_siguientes(tarea: TareaMantenimiento, horizonte_dias: int):
-    per_map = {
-        TareaMantenimiento.TIPO_RIEGO: tarea.planta.periodicidad_riego,
-        TareaMantenimiento.TIPO_PODA: tarea.planta.periodicidad_poda,
-        TareaMantenimiento.TIPO_FUMIGACION: tarea.planta.periodicidad_fumigacion,
-    }
-    cada = int(per_map.get(tarea.tipo) or 0)
-    if cada <= 0:
-        return
+def _generar_repetidas(tarea: TareaMantenimiento, cada_dias: int, repeticiones: int):
     start = tarea.fecha_programada
-    horizon = start + timedelta(days=horizonte_dias)
-    cur = start + timedelta(days=cada)
-    while cur <= horizon:
+    for i in range(1, repeticiones + 1):
+        cur = start + timedelta(days=cada_dias * i)
         TareaMantenimiento.objects.get_or_create(
             planta=tarea.planta,
             tipo=tarea.tipo,
@@ -173,6 +174,6 @@ def _generar_siguientes(tarea: TareaMantenimiento, horizonte_dias: int):
                 "herramienta": getattr(tarea, "herramienta", None),
                 "producto": getattr(tarea, "producto", None),
                 "observaciones": tarea.observaciones,
+                "estado": TareaMantenimiento.ESTADO_PENDIENTE,
             },
         )
-        cur = cur + timedelta(days=cada)

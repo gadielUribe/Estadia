@@ -32,7 +32,7 @@
       <span class="card-label">Gestión de especies</span>
     </a>
 
-    <a href="#" class="dashboard-card">
+    <a href="{% url 'mantenimiento:inicio' %}" class="dashboard-card">
       <div class="card-icon-container card-color-3">
         <img src="{% static 'img/maintenance.png' %}" alt="">
       </div>
@@ -92,12 +92,18 @@
       </div>
       <span class="card-label">Productos</span>
     </a>
-    {% elif request.user.rol == 'mantenimiento' %}
-    <a href="#" class="dashboard-card">
+    <a href="{% url 'mantenimiento:inicio' %}" class="dashboard-card">
       <div class="card-icon-container card-color-3">
         <img src="{% static 'img/maintenance.png' %}" alt="">
       </div>
-      <span class="card-label">Ver tareas asignadas</span>
+      <span class="card-label">Tareas de mantenimiento</span>
+    </a>
+    {% elif request.user.rol == 'mantenimiento' %}
+    <a href="{% url 'mantenimiento:inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-3">
+        <img src="{% static 'img/maintenance.png' %}" alt="">
+      </div>
+      <span class="card-label">Tareas de mantenimiento</span>
     </a>
     {% endif %}
 

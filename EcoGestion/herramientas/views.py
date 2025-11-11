@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Herramienta, AsignacionHerramienta
 from .forms import HerramientaForm, AsignacionHerramientaForm
+from mantenimiento.models import TareaMantenimiento
 
 
 def _is_admin(user):
@@ -89,3 +90,22 @@ def asignacion_delete(request, pk):
         
     # Si se accede por GET, simplemente redirige
     return redirect('herramientas:herramienta_list')
+
+
+@login_required
+def herramienta_tareas(request, pk):
+    herramienta = get_object_or_404(Herramienta, pk=pk)
+    tareas = (
+        TareaMantenimiento.objects.select_related('planta', 'usuario_responsable')
+        .filter(herramienta=herramienta)
+        .order_by('-fecha_programada')
+    )
+    return render(
+        request,
+        'herramientas/tareas_herramienta.html',
+        {
+            'herramienta': herramienta,
+            'tareas': tareas,
+            'section': 'herramientas',
+        },
+    )

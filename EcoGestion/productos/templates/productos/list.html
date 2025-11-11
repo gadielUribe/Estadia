@@ -15,7 +15,6 @@
 <div class="list-header">
   <h2>Productos</h2>
   <div class="list-header-actions">
-    <a href="{% url 'productos:asignacion_list' %}" class="btn-secondary-pill">Asignaciones</a>
     {% if request.user.rol in 'administrador gestor' %}
     <a href="{% url 'productos:producto_create' %}" class="btn-new-item">Nuevo producto</a>
     {% endif %}

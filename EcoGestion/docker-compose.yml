@@ -51,6 +51,32 @@ services:
       redis:
         condition: service_started
 
+  scheduler:
+    build: .
+    command: >
+      sh -c "python manage.py migrate --noinput && \
+             while true; do \
+               python manage.py enviar_recordatorios || true; \
+               sleep 900; \
+             done"
+    volumes:
+      - .:/app
+    environment:
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,172.23.50.37,192.168.1.70
+      DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost,http://127.0.0.1,http://172.23.50.37:8000,http://192.168.1.70:8000
+      MYSQL_DATABASE: "EcoGest"
+      MYSQL_USER: "EcoUser"
+      MYSQL_PASSWORD: "User_pass"
+      MYSQL_HOST: "db"
+      MYSQL_PORT: "3306"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
 volumes:
   mysql_data:
   media_data:

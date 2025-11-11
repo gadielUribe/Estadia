@@ -40,12 +40,21 @@
     </div>
 
     <hr/>
-    <label>{{ form.generar_automaticas }} {{ form.generar_automaticas.label }}</label>
-    <label>{{ form.horizonte_dias.label }} {{ form.horizonte_dias }}</label>
+    <label>{{ form.repetir }} {{ form.repetir.label }}</label>
+    <div class="row">
+      <div>
+        <label>{{ form.cada_dias.label }} {{ form.cada_dias }}</label>
+        <small>{{ form.cada_dias.help_text }}</small>
+      </div>
+      <div>
+        <label>{{ form.repeticiones.label }} {{ form.repeticiones }}</label>
+        <small>{{ form.repeticiones.help_text }}</small>
+      </div>
+    </div>
 
     <div style="margin-top:12px">
       <button class="btn btn-primary" type="submit">Guardar</button>
-      <a class="btn" href="{% url 'mantenimiento:tareas_list_tipo' tipo %}">Cancelar</a>
+      <a class="btn" href="{% url 'mantenimiento:tareas_list' %}">Cancelar</a>
     </div>
   </form>
 </body>

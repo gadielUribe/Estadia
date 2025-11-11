@@ -14,8 +14,7 @@
   <form method="post">
     {% csrf_token %}
     <button class="btn btn-danger" type="submit">Eliminar</button>
-    <a class="btn" href="{% url 'mantenimiento:tareas_list_tipo' tarea.tipo %}">Cancelar</a>
+    <a class="btn" href="{% url 'mantenimiento:tareas_list' %}">Cancelar</a>
   </form>
 </body>
 </html>
-

@@ -17,6 +17,19 @@
 <body>
     <div id="calendar"></div>
 
+    <div id="day-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="day-title">Tareas del día</h5>
+          <button id="day-close" class="btn">×</button>
+        </div>
+        <div id="day-body"></div>
+        <div class="modal-footer">
+          <a id="add-tarea" class="btn btn-primary" href="#">Añadir tarea</a>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <script>
         const USER_ROLE = "{{ user_role }}";
@@ -40,6 +53,23 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
+            function pad(n){ return (n<10?'0':'')+n }
+            function ymdLocal(d){
+              try{ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }catch(e){ return '' }
+            }
+            function hhmm(d){
+              try{ return pad(d.getHours())+":"+pad(d.getMinutes()); }catch(e){return ''}
+            }
+
+            const modal = document.getElementById('day-modal');
+            const modalClose = document.getElementById('day-close');
+            const modalContent = modal.querySelector('.modal-content');
+            // Cerrar con botón o clic en fondo oscuro
+            modalClose.addEventListener('click', ()=> { modal.classList.add('hidden'); document.body.style.overflow='';});
+            modal.addEventListener('click', ()=> { modal.classList.add('hidden'); document.body.style.overflow='';});
+            // Evitar que clicks dentro del cuadro se propaguen al fondo/calendario
+            modalContent.addEventListener('click', (e)=> { e.stopPropagation(); });
+
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
@@ -57,59 +87,122 @@
                         method: 'GET'
                     }
                 ],
-                eventClick: async function(info) {
-                    const e = info.event;
-                    const props = e.extendedProps || {};
-                    const opciones = [];
-                    if (props.puedeMarcar) opciones.push('1. Marcar como realizada');
-                    if (props.puedeEditar) opciones.push('2. Editar fecha/tipo');
-                    if (opciones.length === 0) return;
+                dateClick: function(info){
+                    const dateStr = info.dateStr; // YYYY-MM-DD
+                    const events = calendar.getEvents().filter(ev => ev.start && ymdLocal(ev.start) === dateStr);
+                    const body = document.getElementById('day-body');
+                    body.innerHTML = '';
+                    const title = document.getElementById('day-title');
+                    title.textContent = `Tareas del ${dateStr}`;
 
-                    const sel = prompt('Elige una opción:\n' + opciones.join('\n'));
-                    if (!sel) return;
+                    if (events.length === 0){
+                        body.innerHTML = '<p>No hay tareas programadas.</p>';
+                    } else {
+                        const ul = document.createElement('ul');
+                        events.forEach(ev => {
+                            const li = document.createElement('li');
+                            const p = ev.extendedProps || {};
+                            const resp = p.responsable ? ` - Encargado: ${p.responsable}` : '';
+                            li.textContent = `${hhmm(ev.start)} [${p.tipo}] ${p.planta_nombre || ev.title}${resp}`;
+                            if (p.estado === 'realizada') {
+                              li.classList.add('is-done');
+                            } else if (p.vencida) {
+                              li.classList.add('is-overdue');
+                            }
+                            if (p.estado === 'realizada'){
+                                const done = document.createElement('span');
+                                done.textContent = 'Realizada';
+                                done.className = 'badge-done';
+                                done.style.marginLeft = '8px';
+                                li.appendChild(done);
+                            } else if (p.puedeMarcar){
+                                const btn = document.createElement('button');
+                                btn.textContent = 'Marcar realizada';
+                                btn.className = 'btn';
+                                btn.style.marginLeft = '8px';
 
-                    if (sel.startsWith('1') && props.puedeMarcar) {
-                        const obs = prompt('Observaciones (opcional):');
-                        const res = await fetch(`{% url 'calendario:tarea_done' 0 %}`.replace('/0/', '/' + e.id + '/'), {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRFToken': getCookie('csrftoken')
-                            },
-                            body: new URLSearchParams({observaciones: obs || ''})
+                                const formDiv = document.createElement('div');
+                                formDiv.className = 'inline-form hidden';
+                                formDiv.innerHTML = `
+                                  <div style="margin-top:8px">
+                                    <label style="display:block;margin-bottom:4px">Observaciones (opcional):</label>
+                                    <textarea rows="2" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:4px"></textarea>
+                                    <div style="margin-top:6px">
+                                      <button class="btn btn-primary" type="button">Confirmar</button>
+                                      <button class="btn" type="button">Cancelar</button>
+                                    </div>
+                                  </div>`;
+
+                                btn.addEventListener('click', ()=>{
+                                  formDiv.classList.remove('hidden');
+                                  const ta = formDiv.querySelector('textarea');
+                                  if (ta) ta.focus();
+                                });
+
+                                const [confirmBtn, cancelBtn] = formDiv.querySelectorAll('button');
+                                cancelBtn.addEventListener('click', ()=>{
+                                  formDiv.classList.add('hidden');
+                                });
+                                confirmBtn.addEventListener('click', async ()=>{
+                                  const obs = formDiv.querySelector('textarea').value || '';
+                                  const res = await fetch(`{% url 'calendario:tarea_done' 0 %}`.replace('/0/', '/' + ev.id + '/'), {
+                                      method: 'POST', headers: {'X-CSRFToken': getCookie('csrftoken')},
+                                      body: new URLSearchParams({observaciones: obs})
+                                  });
+                                  if (res.ok){
+                                      // feedback visual rápido y marcar como realizada
+                                      li.classList.remove('is-overdue');
+                                      li.classList.add('is-done');
+                                      if (btn) btn.remove();
+                                      formDiv.remove();
+                                      const done = document.createElement('span');
+                                      done.textContent = 'Realizada';
+                                      done.className = 'badge-done';
+                                      done.style.marginLeft = '8px';
+                                      li.appendChild(done);
+                                      // refrescar eventos para próximos clics
+                                      calendar.refetchEvents();
+                                  } else {
+                                      alert('No se pudo marcar');
+                                  }
+                                });
+
+                                li.appendChild(btn);
+                                li.appendChild(formDiv);
+                            }
+                            ul.appendChild(li);
                         });
-                        if (res.ok) {
-                            e.setProp('backgroundColor', '#95a5a6');
-                            alert('Tarea marcada como realizada');
-                        } else {
-                            alert('No se pudo marcar la tarea');
-                        }
-                    } else if (sel.startsWith('2') && props.puedeEditar) {
-                        const nuevaFecha = prompt('Nueva fecha (YYYY-MM-DD):', e.startStr.slice(0, 10));
-                        if (!nuevaFecha) return;
-                        const nuevoTipo = prompt('Tipo (riego, poda, fumigacion) - deja vacío para conservar:', props.tipo || '');
-                        const res2 = await fetch(`{% url 'calendario:tarea_update' 0 %}`.replace('/0/', '/' + e.id + '/'), {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRFToken': getCookie('csrftoken')
-                            },
-                            body: new URLSearchParams({
-                                fecha_programada: nuevaFecha + 'T09:00:00',
-                                tipo: (nuevoTipo || '').trim()
-                            })
-                        });
-                        if (res2.ok) {
-                            e.setStart(nuevaFecha + 'T09:00:00');
-                            if (nuevoTipo) e.setProp('title', `[${nuevoTipo}] ` + (props.planta_nombre || e.title));
-                            alert('Tarea actualizada');
-                        } else {
-                            alert('No se pudo actualizar la tarea');
-                        }
+                        body.appendChild(ul);
                     }
+
+                    // enlaces para añadir tareas en esa fecha
+                    document.getElementById('add-tarea').href = `{% url 'mantenimiento:tarea_create' %}?fecha=${dateStr}`;
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow='hidden';
+                },
+                // Deshabilitado: las acciones se hacen desde el modal de día
+                eventClick: function(info) {
+                    if (info && info.jsEvent) info.jsEvent.preventDefault();
+                    return false;
                 }
             });
             calendar.render();
         });
     </script>
+    <style>
+      .modal.hidden{ display:none; }
+      .modal{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index: 9999; }
+      .modal-content{ background:#fff; width:90%; max-width:640px; border-radius:8px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.3); pointer-events:auto; }
+      .modal-header, .modal-footer{ padding:10px 14px; background:#f7f7f7; display:flex; align-items:center; gap:8px; justify-content:space-between}
+      .modal-header h5{ margin:0; font-size:16px}
+      .modal-footer a{ margin-right:6px }
+      #day-body{ padding:12px 14px }
+      #day-body ul{ margin:0; padding-left:18px }
+      /* asegurar que el fondo no reciba clicks cuando el modal está visible */
+      .modal:not(.hidden){ pointer-events:auto; }
+      .badge-done{ display:inline-block; background:#95a5a6; color:#fff; padding:2px 6px; border-radius:10px; font-size:12px }
+      .is-done{ color:#7f8c8d; }
+      .is-overdue{ color:#999; text-decoration: line-through; }
+    </style>
 </body>
 </html>
-

@@ -21,8 +21,8 @@ class plantaArbol(models.Model):
     class Meta:
         db_table = 'PlantaArbol'
 
-    # Representación en cadena del objetoz
-    def _str_(self):
+    # Representación en cadena del objeto
+    def __str__(self):
         texto = "{0} - {1}"
         return texto.format(self.id_planta, self.nombre_cientifico)
 

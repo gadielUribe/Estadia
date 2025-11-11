@@ -2,11 +2,9 @@
 {% block title %}Mantenimiento - Tareas{% endblock %}
 {% block content %}
 <h2>Tareas de mantenimiento</h2>
-<p>Elige el tipo de tarea para gestionar (listar, crear, editar, eliminar):</p>
+<p>Gestiona todas las tareas desde un solo lugar.</p>
 <ul>
-  <li><a class="btn btn-link" href="{% url 'mantenimiento:tareas_list_tipo' 'riego' %}">Riego</a></li>
-  <li><a class="btn btn-link" href="{% url 'mantenimiento:tareas_list_tipo' 'poda' %}">Poda</a></li>
-  <li><a class="btn btn-link" href="{% url 'mantenimiento:tareas_list_tipo' 'fumigacion' %}">Fumigación</a></li>
+  <li><a class="btn btn-link" href="{% url 'mantenimiento:tareas_list' %}">Ver listado de tareas</a></li>
+  <li><a class="btn btn-link" href="{% url 'mantenimiento:tarea_create' %}">Registrar nueva tarea</a></li>
   <li><a class="btn btn-link" href="{% url 'calendario:calendario' %}">Ver calendario (app Calendario)</a></li>
 {% endblock %}
-

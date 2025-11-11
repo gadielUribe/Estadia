@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from datetime import timedelta
 
 
 class TareaMantenimiento(models.Model):
@@ -31,6 +32,7 @@ class TareaMantenimiento(models.Model):
     producto = models.ForeignKey("productos.Producto", on_delete=models.SET_NULL, null=True, blank=True)
     usuario_responsable = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="tareas_mantenimiento")
     modificado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="tareas_mantenimiento_modificadas")
+    recordatorio_24h_enviado = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
@@ -49,3 +51,16 @@ class TareaMantenimiento(models.Model):
         if by_user is not None:
             self.modificado_por = by_user
         self.save(update_fields=["estado", "fecha_realizacion", "observaciones", "modificado_por", "actualizado_en"])
+
+    def save(self, *args, **kwargs):
+        # Si se reprograma la tarea con suficiente anticipación, rearmar recordatorio
+        try:
+            if self.pk and self.estado == self.ESTADO_PENDIENTE:
+                prev = TareaMantenimiento.objects.get(pk=self.pk)
+                if prev.fecha_programada != self.fecha_programada:
+                    now = timezone.now()
+                    if self.fecha_programada and self.fecha_programada > now + timedelta(hours=24):
+                        self.recordatorio_24h_enviado = False
+        except TareaMantenimiento.DoesNotExist:
+            pass
+        super().save(*args, **kwargs)
