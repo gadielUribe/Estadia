@@ -1,148 +1,98 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>Tareas {{ tipo|title }}</title>
-  <style>
-    body{font-family:system-ui,Arial;padding:20px}
-    table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid #ddd;padding:6px}
-    th{background:#f5f5f5;text-align:left}
-    .actions a{margin-right:6px}
-    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .btn{padding:6px 10px;border:1px solid #ccc;background:#f8f8f8;cursor:pointer;border-radius:4px;text-decoration:none;color:#000}
-    .btn-primary{background:#1976d2;color:#fff;border-color:#1976d2}
-    /* Modal simple */
-    .modal.hidden{ display:none; }
-    .modal{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index: 9999; }
-    .modal-content{ background:#fff; width:90%; max-width:520px; border-radius:8px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.3); }
-    .modal-header,.modal-footer{ padding:10px 14px; background:#f7f7f7; display:flex; align-items:center; justify-content:space-between }
-    .modal-body{ padding:12px 14px }
-    .btn-danger{background:#c0392b;color:#fff;border-color:#c0392b}
-  </style>
-  </head>
-<body>
-  <div class="top">
-    <h2>Listado de tareas</h2>
-    <div>
-      <a class="btn" href="{% url 'calendario:calendario' %}">Ver calendario</a>
-      <a class="btn btn-primary" href="{% url 'mantenimiento:tarea_create' %}">Nueva tarea</a>
-    </div>
+
+{% block title %}Listado de Tareas{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/modal_confirm.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="list-header">
+  <h2>Listado de tareas</h2>
+  <div class="list-header-actions">
+    <a href="{% url 'calendario:calendario' %}" class="btn-secondary-pill">Ver calendario</a>
+    <a href="{% url 'mantenimiento:tarea_create' %}" class="btn-new-item">Nueva tarea</a>
   </div>
+</div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Planta</th>
-        <th>Tipo</th>
-        <th>Fecha programada</th>
-        <th>Estado</th>
-        <th>Responsable</th>
-        <th>Herramienta</th>
-        <th>Producto</th>
-        <th>Observaciones</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in tareas %}
-      <tr id="row-{{ t.id }}">
-        <td>{{ t.id }}</td>
-        <td>{{ t.planta.nombre_comun }}</td>
-        <td>{{ t.get_tipo_display }}</td>
-        <td>{{ t.fecha_programada|date:'Y-m-d H:i' }}</td>
-        <td>{{ t.get_estado_display }}</td>
-        <td>{{ t.usuario_responsable|default:'-' }}</td>
-        <td>{{ t.herramienta|default:'-' }}</td>
-        <td>{{ t.producto|default:'-' }}</td>
-        <td>{{ t.observaciones|default:'-' }}</td>
-        <td class="actions">
-          <a href="{% url 'mantenimiento:tarea_update_form' t.id %}">Editar</a>
-          <a href="#" class="btn-del" data-id="{{ t.id }}" data-descr="{{ t.get_tipo_display }} - {{ t.planta.nombre_comun }} - {{ t.fecha_programada|date:'Y-m-d H:i' }}">Eliminar</a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="9">No hay tareas registradas</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Planta</th>
+          <th>Tipo</th>
+          <th>Fecha programada</th>
+          <th>Estado</th>
+          <th>Responsable</th>
+          <th>Herramienta</th>
+          <th>Producto</th>
+          <th>Observaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tareas %}
+        <tr>
+          <td>{{ t.id }}</td>
+          <td>{{ t.planta.nombre_comun }}</td>
+          <td>{{ t.get_tipo_display }}</td>
+          <td>{{ t.fecha_programada|date:'Y-m-d H:i' }}</td>
+          <td>{{ t.get_estado_display }}</td>
+          <td>{{ t.usuario_responsable|default:'-' }}</td>
+          <td>{{ t.herramienta|default:'-' }}</td>
+          <td>{{ t.producto|default:'-' }}</td>
+          <td>{{ t.observaciones|truncatewords:8|default:'-' }}</td>
+          <td class="table-actions"> <a class="btn btn-sm btn-primary" href="{% url 'mantenimiento:tarea_update_form' t.id %}">Editar</a>
+            
+            <button type="button" class="btn btn-sm btn-danger"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#confirmDeleteModal"
+                    data-delete-url="{% url 'mantenimiento:tarea_delete' t.id %}"
+                    data-user-name="{{ t.get_tipo_display }} - {{ t.planta.nombre_comun }}">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="10" class="text-center p-4">No hay tareas registradas</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 
-  <!-- Modal confirmación eliminación -->
-  <div id="del-modal" class="modal hidden">
-    <div class="modal-content">
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirm-delete">
       <div class="modal-header">
-        <strong>Eliminar tarea</strong>
-        <button id="del-close" class="btn">×</button>
+        <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p id="del-text">¿Eliminar la tarea seleccionada?</p>
+        <p>¿Estás seguro de que deseas eliminar esta tarea?</p>
+        <p><strong id="userNameInModal"></strong></p>
       </div>
       <div class="modal-footer">
-        <button id="del-confirm" class="btn btn-danger">Eliminar</button>
-        <button id="del-cancel" class="btn">Cancelar</button>
+        <form id="deleteForm" method="post" action="">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
       </div>
     </div>
   </div>
+</div>
+{% endblock %}
 
-  <script>
-    function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
-        }
-      }
-      return cookieValue;
-    }
 
-    const modal = document.getElementById('del-modal');
-    const closeBtn = document.getElementById('del-close');
-    const cancelBtn = document.getElementById('del-cancel');
-    const confirmBtn = document.getElementById('del-confirm');
-    const text = document.getElementById('del-text');
-    let currentId = null;
-
-    function openModal(id, descr) {
-      currentId = id;
-      text.textContent = `¿Eliminar la tarea: ${descr}?`;
-      modal.classList.remove('hidden');
-      document.body.style.overflow='hidden';
-    }
-    function closeModal(){
-      modal.classList.add('hidden');
-      document.body.style.overflow='';
-      currentId = null;
-    }
-
-    document.querySelectorAll('.btn-del').forEach(a => {
-      a.addEventListener('click', (e)=>{
-        e.preventDefault();
-        openModal(a.dataset.id, a.dataset.descr);
-      });
-    });
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
-    confirmBtn.addEventListener('click', async ()=>{
-      if (!currentId) return;
-      const url = `{% url 'mantenimiento:tarea_delete' 0 %}`.replace('/0/', '/' + currentId + '/');
-      const res = await fetch(url, { method:'POST', headers: { 'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With':'XMLHttpRequest' } });
-      if (res.ok){
-        const row = document.getElementById('row-' + currentId);
-        if (row) row.remove();
-        closeModal();
-      } else {
-        alert('No se pudo eliminar la tarea');
-        closeModal();
-      }
-    });
-  </script>
-</body>
-</html>
+{% block extra_js %}
+  <script src="{% static 'js/modal_confirm.js' %}"></script>
+{% endblock %}

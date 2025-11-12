@@ -1,0 +1,157 @@
+/* 1. Contenedor de la "Tarjeta" del Calendario */
+.calendar-wrapper {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  padding: 24px;
+}
+
+/* 2. Estilo de los Botones de FullCalendar (Prev, Next, Today, etc.) */
+.fc .fc-button {
+  background-color: #f3f4f6; /* Estilo de píldora gris */
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px; /* Píldora */
+  padding: 6px 15px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  box-shadow: none !important;
+  transition: all 0.2s ease;
+}
+.fc .fc-button:hover {
+  background-color: #e5e7eb;
+}
+
+/* Botón "Today" (Activo) */
+.fc .fc-button-primary {
+  background-color: #6a67c8; /* Color primario del tema */
+  color: white;
+  border-color: #6a67c8;
+}
+.fc .fc-button-primary:hover {
+  background-color: #5552a0; /* Tono más oscuro */
+}
+
+/* 3. Estilo del Modal Emergente (para ver tareas del día) */
+.calendar-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.calendar-modal.hidden {
+  display: none;
+}
+.calendar-modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 600px; /* Ancho del modal */
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+/* 4. Secciones del Modal (reemplaza .modal-header, etc.) */
+.calendar-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.calendar-modal-header h5 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.calendar-modal-body {
+  padding: 24px;
+  max-height: 60vh; /* Scroll si hay muchas tareas */
+  overflow-y: auto;
+}
+.calendar-modal-footer {
+  padding: 16px 24px;
+  background: #f9f9f9;
+  text-align: right;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Botón de cerrar (X) */
+.modal-close-btn {
+  background: #eee;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #777;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-close-btn:hover {
+  background: #ddd;
+}
+
+/* 5. Lista de Tareas dentro del Modal */
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.task-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+  line-height: 1.5;
+}
+.task-item:last-child {
+  border-bottom: none;
+}
+
+/* 6. Estilos de Tareas (Hecha, Vencida) */
+.task-item.is-done {
+  color: #888;
+  text-decoration: line-through;
+}
+.task-item.is-overdue {
+  color: #dc3545; /* Rojo */
+  font-weight: 500;
+}
+/* Insignia de "Realizada" (como en salud.css) */
+.badge-task-done {
+  display: inline-block;
+  background-color: #6c757d; /* Gris */
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-left: 8px;
+}
+
+/* 7. Formulario para "Marcar como realizada" */
+.task-mark-form {
+  margin-top: 15px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+.task-mark-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-sizing: border-box; /* Importante */
+}
+.task-mark-form-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}

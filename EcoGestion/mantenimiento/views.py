@@ -7,7 +7,6 @@ from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbid
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
-from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import redirect
 
@@ -107,7 +106,6 @@ def tarea_create(request):
                     int(form.cleaned_data["cada_dias"]),
                     int(form.cleaned_data["repeticiones"]),
                 )
-            messages.success(request, "Tarea creada")
             return redirect(reverse("mantenimiento:tareas_list"))
     else:
         fecha = request.GET.get("fecha")
@@ -137,7 +135,6 @@ def tarea_update(request, pk: int):
                     int(form.cleaned_data["cada_dias"]),
                     int(form.cleaned_data["repeticiones"]),
                 )
-            messages.success(request, "Tarea actualizada")
             return redirect(reverse("mantenimiento:tareas_list"))
     else:
         form = TareaForm(instance=tarea)
@@ -156,9 +153,8 @@ def tarea_delete(request, pk: int):
         # Respuesta JSON cuando sea una petición AJAX (fetch desde listado)
         if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in (request.headers.get("Accept", "")):
             return JsonResponse({"ok": True})
-        messages.success(request, "Tarea eliminada")
         return redirect(reverse("mantenimiento:tareas_list"))
-    return render(request, "mantenimiento/tarea_confirm_delete.html", {"tarea": tarea})
+    return redirect(reverse("mantenimiento:tareas_list"))
 
 
 def _generar_repetidas(tarea: TareaMantenimiento, cada_dias: int, repeticiones: int):

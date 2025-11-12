@@ -1,10 +1,44 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Mantenimiento - Tareas{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h2>Tareas de mantenimiento</h2>
-<p>Gestiona todas las tareas desde un solo lugar.</p>
-<ul>
-  <li><a class="btn btn-link" href="{% url 'mantenimiento:tareas_list' %}">Ver listado de tareas</a></li>
-  <li><a class="btn btn-link" href="{% url 'mantenimiento:tarea_create' %}">Registrar nueva tarea</a></li>
-  <li><a class="btn btn-link" href="{% url 'calendario:calendario' %}">Ver calendario (app Calendario)</a></li>
+
+<div class="list-header">
+  <h2>Tareas de mantenimiento</h2>
+</div>
+<p class="text-muted mb-4" style="margin-top: -20px;">Gestiona todas las tareas desde un solo lugar.</p>
+
+
+<div class="dashboard-grid">
+
+  <a href="{% url 'mantenimiento:tareas_list' %}" class="dashboard-card">
+    <div class="card-icon-container card-color-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" viewBox="0 0 16 16"><path d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3.854 2.146a.5.5 0 0 1 0 .708l-1.147 1.147a.5.5 0 0 1-.708-.708l1.147-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.147 1.147a.5.5 0 0 1-.708-.708l1.147-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.147 1.147a.5.5 0 0 1-.708-.708l1.147-1.147a.5.5 0 0 1 .708 0z"/></svg>
+    </div>
+    <span class="card-label">Ver listado de tareas</span>
+  </a>
+  
+  <a href="{% url 'mantenimiento:tarea_create' %}" class="dashboard-card">
+    <div class="card-icon-container card-color-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+    </div>
+    <span class="card-label">Registrar nueva tarea</span>
+  </a>
+
+  <a href="{% url 'calendario:calendario' %}" class="dashboard-card">
+    <div class="card-icon-container card-color-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+    </div>
+    <span class="card-label">Ver calendario</span>
+  </a>
+
+</div>
 {% endblock %}
