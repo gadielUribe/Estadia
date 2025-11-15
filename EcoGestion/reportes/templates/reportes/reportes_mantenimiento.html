@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Reporte de Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3">
+  <h1 class="h4 m-0">Reporte de mantenimiento programado y realizado</h1>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="q"
+           placeholder="Buscar (especie, usuario, observaciones)" value="{{ q }}">
+  </div>
+  <div class="col-md-3">
+    <input type="date" class="form-control" name="f_ini" value="{{ f_ini }}">
+  </div>
+  <div class="col-md-3">
+    <input type="date" class="form-control" name="f_fin" value="{{ f_fin }}">
+  </div>
+  <div class="col-md-2 d-grid">
+    <button class="btn btn-primary" type="submit">Filtrar</button>
+  </div>
+</form>
+
+<div class="mb-3">
+  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+     class="btn btn-success btn-sm">Descargar Excel</a>
+  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+     class="btn btn-danger btn-sm">Descargar PDF</a>
+</div>
+
+<p class="text-muted">
+  Total de tareas: <b>{{ total_tareas }}</b> |
+  Realizadas: <b>{{ realizadas }}</b> |
+  Cumplimiento global: <b>{{ cumplimiento_global }}%</b>
+</p>
+
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Especie</th>
+        <th>Tipo de tarea</th>
+        <th>Fecha programada</th>
+        <th>Fecha de ejecución</th>
+        <th>Estado</th>
+        <th>Usuario responsable</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tareas %}
+      <tr>
+        <td>{{ t.especie }}</td>
+        <td>{{ t.tipo }}</td>
+        <td>{{ t.fecha_programada }}</td>
+        <td>{{ t.fecha_realizacion }}</td>
+        <td>{{ t.estado }}</td>
+        <td>{{ t.usuario }}</td>
+        <td class="text-truncate" style="max-width: 300px;">{{ t.observaciones }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7">No hay tareas que coincidan con los filtros.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

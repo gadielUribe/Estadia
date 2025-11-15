@@ -65,34 +65,24 @@
  </div>
 
  <div class="notif-actions d-flex align-items-center">
- {# Badge de nivel #}
- {% if n.level %}
- {% if n.level|lower == "peligro" or n.level|lower == "danger" or n.level|lower == "error" %}
- <span class="badge text-bg-danger">Peligro</span>
- {% elif n.level|lower == "warning" or n.level|lower == "atencion" %}
- <span class="badge text-bg-warning text-dark">Atención</span>
-{% elif n.level|lower == "success" %}
- <span class="badge text-bg-success">Éxito</span>
- {% else %}
- <span class="badge text-bg-secondary">{{ n.level|title }}</span>
-{% endif %}
- {% endif %}
-
  {# Botón de marcar leído / no leído (con iconos SVG) #}
  {% if n.no_leido %}
  <form method="post" action="{% url 'notificaciones:marcar_leida' n.pk %}">
  {% csrf_token %}
 <input type="hidden" name="next" value="{{ request.get_full_path }}">
 <button class="btn btn-sm btn-outline-success btn-toggle-read" type="submit" title="Marcar como leído">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z"/></svg>
-                  </button>
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+  <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
+</svg>
  </form>
  {% else %}
 <form method="post" action="{% url 'notificaciones:marcar_no_leida' n.pk %}">
  {% csrf_token %}
 <input type="hidden" name="next" value="{{ request.get_full_path }}">
  <button class="btn btn-sm btn-outline-secondary btn-toggle-read" type="submit" title="Marcar como no leído">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-open-fill" viewBox="0 0 16 16">
+  <path d="M8.941.435a2 2 0 0 0-1.882 0l-6 3.2A2 2 0 0 0 0 5.4v.314l6.709 3.932L8 8.928l1.291.718L16 5.714V5.4a2 2 0 0 0-1.059-1.765zM16 6.873l-5.693 3.337L16 13.372v-6.5Zm-.059 7.611L8 10.072.059 14.484A2 2 0 0 0 2 16h12a2 2 0 0 0 1.941-1.516M0 13.373l5.693-3.163L0 6.873z"/>
+</svg>
                 </button>
  </form>
  {% endif %}

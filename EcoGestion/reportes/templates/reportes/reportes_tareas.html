@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Reporte de cumplimiento por usuarios{% endblock %}
+
+{% block content %}
+<h1 class="h4 mb-3">Reporte de cumplimiento de tareas por usuarios</h1>
+<p class="text-muted">
+  Muestra el desempeño de los usuarios de mantenimiento (tareas programadas, realizadas, pendientes y porcentaje de cumplimiento)
+  en el periodo seleccionado.
+</p>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="q"
+           placeholder="Buscar por nombre, matrícula o correo" value="{{ q }}">
+  </div>
+  <div class="col-md-3">
+    <input type="date" class="form-control" name="f_ini" value="{{ f_ini }}">
+  </div>
+  <div class="col-md-3">
+    <input type="date" class="form-control" name="f_fin" value="{{ f_fin }}">
+  </div>
+  <div class="col-md-2 d-grid">
+    <button class="btn btn-primary" type="submit">Filtrar</button>
+  </div>
+</form>
+
+<div class="mb-3">
+  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+     class="btn btn-success btn-sm">
+    Descargar Excel
+  </a>
+  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+     class="btn btn-danger btn-sm">
+    Descargar PDF
+  </a>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-3 mb-2">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body py-2">
+        <div class="small text-muted">Total de tareas</div>
+        <div class="fw-bold fs-5">{{ total_tareas }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-2">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body py-2">
+        <div class="small text-muted">Tareas realizadas</div>
+        <div class="fw-bold fs-5">{{ realizadas }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-2">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body py-2">
+        <div class="small text-muted">Tareas pendientes</div>
+        <div class="fw-bold fs-5">{{ pendientes }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-2">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body py-2">
+        <div class="small text-muted">% cumplimiento global</div>
+        <div class="fw-bold fs-5">{{ cumplimiento_global }}%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Usuario</th>
+        <th>Matrícula</th>
+        <th>Correo</th>
+        <th class="text-center">Tareas programadas</th>
+        <th class="text-center">Realizadas</th>
+        <th class="text-center">Pendientes</th>
+        <th class="text-center">% Cumplimiento</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in usuarios %}
+      <tr>
+        <td>{{ u.nombre }}</td>
+        <td>{{ u.matricula }}</td>
+        <td>{{ u.email }}</td>
+        <td class="text-center">{{ u.total }}</td>
+        <td class="text-center">{{ u.realizadas }}</td>
+        <td class="text-center">{{ u.pendientes }}</td>
+        <td class="text-center">{{ u.porcentaje }}%</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center">
+          No hay registros que coincidan con los filtros.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

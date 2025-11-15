@@ -68,18 +68,18 @@ def crear(request):
     if request.method == 'POST':
         form = SaludForm(request.POST)
         if form.is_valid():
+            planta = form.cleaned_data['planta']
+            if SaludRegistro.objects.filter(planta=planta).exists():
+                return redirect('salud_inicio')
+
             obj = form.save(commit=False)
             obj.usuario = request.user
             obj.save()
 
-            # registrar historial inicial
             SaludHistorial.objects.create(
-                planta=obj.planta,
-                usuario=request.user,
-                estado_salud=obj.estado_salud,
-                observaciones=obj.observaciones,
+                planta=obj.planta, usuario=request.user,
+                estado_salud=obj.estado_salud, observaciones=obj.observaciones,
             )
-
             _notificar_si_riesgo(obj)
             return redirect('salud_inicio')
     else:

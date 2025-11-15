@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Reporte de Especies{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3">
+  <h1 class="h4 m-0">Reporte general de especies</h1>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-4">
+    <input type="text" class="form-control" name="q"
+           placeholder="Buscar (nombre o descripción)" value="{{ q }}">
+  </div>
+  <div class="col-md-3">
+    <input type="date" class="form-control" name="f_ini" value="{{ f_ini }}">
+  </div>
+  <div class="col-md-3">
+    <input type="date" class="form-control" name="f_fin" value="{{ f_fin }}">
+  </div>
+  <div class="col-md-2 d-grid">
+    <button class="btn btn-primary" type="submit">Filtrar</button>
+  </div>
+</form>
+
+<div class="mb-3">
+  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+     class="btn btn-success btn-sm">Descargar Excel</a>
+  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+     class="btn btn-danger btn-sm">Descargar PDF</a>
+</div>
+
+<p class="text-muted">
+  Total de especies registradas (según filtros aplicados): <b>{{ total }}</b>
+</p>
+
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Nombre común</th>
+        <th>Nombre científico</th>
+        <th>Descripción</th>
+        <th>Fecha plantación</th>
+        <th>Riego</th>
+        <th>Poda</th>
+        <th>Fumigación</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in plantas %}
+      <tr>
+        <td>{{ p.nombre_comun }}</td>
+        <td>{{ p.nombre_cientifico }}</td>
+        <td class="text-truncate" style="max-width: 300px;">{{ p.descripcion }}</td>
+        <td>{{ p.fecha_plantacion }}</td>
+        <td>{{ p.periodicidad_riego }}</td>
+        <td>{{ p.periodicidad_poda }}</td>
+        <td>{{ p.periodicidad_fumigacion }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7">No hay registros que coincidan con los filtros.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

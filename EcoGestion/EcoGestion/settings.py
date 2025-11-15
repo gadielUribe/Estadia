@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'notificaciones.apps.NotificacionesConfig',
     'calendario.apps.CalendarioConfig',
     'mantenimiento.apps.MantenimientoConfig',
+    'reportes.apps.ReportesConfig',
     'channels',
     'dbbackup',
 ]
