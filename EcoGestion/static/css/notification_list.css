@@ -1,0 +1,175 @@
+/* Contenedor de las pestañas de filtro */
+.nav-container-pills {
+  margin-bottom: 25px;
+  background-color: #f8f9fa; /* Fondo ligero */
+  padding: 8px 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.nav.notif-pills {
+  display: flex;
+  justify-content: flex-start; /* Alinea a la izquierda */
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.nav.notif-pills .nav-item {
+  margin-right: 10px; /* Espacio entre pestañas */
+}
+
+.nav.notif-pills .nav-link {
+  padding: 8px 18px;
+  border-radius: 20px; /* Forma de píldora */
+  color: #6c757d; /* Gris para inactivo */
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex; /* Para alinear texto y badge */
+  align-items: center;
+  gap: 8px; /* Espacio entre texto y badge */
+  text-decoration: none;
+}
+
+.nav.notif-pills .nav-link:hover:not(.active) {
+  background-color: #e9ecef; /* Fondo al pasar el ratón */
+  color: #495057;
+}
+
+.nav.notif-pills .nav-link.active {
+  background-color: #6a67c8; /* Color primario para activo */
+  color: white;
+  font-weight: 600;
+}
+
+/* Badges dentro de las pestañas */
+.nav.notif-pills .badge {
+  padding: 5px 9px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1; /* Para centrar verticalmente */
+}
+
+/* Ajustes para colores de badges */
+.text-bg-secondary { background-color: #6c757d !important; color: #fff !important; }
+.text-bg-primary { background-color: #6a67c8 !important; color: #fff !important; }
+.text-bg-success { background-color: #28a745 !important; color: #fff !important; }
+.text-bg-danger { background-color: #dc3545 !important; color: #fff !important; }
+.text-bg-warning { background-color: #ffc107 !important; color: #212529 !important; } /* Amarillo con texto oscuro */
+
+
+/* Acciones por lotes (Marcar todo leído/no leído) */
+.notif-batch-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end; /* A la derecha */
+  margin-bottom: 25px;
+  padding-right: 5px; /* Pequeño ajuste visual */
+}
+
+/* Contenedor de la lista de notificaciones */
+.notif-list-wrapper {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  overflow: hidden; /* Asegura que las esquinas redondeadas funcionen */
+}
+
+/* Estilo general del elemento de lista de notificación */
+.notif-list-wrapper .list-group {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.notif-item {
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  position: relative; /* Para posicionar elementos internos */
+  display: flex;
+  align-items: flex-start; /* Alinea contenido y acciones arriba */
+}
+.notif-item:last-child {
+  border-bottom: none; /* Sin borde inferior para el último elemento */
+}
+
+/* Contenido principal de la notificación */
+.notif-content {
+  flex-grow: 1; /* Ocupa el espacio disponible */
+}
+
+.notif-verb {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.notif-meta {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Estilo para notificaciones no leídas */
+.notif-item.is-unread {
+  background-color: #fdfdfd; /* Ligeramente diferente */
+  border-left: 5px solid #6a67c8; /* Indicador visual de no leído */
+  padding-left: 15px; /* Ajuste por el borde izquierdo */
+}
+
+/* Contenedor de acciones (nivel y botón de leído/no leído) */
+.notif-actions {
+  display: flex;
+  flex-direction: column; /* Icono abajo del badge */
+  align-items: flex-end; /* Alinea a la derecha */
+  gap: 10px;
+  min-width: 100px; /* Para que no se colapse */
+}
+
+/* Botón de toggle de leído/no leído */
+.btn-toggle-read {
+  width: 40px; /* Ancho fijo para el icono */
+  height: 40px; /* Altura fija para el icono */
+  border-radius: 50% !important; /* Circular */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  padding: 0; /* Quitar padding interno */
+  margin-top: 10px; /* Espacio con el badge de nivel */
+  position: absolute; /* Posicionamiento absoluto */
+  bottom: 15px; /* Abajo */
+  right: 15px; /* A la derecha */
+}
+
+.btn-toggle-read svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Estilo para los botones de las acciones en lote */
+.notif-batch-actions .btn {
+  padding: 8px 15px;
+  border-radius: 20px; /* Píldora */
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.notif-batch-actions .btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+.notif-batch-actions .btn-outline-success:hover {
+  background-color: #28a745;
+  color: white;
+}
+.notif-batch-actions .btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+.notif-batch-actions .btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: white;
+}

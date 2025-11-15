@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib import messages
 
 from .models import Voluntario, AsignacionVoluntario
 from .forms import VoluntarioForm, AsignacionVoluntarioForm
@@ -33,7 +32,6 @@ def voluntario_create(request):
         form = VoluntarioForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Voluntario registrado.')
             return redirect('voluntarios:voluntario_list')
     else:
         form = VoluntarioForm()
@@ -48,7 +46,6 @@ def voluntario_update(request, pk):
         form = VoluntarioForm(request.POST, instance=voluntario)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Voluntario actualizado.')
             return redirect('voluntarios:voluntario_list')
     else:
         form = VoluntarioForm(instance=voluntario)
@@ -61,9 +58,8 @@ def voluntario_delete(request, pk):
     voluntario = get_object_or_404(Voluntario, pk=pk)
     if request.method == 'POST':
         voluntario.delete()
-        messages.success(request, 'Voluntario eliminado.')
         return redirect('voluntarios:voluntario_list')
-    return render(request, 'voluntarios/confirm_delete.html', {'voluntario': voluntario, 'section': 'voluntarios'})
+    return redirect('voluntarios:voluntario_list')
 
 
 @login_required
@@ -75,7 +71,6 @@ def asignar_voluntario(request):
             asign = form.save(commit=False)
             asign.asignado_por = request.user
             asign.save()
-            messages.success(request, 'Voluntario asignado a actividad/evento.')
             return redirect('voluntarios:asignacion_list')
     else:
         form = AsignacionVoluntarioForm()
@@ -94,7 +89,6 @@ def asignacion_delete(request, pk):
     asign = get_object_or_404(AsignacionVoluntario, pk=pk)
     if request.method == 'POST':
         asign.delete()
-        messages.success(request, 'Asignación eliminada.')
         return redirect('voluntarios:asignacion_list')
-    return render(request, 'voluntarios/confirm_delete_asignacion.html', {'asignacion': asign, 'section': 'voluntarios'})
+    return redirect('voluntarios:asignacion_list')
 

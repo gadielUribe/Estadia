@@ -1,61 +1,94 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>{{ accion }} tarea de {{ tipo }}</title>
-  <style>
-    body{font-family:system-ui,Arial;padding:20px}
-    form{max-width:640px}
-    label{display:block;margin-top:10px}
-    input,select,textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:4px}
-    .row{display:flex;gap:12px}
-    .row > div{flex:1}
-    .btn{padding:6px 10px;border:1px solid #ccc;background:#f8f8f8;cursor:pointer;border-radius:4px;text-decoration:none;color:#000}
-    .btn-primary{background:#1976d2;color:#fff;border-color:#1976d2}
-  </style>
-</head>
-<body>
-  <h2>{{ accion }} tarea de {{ tipo }}</h2>
-  <form method="post">
-    {% csrf_token %}
-    <label>Planta {{ form.planta }}</label>
-    <label>Tipo {{ form.tipo }}</label>
-    <label>Fecha programada {{ form.fecha_programada }}</label>
-    <div class="row">
-      <div>
-        <label>Responsable {{ form.usuario_responsable }}</label>
-      </div>
-      <div>
-        <label>Herramienta (opcional) {{ form.herramienta }}</label>
-      </div>
-    </div>
-    <div class="row">
-      <div>
-        <label>Producto (opcional) {{ form.producto }}</label>
-      </div>
-      <div>
-        <label>Observaciones {{ form.observaciones }}</label>
-      </div>
+
+{% block title %}{{ accion }} tarea de {{ tipo }}{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class="form-container">
+  <div class="form-wrapper">
+    
+    <div class="form-header">
+      <h2>{{ accion }} tarea de {{ tipo }}</h2>
     </div>
 
-    <hr/>
-    <label>{{ form.repetir }} {{ form.repetir.label }}</label>
-    <div class="row">
-      <div>
-        <label>{{ form.cada_dias.label }} {{ form.cada_dias }}</label>
-        <small>{{ form.cada_dias.help_text }}</small>
-      </div>
-      <div>
-        <label>{{ form.repeticiones.label }} {{ form.repeticiones }}</label>
-        <small>{{ form.repeticiones.help_text }}</small>
-      </div>
-    </div>
+    <form method="post">
+      {% csrf_token %}
+      
+      <p>
+        <label for="{{ form.planta.id_for_label }}">Planta</label>
+        {{ form.planta }}
+        {% for error in form.planta.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+      </p>
+      <p>
+        <label for="{{ form.tipo.id_for_label }}">Tipo</label>
+        {{ form.tipo }}
+        {% for error in form.tipo.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+      </p>
+      <p>
+         <label for="{{ form.fecha_programada.id_for_label }}">Fecha programada</label>
+         {{ form.fecha_programada }}
+         {% for error in form.fecha_programada.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+      </p>
 
-    <div style="margin-top:12px">
-      <button class="btn btn-primary" type="submit">Guardar</button>
-      <a class="btn" href="{% url 'mantenimiento:tareas_list' %}">Cancelar</a>
-    </div>
-  </form>
-</body>
-</html>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.usuario_responsable.id_for_label }}">Responsable</label>
+          {{ form.usuario_responsable }}
+          {% for error in form.usuario_responsable.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.herramienta.id_for_label }}">Herramienta (opcional)</label>
+          {{ form.herramienta }}
+          {% for error in form.herramienta.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.producto.id_for_label }}">Producto (opcional)</label>
+          {{ form.producto }}
+          {% for error in form.producto.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.observaciones.id_for_label }}">Observaciones</label>
+          {{ form.observaciones }}
+          {% for error in form.observaciones.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+        </div>
+      </div>
+      
+      <div class="repeat-section">
+        <div class="repeat-toggle">
+          {{ form.repetir }}
+          <label for="{{ form.repetir.id_for_label }}">{{ form.repetir.label }}</label>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.cada_dias.id_for_label }}">{{ form.cada_dias.label }}</label>
+            {{ form.cada_dias }}
+            <small>{{ form.cada_dias.help_text }}</small>
+            {% for error in form.cada_dias.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.repeticiones.id_for_label }}">{{ form.repeticiones.label }}</label>
+            {{ form.repeticiones }}
+            <small>{{ form.repeticiones.help_text }}</small>
+            {% for error in form.repeticiones.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <a href="{% url 'mantenimiento:tareas_list' %}" class="btn-cancel">Cancelar</a>
+        <button class="btn-save" type="submit">Guardar</button>
+      </div>
+    </form>
+    
+  </div>
+</div>
+{% endblock %}

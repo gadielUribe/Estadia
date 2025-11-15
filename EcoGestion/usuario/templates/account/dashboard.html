@@ -78,6 +78,13 @@
       </div>
       <span class="card-label">Voluntarios</span>
     </a>
+
+    <a href="{% url 'reportes_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-1">
+        <img src="{% static 'img/admin-user.png' %}" alt="">
+      </div>
+      <span class="card-label">Reportes</span>
+    </a>
     
   {% elif request.user.rol == 'gestor' %}
     <a href="{% url 'planta_inicio' %}" class="dashboard-card">

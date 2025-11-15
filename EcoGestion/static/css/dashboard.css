@@ -70,7 +70,7 @@ main {
  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); /* 5 columnas con ajuste */
  gap: 24px; /* Espacio uniforme entre tarjetas */
  justify-content: start; /* Alinea las tarjetas al inicio, no las centra */
-  justify-items: center; /* Centra las tarjetas dentro de su celda de grid */
+justify-items: center; /* Centra las tarjetas dentro de su celda de grid */
  max-width: 100%; /* Asegura que el grid no se desborde */
 }
 
@@ -105,7 +105,7 @@ main {
 
 /* El ícono (imagen) dentro del contenedor */
 .card-icon-container img {
- width: 75px; /* Tamaño del ícono, ligeramente más grande */
+ width: 80px; /* Tamaño del ícono, ligeramente más grande */
  height: 75px;
  object-fit: contain;
  /* El filtro de brillo y contraste es clave para el aspecto "suavizado" de los iconos */
@@ -141,7 +141,6 @@ main {
 }
 
 
-/* --- 🚀 MEJORA: Diseño Responsivo para Móviles --- */
 
 @media (max-width: 600px) {
     .dashboard-header {
