@@ -1,0 +1,47 @@
+/* 1. Estilo para el filtro de Checkbox ("Bajo Stock") */
+.filter-group-checkbox {
+  display: flex;
+  align-items: flex-end; /* Alinear con la base de los otros inputs */
+  padding-bottom: 10px; /* Ajuste fino de alineación */
+  min-width: 160px;
+  flex-grow: 1;
+}
+
+.filter-group-checkbox .form-check-label {
+  font-size: 0.95rem;
+  color: #444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.filter-group-checkbox .form-check-input {
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 8px;
+  margin-top: 0; /* Reseteo */
+}
+
+/* 2. Sub-encabezado para la segunda tabla ("Movimientos") */
+.list-subheader {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #333;
+  margin-top: 40px; /* Espacio después de la primera tabla */
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* 3. Estilo para filas con "Bajo Stock" */
+.table-wrapper .table tr.row-low-stock {
+  background-color: #fffbeb; /* Amarillo muy pálido */
+  font-weight: 500;
+}
+.table-wrapper .table tr.row-low-stock:hover {
+  background-color: #fff8dd; /* Amarillo un poco más oscuro al pasar el mouse */
+}
+.table-wrapper .table tr.row-low-stock td:first-child {
+  color: #b45309; /* Texto oscuro para el nombre */
+  font-weight: 700;
+}

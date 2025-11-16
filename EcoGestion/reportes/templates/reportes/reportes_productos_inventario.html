@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporte de productos e inventario{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet">
+  <link href="{% static 'css/report_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/report_inventario.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="list-header">
+  <h2>Reporte de productos e inventario</h2>
+  
+  {% if rol != "mantenimiento" %}
+  <div class="export-actions">
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if bajo_stock %}bajo_stock=1&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #28a745; color: #28a745;">
+       Excel
+    </a>
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if bajo_stock %}bajo_stock=1&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
+       PDF
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<p class="text-muted mb-4" style="margin-top: -20px;">
+  Visualiza el estado del inventario, nivel de existencias y movimientos registrados.
+</p>
+
+<div class="filter-bar-wrapper">
+  <form method="get" class="filter-bar-form">
+    
+    <div class="filter-group" style="flex-grow: 2;">
+      <label>Buscar</label>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o descripción">
+    </div>
+
+    <div class="filter-group">
+      <label>Desde (Fecha llegada)</label>
+      <input type="date" name="f_ini" value="{{ f_ini }}">
+    </div>
+    <div class="filter-group">
+      <label>Hasta (Fecha llegada)</label>
+      <input type="date" name="f_fin" value="{{ f_fin }}">
+    </div>
+    
+    <div class="filter-group-checkbox">
+      <label class="form-check-label">
+        <input type="checkbox" class="form-check-input" name="bajo_stock" value="1"
+               {% if bajo_stock %}checked{% endif %}>
+        Solo bajo stock (&lt; 10)
+      </label>
+    </div>
+
+    <div class="filter-group filter-actions">
+      <button class="btn-save" type="submit" style="background-color: #0d6efd; border:none;">Filtrar</button>
+    </div>
+  </form>
+</div>
+
+<p class="list-total-count">
+  Total de productos (según filtros): <b>{{ total_productos }}</b>
+</p>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Descripción</th>
+          <th class="text-center">Existencias</th>
+          <th>Fecha de llegada</th>
+          <th class="text-center">Días en inventario</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in productos %}
+        <tr {% if p.existencias < 10 %}class="row-low-stock"{% endif %}>
+          <td>{{ p.nombre }}</td>
+          <td class="text-truncate" style="max-width: 260px;">{{ p.descripcion }}</td>
+          <td class="text-center">{{ p.existencias }}</td>
+          <td>
+            {% if p.fecha_llegada %}
+              {{ p.fecha_llegada|date:"Y-m-d" }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {% if p.dias_inventario is not None %}
+              {{ p.dias_inventario }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center p-4">No hay productos que coincidan con los filtros.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if rol != "mantenimiento" %}
+<h3 class="list-subheader">Movimientos de existencias (salidas a tareas)</h3>
+<p class="text-muted">Histórico básico de salidas de productos registradas en el sistema.</p>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>ID Tarea</th>
+          <th>Asignado por</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in movimientos %}
+        <tr>
+          <td>{{ m.producto }}</td>
+          <td>{{ m.cantidad }}</td>
+          <td>{{ m.tipo }}</td>
+          <td>
+            {% if m.fecha %}
+              {{ m.fecha|date:"Y-m-d H:i" }}
+            {% endif %}
+          </td>
+          <td>{{ m.tarea_id }}</td>
+          <td>{{ m.asignado_por }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center p-4">
+            No hay movimientos de existencias registrados.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

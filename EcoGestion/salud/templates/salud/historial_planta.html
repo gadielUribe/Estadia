@@ -16,8 +16,23 @@
     Historial de salud de {{ planta.nombre_comun }} 
     <small>({{ planta.nombre_cientifico }})</small>
   </h2>
-  <a href="{% url 'salud_inicio' %}" class="btn-secondary-pill">← Volver</a>
+  
+  <div class="list-header-actions">
+    <a href="{% url 'salud_inicio' %}" class="btn-secondary-pill">← Volver</a>
+    
+    <a href="?excel=1"
+       class="btn-secondary-pill" 
+       style="font-size: 0.85rem; padding: 8px 15px; border-color: #28a745; color: #28a745;">
+       Excel
+    </a>
+    <a href="?pdf=1"
+       class="btn-secondary-pill" 
+       style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
+       PDF
+    </a>
+  </div>
 </div>
+
 
 <p class="list-total-count">Registros totales: {{ total }}</p>
 

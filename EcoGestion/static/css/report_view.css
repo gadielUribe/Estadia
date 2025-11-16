@@ -1,0 +1,56 @@
+/* 1. Cuadrícula de Estadísticas (KPIs) */
+.stats-grid {
+  display: grid;
+  /* Crea columnas automáticas que se ajustan al espacio */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* 2. Tarjeta de Estadística Individual */
+.stat-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea texto a la izquierda */
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: #e0e0e0;
+}
+
+/* 3. Etiqueta (Título de la estadística) */
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* 4. Valor (Número grande) */
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+/* Color de acento para el número principal */
+.stat-card.primary .stat-value { color: #6a67c8; }
+.stat-card.success .stat-value { color: #28a745; }
+.stat-card.warning .stat-value { color: #ffc107; }
+.stat-card.info    .stat-value { color: #17a2b8; }
+
+/* 5. Botones de Exportación (Estilo específico) */
+.export-actions {
+  display: flex;
+  gap: 10px;
+}

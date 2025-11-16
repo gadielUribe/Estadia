@@ -1,16 +1,26 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block title %}Reportes{% endblock %}
 
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/reporte.css' %}" rel="stylesheet">
+{% endblock %}
+
+
 {% block content %}
-<h1 class="h4 mb-3">Módulo de reportes</h1>
-<p class="text-muted mb-4">
+
+<div class="list-header">
+  <h2>Módulo de reportes</h2>
+</div>
+<p class="text-muted mb-4" style="margin-top: -20px;">
   Selecciona el tipo de reporte que deseas consultar o exportar.
 </p>
 
-<div class="row g-3">
-  <div class="col-md-4">
-    <div class="card h-100">
+<div class="row g-4">
+  <div class="col-lg-4 col-md-6">
+    <div class="card report-card h-100">
       <div class="card-body d-flex flex-column">
         <h5 class="card-title">Reporte de especies</h5>
         <p class="card-text flex-grow-1">
@@ -23,8 +33,8 @@
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card h-100">
+  <div class="col-lg-4 col-md-6">
+    <div class="card report-card h-100">
       <div class="card-body d-flex flex-column">
         <h5 class="card-title">Reporte de mantenimiento</h5>
         <p class="card-text flex-grow-1">
@@ -37,8 +47,8 @@
     </div>
   </div>
 
-  <div class="col-md-4">
-    <div class="card h-100">
+  <div class="col-lg-4 col-md-6">
+    <div class="card report-card h-100">
       <div class="card-body d-flex flex-column">
         <h5 class="card-title">Cumplimiento por usuarios</h5>
         <p class="card-text flex-grow-1">
@@ -50,8 +60,9 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
-  <div class="card h-100">
+  
+  <div class="col-lg-4 col-md-6">
+  <div class="card report-card h-100">
     <div class="card-body d-flex flex-column">
       <h5 class="card-title">Actividades de usuario</h5>
       <p class="card-text flex-grow-1">
@@ -63,6 +74,34 @@
     </div>
    </div>
   </div>
-
+  
+  <div class="col-lg-4 col-md-6">
+    <div class="card report-card h-100">
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title">Uso y disponibilidad de herramientas</h5>
+        <p class="card-text flex-grow-1">
+          Consulta la disponibilidad actual de las herramientas y su uso en tareas de riego, poda y fumigión.
+        </p>
+        <a href="{% url 'reporte_uso_herramientas' %}" class="btn btn-outline-success mt-auto">
+          Ver reporte de herramientas
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4 col-md-6">
+    <div class="card report-card h-100">
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title">Productos e inventario</h5>
+        <p class="card-text flex-grow-1">
+          Consulta el estado del inventario, productos con bajo stock y movimientos registrados.
+        </p>
+        <a href="{% url 'reporte_productos_inventario' %}" class="btn btn-outline-warning mt-auto">
+          Ver reporte de inventario
+        </a>
+      </div>
+    </div>
+  </div>
+  
 </div>
 {% endblock %}

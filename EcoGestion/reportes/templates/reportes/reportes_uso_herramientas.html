@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporte de Herramientas{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet"> <link href="{% static 'css/report_view.css' %}" rel="stylesheet"> <link href="{% static 'css/report_inventario.css' %}" rel="stylesheet"> {% endblock %}
+
+
+{% block content %}
+
+<div class="list-header">
+  <h2>Reporte de uso y disponibilidad de herramientas</h2>
+  
+  {% if rol != "mantenimiento" %}
+  <div class="export-actions">
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if estado_filtro %}estado={{ estado_filtro }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #28a745; color: #28a745;">
+       Excel
+    </a>
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if estado_filtro %}estado={{ estado_filtro }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
+       PDF
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<p class="text-muted mb-4" style="margin-top: -20px;">
+  Consulta la disponibilidad de las herramientas y su utilización en tareas de mantenimiento.
+</p>
+
+<div class="filter-bar-wrapper">
+  <form method="get" class="filter-bar-form">
+    
+    <div class="filter-group" style="flex-grow: 2;">
+      <label>Buscar</label>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o descripción">
+    </div>
+    <div class="filter-group">
+      <label>Estado</label>
+      <select name="estado">
+        <option value="">-- Todos los estados --</option>
+        <option value="disponible" {% if estado_filtro == "disponible" %}selected{% endif %}>Disponible</option>
+        <option value="en_uso" {% if estado_filtro == "en_uso" %}selected{% endif %}>En uso</option>
+        <option value="mantenimiento" {% if estado_filtro == "mantenimiento" %}selected{% endif %}>Mantenimiento</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Desde (Fecha)</label>
+      <input type="date" name="f_ini" value="{{ f_ini }}">
+    </div>
+    <div class="filter-group">
+      <label>Hasta (Fecha)</label>
+      <input type="date" name="f_fin" value="{{ f_fin }}">
+    </div>
+
+    <div class="filter-group filter-actions">
+      <button class="btn-save" type="submit" style="background-color: #0d6efd; border:none;">Filtrar</button>
+    </div>
+  </form>
+</div>
+
+<p class="list-total-count">
+  Número total de herramientas (según filtros): <b>{{ total_herramientas }}</b>
+</p>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th class="text-center">Tareas totales</th>
+          <th class="text-center">Riego</th>
+          <th class="text-center">Poda</th>
+          <th class="text-center">Fumigación</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in herramientas %}
+        <tr>
+          <td>{{ h.nombre }}</td>
+          <td class="text-truncate" style="max-width: 280px;">{{ h.descripcion }}</td>
+          <td>{{ h.estado }}</td>
+          <td class="text-center">{{ h.total }}</td>
+          <td class="text-center">{{ h.riego }}</td>
+          <td class="text-center">{{ h.poda }}</td>
+          <td class="text-center">{{ h.fumigacion }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center p-4">No hay herramientas que coincidan con los filtros.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if rol != "mantenimiento" %}
+<h3 class="list-subheader">Historial de tareas vinculadas a herramientas</h3>
+<p class="text-muted">Solo visible para administrador y usuario registrador (gestor).</p>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Herramienta</th>
+          <th>Tipo de tarea</th>
+          <th>Planta</th>
+          <th>Fecha programada</th>
+          <th>Estado</th>
+          <th>Usuario responsable</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in historial %}
+        <tr>
+          <td>{{ h.herramienta }}</td>
+          <td>{{ h.tipo }}</td>
+          <td>{{ h.planta }}</td>
+          <td>
+            {% if h.fecha_programada %}
+              {{ h.fecha_programada|date:"Y-m-d H:i" }}
+            {% endif %}
+          </td>
+          <td>{{ h.estado }}</td>
+          <td>{{ h.usuario }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center p-4">
+            No hay historial de tareas para las herramientas seleccionadas.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

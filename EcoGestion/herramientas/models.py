@@ -3,9 +3,25 @@ from django.conf import settings
 
 
 class Herramienta(models.Model):
+    ESTADO_DISPONIBLE = "disponible"
+    ESTADO_EN_USO = "en_uso"
+    ESTADO_MANTENIMIENTO = "mantenimiento"
+
+    ESTADOS = (
+        (ESTADO_DISPONIBLE, "Disponible"),
+        (ESTADO_EN_USO, "En uso"),
+        (ESTADO_MANTENIMIENTO, "Mantenimiento"),
+    )
+
     id_herramienta = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True)
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADOS,
+        default=ESTADO_DISPONIBLE,
+        verbose_name="Estado"
+    )
 
     class Meta:
         db_table = 'Herramienta'

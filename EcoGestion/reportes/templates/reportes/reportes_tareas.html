@@ -1,107 +1,109 @@
 {% extends 'base.html' %}
-{% block title %}Reporte de cumplimiento por usuarios{% endblock %}
+{% load static %}
+
+{% block title %}Reporte de cumplimiento{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet"> <link href="{% static 'css/report_view.css' %}" rel="stylesheet"> {% endblock %}
+
 
 {% block content %}
-<h1 class="h4 mb-3">Reporte de cumplimiento de tareas por usuarios</h1>
-<p class="text-muted">
-  Muestra el desempeño de los usuarios de mantenimiento (tareas programadas, realizadas, pendientes y porcentaje de cumplimiento)
-  en el periodo seleccionado.
+
+<div class="list-header">
+  <h2>Reporte de cumplimiento de tareas</h2>
+  
+  <div class="export-actions">
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #28a745; color: #28a745;">
+       Excel
+    </a>
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
+       PDF
+    </a>
+  </div>
+</div>
+
+<p class="text-muted mb-4" style="margin-top: -20px;">
+  Muestra el desempeño de los usuarios de mantenimiento en el periodo seleccionado.
 </p>
 
-<form method="get" class="row g-2 mb-3">
-  <div class="col-md-4">
-    <input type="text" class="form-control" name="q"
-           placeholder="Buscar por nombre, matrícula o correo" value="{{ q }}">
-  </div>
-  <div class="col-md-3">
-    <input type="date" class="form-control" name="f_ini" value="{{ f_ini }}">
-  </div>
-  <div class="col-md-3">
-    <input type="date" class="form-control" name="f_fin" value="{{ f_fin }}">
-  </div>
-  <div class="col-md-2 d-grid">
-    <button class="btn btn-primary" type="submit">Filtrar</button>
-  </div>
-</form>
+<div class="filter-bar-wrapper">
+  <form method="get" class="filter-bar-form">
+    
+    <div class="filter-group" style="flex-grow: 2;">
+      <label>Buscar</label>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre, matrícula o correo">
+    </div>
 
-<div class="mb-3">
-  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
-     class="btn btn-success btn-sm">
-    Descargar Excel
-  </a>
-  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
-     class="btn btn-danger btn-sm">
-    Descargar PDF
-  </a>
+    <div class="filter-group">
+      <label>Desde</label>
+      <input type="date" name="f_ini" value="{{ f_ini }}">
+    </div>
+    <div class="filter-group">
+      <label>Hasta</label>
+      <input type="date" name="f_fin" value="{{ f_fin }}">
+    </div>
+
+    <div class="filter-group filter-actions">
+      <button class="btn-save" type="submit" style="background-color: #0d6efd; border:none;">Filtrar</button>
+    </div>
+  </form>
 </div>
 
-<div class="row mb-3">
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">Total de tareas</div>
-        <div class="fw-bold fs-5">{{ total_tareas }}</div>
-      </div>
-    </div>
+<div class="stats-grid">
+  <div class="stat-card primary">
+    <span class="stat-label">Total de tareas</span>
+    <span class="stat-value">{{ total_tareas }}</span>
   </div>
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">Tareas realizadas</div>
-        <div class="fw-bold fs-5">{{ realizadas }}</div>
-      </div>
-    </div>
+  <div class="stat-card success">
+    <span class="stat-label">Tareas realizadas</span>
+    <span class="stat-value">{{ realizadas }}</span>
   </div>
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">Tareas pendientes</div>
-        <div class="fw-bold fs-5">{{ pendientes }}</div>
-      </div>
-    </div>
+  <div class="stat-card warning">
+    <span class="stat-label">Tareas pendientes</span>
+    <span class="stat-value">{{ pendientes }}</span>
   </div>
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">% cumplimiento global</div>
-        <div class="fw-bold fs-5">{{ cumplimiento_global }}%</div>
-      </div>
-    </div>
+  <div class="stat-card info">
+    <span class="stat-label">% Cumplimiento global</span>
+    <span class="stat-value">{{ cumplimiento_global }}%</span>
   </div>
 </div>
 
-<div class="table-responsive">
-  <table class="table table-striped align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>Usuario</th>
-        <th>Matrícula</th>
-        <th>Correo</th>
-        <th class="text-center">Tareas programadas</th>
-        <th class="text-center">Realizadas</th>
-        <th class="text-center">Pendientes</th>
-        <th class="text-center">% Cumplimiento</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for u in usuarios %}
-      <tr>
-        <td>{{ u.nombre }}</td>
-        <td>{{ u.matricula }}</td>
-        <td>{{ u.email }}</td>
-        <td class="text-center">{{ u.total }}</td>
-        <td class="text-center">{{ u.realizadas }}</td>
-        <td class="text-center">{{ u.pendientes }}</td>
-        <td class="text-center">{{ u.porcentaje }}%</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="7" class="text-center">
-          No hay registros que coincidan con los filtros.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table"> <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Matrícula</th>
+          <th>Correo</th>
+          <th class="text-center">Tareas programadas</th>
+          <th class="text-center">Realizadas</th>
+          <th class="text-center">Pendientes</th>
+          <th class="text-center">% Cumplimiento</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr>
+          <td>{{ u.nombre }}</td>
+          <td>{{ u.matricula }}</td>
+          <td>{{ u.email }}</td>
+          <td class="text-center">{{ u.total }}</td>
+          <td class="text-center">{{ u.realizadas }}</td>
+          <td class="text-center">{{ u.pendientes }}</td>
+          <td class="text-center">{{ u.porcentaje }}%</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center p-4">
+            No hay registros que coincidan con los filtros.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
