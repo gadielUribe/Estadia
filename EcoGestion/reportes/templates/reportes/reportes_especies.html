@@ -1,69 +1,89 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}Reporte de Especies{% endblock %}
 
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet"> <link href="{% static 'css/report_view.css' %}" rel="stylesheet"> {% endblock %}
+
+
 {% block content %}
-<div class="d-flex align-items-center mb-3">
-  <h1 class="h4 m-0">Reporte general de especies</h1>
+
+<div class="list-header">
+  <h2>Reporte general de especies</h2>
+  
+  <div class="export-actions">
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #28a745; color: #28a745;">
+       Excel
+    </a>
+    <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
+       PDF
+    </a>
+  </div>
 </div>
 
-<form method="get" class="row g-2 mb-3">
-  <div class="col-md-4">
-    <input type="text" class="form-control" name="q"
-           placeholder="Buscar (nombre o descripción)" value="{{ q }}">
-  </div>
-  <div class="col-md-3">
-    <input type="date" class="form-control" name="f_ini" value="{{ f_ini }}">
-  </div>
-  <div class="col-md-3">
-    <input type="date" class="form-control" name="f_fin" value="{{ f_fin }}">
-  </div>
-  <div class="col-md-2 d-grid">
-    <button class="btn btn-primary" type="submit">Filtrar</button>
-  </div>
-</form>
+<div class="filter-bar-wrapper">
+  <form method="get" class="filter-bar-form">
+    
+    <div class="filter-group" style="flex-grow: 2;">
+      <label>Buscar</label>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar (nombre o descripción)">
+    </div>
 
-<div class="mb-3">
-  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
-     class="btn btn-success btn-sm">Descargar Excel</a>
-  <a href="?{% if q %}q={{ q }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
-     class="btn btn-danger btn-sm">Descargar PDF</a>
+    <div class="filter-group">
+      <label>Desde</label>
+      <input type="date" name="f_ini" value="{{ f_ini }}">
+    </div>
+    <div class="filter-group">
+      <label>Hasta</label>
+      <input type="date" name="f_fin" value="{{ f_fin }}">
+    </div>
+
+    <div class="filter-group filter-actions">
+      <button class="btn-save" type="submit" style="background-color: #0d6efd; border:none;">Filtrar</button>
+    </div>
+  </form>
 </div>
 
-<p class="text-muted">
-  Total de especies registradas (según filtros aplicados): <b>{{ total }}</b>
+<p class="list-total-count">
+  Total de especies registradas: <b>{{ total }}</b>
 </p>
 
-<div class="table-responsive">
-  <table class="table table-striped align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>Nombre común</th>
-        <th>Nombre científico</th>
-        <th>Descripción</th>
-        <th>Fecha plantación</th>
-        <th>Riego</th>
-        <th>Poda</th>
-        <th>Fumigación</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in plantas %}
-      <tr>
-        <td>{{ p.nombre_comun }}</td>
-        <td>{{ p.nombre_cientifico }}</td>
-        <td class="text-truncate" style="max-width: 300px;">{{ p.descripcion }}</td>
-        <td>{{ p.fecha_plantacion }}</td>
-        <td>{{ p.periodicidad_riego }}</td>
-        <td>{{ p.periodicidad_poda }}</td>
-        <td>{{ p.periodicidad_fumigacion }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="7">No hay registros que coincidan con los filtros.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre común</th>
+          <th>Nombre científico</th>
+          <th>Descripción</th>
+          <th>Fecha plantación</th>
+          <th>Riego</th>
+          <th>Poda</th>
+          <th>Fumigación</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in plantas %}
+        <tr>
+          <td>{{ p.nombre_comun }}</td>
+          <td>{{ p.nombre_cientifico }}</td>
+          <td class="text-truncate" style="max-width: 300px;">{{ p.descripcion }}</td>
+          <td>{{ p.fecha_plantacion }}</td>
+          <td>{{ p.periodicidad_riego }}</td>
+          <td>{{ p.periodicidad_poda }}</td>
+          <td>{{ p.periodicidad_fumigacion }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center p-4">No hay registros que coincidan con los filtros.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

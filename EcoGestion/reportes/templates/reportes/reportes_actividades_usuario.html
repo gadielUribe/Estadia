@@ -1,123 +1,128 @@
 {% extends 'base.html' %}
-{% block title %}Reporte de actividades de usuario{% endblock %}
+{% load static %}
+
+{% block title %}Reporte de actividades{% endblock %}
+
+{% block extra_css %}
+  <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+  <link href="{% static 'css/planta.css' %}" rel="stylesheet">
+  <link href="{% static 'css/report_view.css' %}" rel="stylesheet">
+{% endblock %}
+
 
 {% block content %}
-<h1 class="h4 mb-3">Reporte de actividades de usuario</h1>
-<p class="text-muted">
-  Muestra las acciones relacionadas con tareas de mantenimiento realizadas por usuarios de tipo <b>Mantenimiento</b>,
-  permitiendo filtrar por usuario, fecha y tipo de acción.
+
+<div class="list-header">
+  <h2>Reporte de actividades</h2>
+  
+  <div class="export-actions">
+    <a href="?{% if usuario_id %}usuario={{ usuario_id }}&{% endif %}{% if tipo_accion %}tipo={{ tipo_accion }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px;">
+       Excel
+    </a>
+    <a href="?{% if usuario_id %}usuario={{ usuario_id }}&{% endif %}{% if tipo_accion %}tipo={{ tipo_accion }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
+       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
+       PDF
+    </a>
+  </div>
+</div>
+
+<p class="text-muted mb-4" style="margin-top: -20px;">
+  Muestra las acciones relacionadas con tareas de mantenimiento realizadas por usuarios.
 </p>
 
-<form method="get" class="row g-2 mb-3">
-  <div class="col-md-4">
-    <select name="usuario" class="form-select">
-      <option value="">-- Todos los usuarios de mantenimiento --</option>
-      {% for u in usuarios_mantenimiento %}
-      <option value="{{ u.id_usuario }}" {% if usuario_id|default:'' == u.id_usuario|stringformat:"s" %}selected{% endif %}>
-        {{ u.nombre_completo }} ({{ u.matricula }})
-      </option>
-      {% endfor %}
-    </select>
-  </div>
+<div class="filter-bar-wrapper">
+  <form method="get" class="filter-bar-form">
+    
+    <div class="filter-group" style="flex-grow: 2;">
+      <label>Usuario</label>
+      <select name="usuario">
+        <option value="">-- Todos los usuarios --</option>
+        {% for u in usuarios_mantenimiento %}
+        <option value="{{ u.id_usuario }}" {% if usuario_id|default:'' == u.id_usuario|stringformat:"s" %}selected{% endif %}>
+          {{ u.nombre_completo }} ({{ u.matricula }})
+        </option>
+        {% endfor %}
+      </select>
+    </div>
 
-  <div class="col-md-2">
-    <select name="tipo" class="form-select">
-      <option value="todas" {% if tipo_accion == "todas" %}selected{% endif %}>Todas las acciones</option>
-      <option value="realizada" {% if tipo_accion == "realizada" %}selected{% endif %}>Solo realizadas</option>
-      <option value="pendiente" {% if tipo_accion == "pendiente" %}selected{% endif %}>Solo pendientes</option>
-    </select>
-  </div>
+    <div class="filter-group">
+      <label>Tipo de acción</label>
+      <select name="tipo">
+        <option value="todas" {% if tipo_accion == "todas" %}selected{% endif %}>Todas</option>
+        <option value="realizada" {% if tipo_accion == "realizada" %}selected{% endif %}>Realizadas</option>
+        <option value="pendiente" {% if tipo_accion == "pendiente" %}selected{% endif %}>Pendientes</option>
+      </select>
+    </div>
 
-  <div class="col-md-2">
-    <input type="date" class="form-control" name="f_ini" value="{{ f_ini }}">
-  </div>
-  <div class="col-md-2">
-    <input type="date" class="form-control" name="f_fin" value="{{ f_fin }}">
-  </div>
+    <div class="filter-group">
+      <label>Desde</label>
+      <input type="date" name="f_ini" value="{{ f_ini }}">
+    </div>
+    <div class="filter-group">
+      <label>Hasta</label>
+      <input type="date" name="f_fin" value="{{ f_fin }}">
+    </div>
 
-  <div class="col-md-2 d-grid">
-    <button class="btn btn-primary" type="submit">Filtrar</button>
-  </div>
-</form>
-
-<div class="mb-3">
-  <a href="?{% if usuario_id %}usuario={{ usuario_id }}&{% endif %}{% if tipo_accion %}tipo={{ tipo_accion }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
-     class="btn btn-success btn-sm">
-    Descargar Excel
-  </a>
-  <a href="?{% if usuario_id %}usuario={{ usuario_id }}&{% endif %}{% if tipo_accion %}tipo={{ tipo_accion }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
-     class="btn btn-danger btn-sm">
-    Descargar PDF
-  </a>
+    <div class="filter-group filter-actions">
+      <button class="btn-save" type="submit" style="background-color: #0d6efd; border:none;">Filtrar</button>
+    </div>
+  </form>
 </div>
 
-<div class="row mb-3">
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">Total de acciones</div>
-        <div class="fw-bold fs-5">{{ total_acciones }}</div>
-      </div>
-    </div>
+<div class="stats-grid">
+  <div class="stat-card primary">
+    <span class="stat-label">Total Acciones</span>
+    <span class="stat-value">{{ total_acciones }}</span>
   </div>
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">Tareas realizadas</div>
-        <div class="fw-bold fs-5">{{ realizadas }}</div>
-      </div>
-    </div>
+  <div class="stat-card success">
+    <span class="stat-label">Realizadas</span>
+    <span class="stat-value">{{ realizadas }}</span>
   </div>
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">Tareas pendientes</div>
-        <div class="fw-bold fs-5">{{ pendientes }}</div>
-      </div>
-    </div>
+  <div class="stat-card warning">
+    <span class="stat-label">Pendientes</span>
+    <span class="stat-value">{{ pendientes }}</span>
   </div>
-  <div class="col-md-3 mb-2">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body py-2">
-        <div class="small text-muted">% cumplimiento (tareas realizadas)</div>
-        <div class="fw-bold fs-5">{{ cumplimiento }}%</div>
-      </div>
-    </div>
+  <div class="stat-card info">
+    <span class="stat-label">% Cumplimiento</span>
+    <span class="stat-value">{{ cumplimiento }}%</span>
   </div>
 </div>
 
-<div class="table-responsive">
-  <table class="table table-striped align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>Usuario</th>
-        <th>Rol</th>
-        <th>Tipo de acción</th>
-        <th>Fecha y hora</th>
-        <th>Detalle</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for a in actividades %}
-      <tr>
-        <td>{{ a.usuario }}</td>
-        <td>{{ a.rol }}</td>
-        <td>{{ a.tipo_accion }}</td>
-        <td>
-          {% if a.fecha_hora %}
-            {{ a.fecha_hora|date:"Y-m-d H:i" }}
-          {% endif %}
-        </td>
-        <td>{{ a.detalle }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="5" class="text-center">
-          No hay actividades que coincidan con los filtros seleccionados.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>Tipo de acción</th>
+          <th>Fecha y hora</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in actividades %}
+        <tr>
+          <td>{{ a.usuario }}</td>
+          <td>{{ a.rol }}</td>
+          <td>{{ a.tipo_accion }}</td>
+          <td>
+            {% if a.fecha_hora %}
+              {{ a.fecha_hora|date:"Y-m-d H:i" }}
+            {% endif %}
+          </td>
+          <td>{{ a.detalle }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center p-4">
+            No hay actividades que coincidan con los filtros seleccionados.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

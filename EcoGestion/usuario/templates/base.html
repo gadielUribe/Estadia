@@ -15,6 +15,9 @@
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
   <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
   <link href="{% static 'css/private_chat.css' %}" rel="stylesheet">
+  <link href="{% static 'css/reporte.css' %}" rel="stylesheet">
+  <link href="{% static 'css/report_inventario.css' %}" rel="stylesheet">
+  <link href="{% static 'css/report_view.css' %}" rel="stylesheet">
   <link href="{% static 'css/backup.css' %}" rel="stylesheet">
   <link href="{% static 'css/chat_view.css' %}" rel="stylesheet">
   <link href="{% static 'css/notification_list.css' %}" rel="stylesheet">
@@ -54,7 +57,7 @@
         {% if request.user.is_authenticated %}
         <ul>
           <li><a href="{% url 'dashboard' %}">Inicio</a></li>
-          <li><a href="#">Reportes</a></li>
+          <li><a href="{% url 'reportes_inicio' %}">Reportes</a></li>
           <li><a href="{% url 'chat_general' %}">Chat General</a></li>
           <li><a href="{% url 'chat_privado' request.user.id_usuario %}">Chat Privado</a></li>
           <li><a href="{% url 'calendario:calendario' %}">Calendario</a></li>

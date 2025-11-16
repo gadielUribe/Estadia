@@ -1,128 +1,141 @@
-/* --- Contenido para static/css/dashboard.css (Corregido y Mejorado) --- */
-
 /* --- General del Body/Contenido --- */
 body {
- background-color: #f7f7f7; /* Un color de fondo muy suave para el cuerpo */
+    background-color: #f7f7f7; /* Un color de fondo muy suave para el cuerpo */
 }
 
 main {
-  padding-top: 40px; /* Más espacio arriba para el contenido principal */
-    padding-bottom: 40px; /* Añadimos espacio abajo también */
+     padding-top: 40px; /* Más espacio arriba para el contenido principal */
+padding-bottom: 40px; /* Añadimos espacio abajo también */
 }
 
 /* --- Encabezado del Dashboard --- */
 .dashboard-header {
- display: flex;
- justify-content: space-between;
- align-items: center; /* Centra los items verticalmente para el botón */
- margin-bottom: 40px; /* Más espacio debajo del encabezado */
- flex-wrap: wrap; 
- gap: 20px; /* Espacio entre el texto y el botón */
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centra los items verticalmente para el botón */
+    margin-bottom: 40px; /* Más espacio debajo del encabezado */
+    flex-wrap: wrap; 
+    gap: 20px; /* Espacio entre el texto y el botón */
 }
 
 .dashboard-header div {
-  /* Flex para el título y el rol para que el rol no se pegue al título */
-  display: flex;
-  flex-direction: column;
-  gap: 5px; /* Espacio entre el título y el rol */
+     /* Flex para el título y el rol para que el rol no se pegue al título */
+     display: flex;
+     flex-direction: column;
+     gap: 5px; /* Espacio entre el título y el rol */
 }
 
 .dashboard-header h2 {
- margin: 0;
- font-family: "Work Sans", sans-serif; /* Fuente específica como la imagen */
- font-size: 2.3rem; /* Tamaño de fuente del título */
- font-weight: 800; /* Más grueso como en la imagen */
- color: #333; /* Un gris más oscuro */
- line-height: 1.2;
+    margin: 0;
+    font-family: "Work Sans", sans-serif; /* Fuente específica como la imagen */
+    font-size: 2.3rem; /* Tamaño de fuente del título */
+    font-weight: 800; /* Más grueso como en la imagen */
+    color: #333; /* Un gris más oscuro */
+    line-height: 1.2;
 }
 
 .dashboard-header p {
- margin: 0;
- font-family: "Work Sans", sans-serif; /* Fuente específica */
- font-size: 1rem; /* Tamaño de fuente del rol */
- color: #777; /* Color de texto más claro para el rol */
- font-weight: 500;
+    margin: 0;
+    font-family: "Work Sans", sans-serif; /* Fuente específica */
+    font-size: 1rem; /* Tamaño de fuente del rol */
+    color: #777; /* Color de texto más claro para el rol */
+    font-weight: 500;
 }
 
 /* --- Botón "Agregar usuario" --- */
 .btn-agregar-usuario {
- background-color: #f3f4f6; /* Gris claro de la imagen */
- color: #333;
- padding: 10px 22px; /* Un poco más de padding horizontal */
- text-decoration: none;
- border-radius: 20px; /* Forma de píldora */
- font-family: "Work Sans", sans-serif; /* Fuente específica */
- font-weight: 600;
- font-size: 0.9rem;
- transition: background-color 0.2s ease, transform 0.2s ease;
- border: 1px solid #e0e0e0; /* Un borde más sutil */
- box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra ligera */
+    background-color: #f3f4f6; /* Gris claro de la imagen */
+    color: #333;
+    padding: 10px 22px; /* Un poco más de padding horizontal */
+    text-decoration: none;
+    border-radius: 20px; /* Forma de píldora */
+    font-family: "Work Sans", sans-serif; /* Fuente específica */
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    border: 1px solid #e0e0e0; /* Un borde más sutil */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Sombra ligera */
 }
 
 .btn-agregar-usuario:hover {
- background-color: #e5e7eb;
- transform: translateY(-2px); /* Pequeño efecto de levantamiento */
+    background-color: #e5e7eb;
+    transform: translateY(-2px); /* Pequeño efecto de levantamiento */
 }
 
 /* --- Grid de Tarjetas del Dashboard --- */
 .dashboard-grid {
- display: grid; /* Cambiamos a CSS Grid para un control más preciso */
- grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); /* 5 columnas con ajuste */
- gap: 24px; /* Espacio uniforme entre tarjetas */
- justify-content: start; /* Alinea las tarjetas al inicio, no las centra */
+    display: grid; /* Cambiamos a CSS Grid para un control más preciso */
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); /* 5 columnas con ajuste */
+    gap: 24px; /* Espacio uniforme entre tarjetas */
+    justify-content: start; /* Alinea las tarjetas al inicio, no las centra */
 justify-items: center; /* Centra las tarjetas dentro de su celda de grid */
- max-width: 100%; /* Asegura que el grid no se desborde */
+    max-width: 100%; /* Asegura que el grid no se desborde */
 }
 
 /* --- Tarjeta Individual (El enlace <a>) --- */
 .dashboard-card {
- display: flex;
- flex-direction: column;
- align-items: center;
- text-decoration: none;
- color: #333;
- width: 170px; /* Ancho de cada tarjeta (un poco más grande) */
- transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.dashboard-card:hover {
- transform: translateY(-5px); /* Efecto de "levantar" al pasar el mouse */
- box-shadow: 0 10px 20px rgba(0,0,0,0.1); /* Sombra más pronunciada al hover */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    width: 170px; /* Ancho de cada tarjeta (un poco más grande) */
 }
 
 /* Contenedor del ícono (el cuadrado de color) */
 .card-icon-container {
- width: 155px; /* Un poco más grande para el contenedor */
- height: 155px;
- border-radius: 12px; /* Bordes menos redondeados que un círculo completo */
- display: flex;
- align-items: center;
- justify-content: center;
- margin-bottom: 15px; /* Más espacio con el texto de abajo */
- background-color: #f4f4f4; /* Color por defecto */
- box-shadow: 0 4px 8px rgba(0,0,0,0.08); /* Sombra inicial */
+    width: 155px; /* Un poco más grande para el contenedor */
+    height: 155px;
+    border-radius: 12px; /* Bordes menos redondeados que un círculo completo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px; /* Espacio con el texto de abajo */
+    background-color: #f4f4f4; /* Color por defecto */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08); /* Sombra inicial */
+  
+  /* --- CAMBIO CLAVE 1 --- */
+  /* Añadimos la transición aquí */
+     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* El ícono (imagen) dentro del contenedor */
 .card-icon-container img {
- width: 80px; /* Tamaño del ícono, ligeramente más grande */
- height: 75px;
- object-fit: contain;
- /* El filtro de brillo y contraste es clave para el aspecto "suavizado" de los iconos */
- filter: brightness(1.05) contrast(0.95); /* Ajuste sutil para que coincida */
+    width: 80px; 
+    height: 75px;
+    object-fit: contain;
+    filter: brightness(1.05) contrast(0.95); /* Ajuste sutil para que coincida */
 }
 
 /* Etiqueta de texto debajo del ícono */
 .card-label {
- font-family: "Work Sans", sans-serif; /* Fuente específica */
- font-size: 0.98rem; /* Tamaño de texto un poco más grande */
- font-weight: 600;
- text-align: center;
- color: #555; /* Color de texto más suave */
- line-height: 1.3; /* Espaciado de línea para textos largos */
+    font-family: "Work Sans", sans-serif; /* Fuente específica */
+    font-size: 0.98rem; /* Tamaño de texto un poco más grande */
+    font-weight: 600;
+    text-align: center;
+    color: #555; /* Color de texto más suave */
+    line-height: 1.3; /* Espaciado de línea para textos largos */
+
+  /* --- CAMBIO CLAVE 2 --- */
+  /* El label también debe transicionar */
+  transition: transform 0.2s ease;
 }
 
+/* --- CAMBIO CLAVE 3 --- */
+/* Cuando se pasa el mouse por la tarjeta... */
+.dashboard-card:hover .card-icon-container {
+  /* ...el contenedor de icono se levanta y cambia su sombra */
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.dashboard-card:hover .card-label {
+  /* ...y el label se levanta con él */
+  transform: translateY(-5px);
+}
+
+
 /* --- Colores de las tarjetas (basados en la imagen) --- */
+/* (Esto aplica al .card-icon-container, lo cual es correcto) */
 .card-color-1 { background-color: #e0f2ea; } /* Verde pálido */
 .card-color-2 { background-color: #e0f2eb; } /* Otro verde pálido, similar al 1 */
 .card-color-3 { background-color: #3e7a78; color: #fff; } /* Verde oscuro */
@@ -137,49 +150,46 @@ justify-items: center; /* Centra las tarjetas dentro de su celda de grid */
 .card-color-3 img,
 .card-color-6 img,
 .card-color-9 img {
- filter: invert(1) brightness(1.2) sepia(0.5) saturate(2); /* Ajuste para un blanco más nítido */
+    filter: invert(1) brightness(1.2) sepia(0.5) saturate(2); /* Ajuste para un blanco más nítido */
 }
 
 
-
+/* --- Media Query para Móviles (Sin cambios) --- */
 @media (max-width: 600px) {
     .dashboard-header {
-        justify-content: center; /* Centra el título y el botón */
-        text-align: center; /* Centra el texto del título y rol */
-    }
+    justify-content: center;
+    text-align: center;
+}
 
-    .dashboard-header h2 {
-        font-size: 1.9rem; /* Título más pequeño en móviles */
-    }
+.dashboard-header h2 {
+    font-size: 1.9rem;
+}
 
-    .btn-agregar-usuario {
-        width: 100%; /* Botón de ancho completo para fácil click */
-        box-sizing: border-box; /* Asegura que el padding no rompa el layout */
-    }
+.btn-agregar-usuario {
+    width: 100%;
+    box-sizing: border-box;
+}
 
-    .dashboard-grid {
-        /* Reduce el gap en móviles para más espacio */
-        gap: 20px; 
-        
-        /* Ajusta las columnas para que las tarjetas no sean tan pequeñas */
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    }
+.dashboard-grid {
+    gap: 20px; 
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
 
-    .dashboard-card {
-        width: 140px; /* Tarjetas un poco más pequeñas */
-    }
+.dashboard-card {
+    width: 140px;
+}
 
-    .card-icon-container {
-        width: 120px; /* Contenedor de ícono más pequeño */
-        height: 120px;
-    }
+.card-icon-container {
+    width: 120px;
+    height: 120px;
+}
 
-    .card-icon-container img {
-        width: 60px; /* Ícono más pequeño */
-        height: 60px;
-    }
+.card-icon-container img {
+    width: 60px;
+    height: 60px;
+}
 
-    .card-label {
-        font-size: 0.9rem; /* Texto de tarjeta más pequeño */
-    }
+.card-label {
+    font-size: 0.9rem;
+}
 }
