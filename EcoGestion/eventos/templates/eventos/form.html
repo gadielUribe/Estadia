@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ accion }} evento{% endblock %}
+{% block extra_css %}
+<link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <div class="form-wrapper">
+    <div class="form-header">
+      <h2>{{ accion }} evento</h2>
+    </div>
+
+    {% if form.errors %}
+      <div class="alert alert-danger">Completa los campos obligatorios y corrige los errores.</div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <p>
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+          {% for error in field.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
+        </p>
+      {% endfor %}
+
+      <div class="form-actions">
+        <a href="{% url 'eventos:lista' %}" class="btn-cancel">Cancelar</a>
+        <button type="submit" class="btn-save">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

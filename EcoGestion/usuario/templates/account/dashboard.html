@@ -79,6 +79,13 @@
       <span class="card-label">Voluntarios</span>
     </a>
 
+    <a href="{% url 'eventos:lista' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-4">
+        <img src="{% static 'img/eventos.png' %}" alt="">
+      </div>
+      <span class="card-label">Eventos ambientales</span>
+    </a>
+
     <a href="{% url 'reportes_inicio' %}" class="dashboard-card">
       <div class="card-icon-container card-color-1">
         <img src="{% static 'img/reportes.png' %}" alt="">
@@ -105,12 +112,24 @@
       </div>
       <span class="card-label">Tareas de mantenimiento</span>
     </a>
+    <a href="{% url 'eventos:lista' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-4">
+        <img src="{% static 'img/calendar.png' %}" alt="">
+      </div>
+      <span class="card-label">Eventos ambientales</span>
+    </a>
     {% elif request.user.rol == 'mantenimiento' %}
     <a href="{% url 'mantenimiento:inicio' %}" class="dashboard-card">
       <div class="card-icon-container card-color-3">
         <img src="{% static 'img/maintenance.png' %}" alt="">
       </div>
       <span class="card-label">Tareas de mantenimiento</span>
+    </a>
+    <a href="{% url 'eventos:lista' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-4">
+        <img src="{% static 'img/calendar.png' %}" alt="">
+      </div>
+      <span class="card-label">Eventos ambientales</span>
     </a>
     {% endif %}
 

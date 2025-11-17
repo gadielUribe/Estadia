@@ -16,10 +16,22 @@
       <h2>Crear incidencia ambiental</h2>
     </div>
 
-    <form method="POST" enctype="multipart/form-data">
+    {% if form.errors %}
+      <div class="alert alert-danger">Completa los campos obligatorios y corrige los errores.</div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
-      
-      {{ form.as_p }}
+      {% for field in form %}
+      <p>
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}
+          <span class="error-text">{{ error }}</span>
+        {% endfor %}
+      </p>
+      {% endfor %}
       
       <div class="form-actions">
         <a href="{% url 'incidencia_inicio' %}" class="btn-cancel">Cancelar</a>

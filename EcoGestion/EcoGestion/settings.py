@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'salud.apps.SaludConfig',
     'notificaciones.apps.NotificacionesConfig',
     'calendario.apps.CalendarioConfig',
+    'eventos.apps.EventosConfig',
     'mantenimiento.apps.MantenimientoConfig',
     'reportes.apps.ReportesConfig',
     'channels',

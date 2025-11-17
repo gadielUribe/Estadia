@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from plantas.models import plantaArbol
 from mantenimiento.models import TareaMantenimiento
+from eventos.models import EventoAmbiental
 
 
 def _user_role(user) -> str:
@@ -124,11 +125,13 @@ def tareas_feed(request):
                     "planta_nombre": t.planta.nombre_comun,
                     "vencida": (t.estado == TareaMantenimiento.ESTADO_PENDIENTE and t.fecha_programada < now),
                     "responsable": responsable,
+                    "category": "tarea",
                     "puedeEditar": role in {"administrador", "gestor"},
                     "puedeMarcar": role in {"administrador", "gestor", "mantenimiento"},
                 },
             }
         )
+
     return JsonResponse(events, safe=False)
 
 

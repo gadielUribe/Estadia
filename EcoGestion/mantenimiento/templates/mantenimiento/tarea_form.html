@@ -16,35 +16,41 @@
       <h2>{{ accion }} tarea de {{ tipo }}</h2>
     </div>
 
-    <form method="post">
+    {% if form.errors %}
+      <div class="alert alert-danger">
+        Por favor completa los campos obligatorios y corrige los errores indicados.
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
       {% csrf_token %}
       
       <p>
         <label for="{{ form.planta.id_for_label }}">Planta</label>
         {{ form.planta }}
-        {% for error in form.planta.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+        {% for error in form.planta.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
       </p>
       <p>
         <label for="{{ form.tipo.id_for_label }}">Tipo</label>
         {{ form.tipo }}
-        {% for error in form.tipo.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+        {% for error in form.tipo.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
       </p>
       <p>
          <label for="{{ form.fecha_programada.id_for_label }}">Fecha programada</label>
          {{ form.fecha_programada }}
-         {% for error in form.fecha_programada.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+         {% for error in form.fecha_programada.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
       </p>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="{{ form.usuario_responsable.id_for_label }}">Responsable</label>
-          {{ form.usuario_responsable }}
-          {% for error in form.usuario_responsable.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+          <label for="{{ form.responsable_selector.id_for_label }}">Responsable</label>
+          {{ form.responsable_selector }}
+          {% for error in form.responsable_selector.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
         </div>
         <div class="form-group">
           <label for="{{ form.herramienta.id_for_label }}">Herramienta (opcional)</label>
           {{ form.herramienta }}
-          {% for error in form.herramienta.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+          {% for error in form.herramienta.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
         </div>
       </div>
       
@@ -52,12 +58,12 @@
         <div class="form-group">
           <label for="{{ form.producto.id_for_label }}">Producto (opcional)</label>
           {{ form.producto }}
-          {% for error in form.producto.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+          {% for error in form.producto.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
         </div>
         <div class="form-group">
           <label for="{{ form.observaciones.id_for_label }}">Observaciones</label>
           {{ form.observaciones }}
-          {% for error in form.observaciones.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+          {% for error in form.observaciones.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
         </div>
       </div>
       
@@ -72,13 +78,13 @@
             <label for="{{ form.cada_dias.id_for_label }}">{{ form.cada_dias.label }}</label>
             {{ form.cada_dias }}
             <small>{{ form.cada_dias.help_text }}</small>
-            {% for error in form.cada_dias.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+            {% for error in form.cada_dias.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
           </div>
           <div class="form-group">
             <label for="{{ form.repeticiones.id_for_label }}">{{ form.repeticiones.label }}</label>
             {{ form.repeticiones }}
             <small>{{ form.repeticiones.help_text }}</small>
-            {% for error in form.repeticiones.errors %}<small class="text-danger">{{ error }}</small>{% endfor %}
+            {% for error in form.repeticiones.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
           </div>
         </div>
       </div>

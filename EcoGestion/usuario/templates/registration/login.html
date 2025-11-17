@@ -13,9 +13,13 @@
 
     <h2>Inicio de Sesión</h2>
 
-    {% if form.errors %}
+    {% if error %}
       <div class="alert alert-danger" role="alert">
-        Tu usuario o contraseña son incorrectos. Intenta de nuevo.
+        {{ error }}
+      </div>
+    {% elif form.errors %}
+      <div class="alert alert-danger" role="alert">
+        Credenciales inválidas. Intenta de nuevo.
       </div>
     {% endif %}
 

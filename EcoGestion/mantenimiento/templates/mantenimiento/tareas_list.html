@@ -44,7 +44,7 @@
           <td>{{ t.get_tipo_display }}</td>
           <td>{{ t.fecha_programada|date:'Y-m-d H:i' }}</td>
           <td>{{ t.get_estado_display }}</td>
-          <td>{{ t.usuario_responsable|default:'-' }}</td>
+          <td>{{ t.responsable_etiqueta|default:'-' }}</td>
           <td>{{ t.herramienta|default:'-' }}</td>
           <td>{{ t.producto|default:'-' }}</td>
           <td>{{ t.observaciones|truncatewords:8|default:'-' }}</td>

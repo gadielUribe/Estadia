@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 
 from plantas.models import plantaArbol
+from voluntarios.models import AsignacionVoluntario
 from .models import TareaMantenimiento
 from .forms import TareaForm
 
@@ -22,6 +23,27 @@ def _user_role(user) -> str:
 
 def _horizon_days() -> int:
     return 60
+
+
+def _actividad_descripcion(tarea: TareaMantenimiento) -> str:
+    return f"{tarea.get_tipo_display()} - {tarea.planta.nombre_comun}"
+
+
+def _sincronizar_voluntario(tarea: TareaMantenimiento, voluntario, asignado_por):
+    queryset = AsignacionVoluntario.objects.filter(tarea_id=tarea.id)
+    if voluntario:
+        AsignacionVoluntario.objects.update_or_create(
+            tarea_id=tarea.id,
+            defaults={
+                "voluntario": voluntario,
+                "actividad": _actividad_descripcion(tarea),
+                "evento_id": None,
+                "evento_nombre": "",
+                "asignado_por": asignado_por,
+            },
+        )
+    else:
+        queryset.delete()
 
 
 def ensure_future_tasks(horizon_days: int | None = None):
@@ -86,7 +108,28 @@ def tareas_list(request):
     tipo = request.GET.get("tipo")
     if tipo in {t[0] for t in TareaMantenimiento.TIPOS}:
         qs = qs.filter(tipo=tipo)
-    return render(request, "mantenimiento/tareas_list.html", {"tareas": qs, "tipo": tipo or "todas"})
+    tareas = list(qs)
+    tarea_ids = [t.id for t in tareas]
+    voluntario_map = {}
+    if tarea_ids:
+        asignaciones = (
+            AsignacionVoluntario.objects.select_related("voluntario")
+            .filter(tarea_id__in=tarea_ids)
+            .order_by("-fecha_asignacion")
+        )
+        for asign in asignaciones:
+            nombre_vol = f"{asign.voluntario.nombre} {asign.voluntario.apellido}".strip()
+            voluntario_map.setdefault(asign.tarea_id, nombre_vol)
+    for tarea in tareas:
+        if tarea.usuario_responsable:
+            tarea.responsable_etiqueta = str(tarea.usuario_responsable)
+        else:
+            tarea.responsable_etiqueta = voluntario_map.get(tarea.id, "-")
+    return render(
+        request,
+        "mantenimiento/tareas_list.html",
+        {"tareas": tareas, "tipo": tipo or "todas"},
+    )
 
 
 @login_required
@@ -99,12 +142,17 @@ def tarea_create(request):
         form = TareaForm(request.POST)
         if form.is_valid():
             tarea = form.save(commit=False)
+            usuario, voluntario = form.get_responsable()
+            tarea.usuario_responsable = usuario
             tarea.save()
+            _sincronizar_voluntario(tarea, voluntario, request.user)
             if form.cleaned_data.get("repetir") and form.cleaned_data.get("cada_dias") and form.cleaned_data.get("repeticiones"):
                 _generar_repetidas(
                     tarea,
                     int(form.cleaned_data["cada_dias"]),
                     int(form.cleaned_data["repeticiones"]),
+                    voluntario=voluntario,
+                    asignado_por=request.user,
                 )
             return redirect(reverse("mantenimiento:tareas_list"))
     else:
@@ -127,13 +175,19 @@ def tarea_update(request, pk: int):
     if request.method == "POST":
         form = TareaForm(request.POST, instance=tarea)
         if form.is_valid():
-            tarea = form.save()
+            tarea = form.save(commit=False)
+            usuario, voluntario = form.get_responsable()
+            tarea.usuario_responsable = usuario
+            tarea.save()
+            _sincronizar_voluntario(tarea, voluntario, request.user)
             # opcionalmente generar siguientes desde nueva fecha
             if form.cleaned_data.get("repetir") and form.cleaned_data.get("cada_dias") and form.cleaned_data.get("repeticiones"):
                 _generar_repetidas(
                     tarea,
                     int(form.cleaned_data["cada_dias"]),
                     int(form.cleaned_data["repeticiones"]),
+                    voluntario=voluntario,
+                    asignado_por=request.user,
                 )
             return redirect(reverse("mantenimiento:tareas_list"))
     else:
@@ -157,11 +211,11 @@ def tarea_delete(request, pk: int):
     return redirect(reverse("mantenimiento:tareas_list"))
 
 
-def _generar_repetidas(tarea: TareaMantenimiento, cada_dias: int, repeticiones: int):
+def _generar_repetidas(tarea: TareaMantenimiento, cada_dias: int, repeticiones: int, voluntario=None, asignado_por=None):
     start = tarea.fecha_programada
     for i in range(1, repeticiones + 1):
         cur = start + timedelta(days=cada_dias * i)
-        TareaMantenimiento.objects.get_or_create(
+        nueva_tarea, created = TareaMantenimiento.objects.get_or_create(
             planta=tarea.planta,
             tipo=tarea.tipo,
             fecha_programada=cur,
@@ -173,3 +227,5 @@ def _generar_repetidas(tarea: TareaMantenimiento, cada_dias: int, repeticiones: 
                 "estado": TareaMantenimiento.ESTADO_PENDIENTE,
             },
         )
+        if voluntario and created:
+            _sincronizar_voluntario(nueva_tarea, voluntario, asignado_por)

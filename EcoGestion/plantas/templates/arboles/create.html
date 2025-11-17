@@ -18,58 +18,94 @@
         <h2>Crear nueva especie</h2>
       </div>
 
-      <form method="POST" enctype="multipart/form-data">
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          Por favor completa los campos obligatorios y corrige los errores indicados.
+        </div>
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         
         <p>
           <label for="{{ form.nombre_comun.id_for_label }}">Nombre Común:</label>
           {{ form.nombre_comun }}
+          {% for error in form.nombre_comun.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
-        
+
         <p>
           <label for="{{ form.nombre_cientifico.id_for_label }}">Nombre Científico:</label>
           {{ form.nombre_cientifico }}
+          {% for error in form.nombre_cientifico.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
 
         <p>
           <label for="{{ form.descripcion.id_for_label }}">Descripción:</label>
           {{ form.descripcion }}
+          {% for error in form.descripcion.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
 
         <p>
           <label for="{{ form.fecha_plantacion.id_for_label }}">Fecha de Plantación:</label>
           {{ form.fecha_plantacion }}
-        </de>
+          {% for error in form.fecha_plantacion.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
+        </p>
 
         <p>
           <label for="{{ form.imagen_url.id_for_label }}">Imagen:</label>
           <div class="custom-file-upload-wrapper">
             {{ form.imagen_url }}
           </div>
+          {% for error in form.imagen_url.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
 
         <p>
           <label for="{{ form.periodicidad_riego.id_for_label }}">Periodicidad Riego:</label>
           {{ form.periodicidad_riego }}
+          {% for error in form.periodicidad_riego.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
 
         <p>
           <label for="{{ form.periodicidad_poda.id_for_label }}">Periodicidad Poda:</label>
           {{ form.periodicidad_poda }}
+          {% for error in form.periodicidad_poda.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
         
         <p>
           <label for="{{ form.periodicidad_fumigacion.id_for_label }}">Periodicidad Fumigación:</label>
           {{ form.periodicidad_fumigacion }}
+          {% for error in form.periodicidad_fumigacion.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
         <p>
           <label for="{{ form.estado_salud.id_for_label }}">Estado de Salud:</label>
           {{ form.estado_salud }}
+          {% for error in form.estado_salud.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
 
         <p>
           <label for="{{ form.observaciones.id_for_label }}">Observaciones:</label>
           {{ form.observaciones }}
+          {% for error in form.observaciones.errors %}
+            <span class="error-text">{{ error }}</span>
+          {% endfor %}
         </p>
         
         <p style="display: none;">{{ form.lat }}</p>
