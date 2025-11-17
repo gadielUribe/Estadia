@@ -6,6 +6,8 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
 
+from usuario.views import UsuarioPasswordResetView
+
 urlpatterns = [
     path('', lambda request: redirect('login', permanent=False)),  
     path('account/', include('usuario.urls')),
@@ -20,9 +22,10 @@ urlpatterns = [
     path('productos/', include('productos.urls')),
     path('voluntarios/', include('voluntarios.urls')),
     path('backup/', include('respaldo.urls')),
+    path('eventos/', include('eventos.urls')),
     path('reportes/', include('reportes.urls')),
     path("notificaciones/", include("notificaciones.urls", namespace="notificaciones")),
-    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/', UsuarioPasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),

@@ -69,6 +69,14 @@
   box-shadow: 0 0 0 2px rgba(106, 103, 200, 0.2);
 }
 
+.error-text {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin-top: -6px;
+  margin-bottom: 10px;
+  display: block;
+}
+
 /* --- Contenedor de Botones (Guardar/Cancelar) --- */
 .form-actions {
   display: flex;
@@ -313,4 +321,27 @@
 p small {
   color: #777;
   font-size: 0.85rem;
+}
+
+.dual-select {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .dual-select {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dual-select-item small {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: #555;
+}
+
+.field-help {
+  display: block;
+  margin-top: 4px;
 }

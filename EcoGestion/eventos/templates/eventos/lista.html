@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Eventos ambientales{% endblock %}
+{% block extra_css %}
+<link href="{% static 'css/list_view.css' %}" rel="stylesheet">
+<link href="{% static 'css/form_view.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="list-header">
+  <h2>Eventos ambientales</h2>
+  <div class="list-header-actions">
+    <a class="btn-secondary-pill" href="{% url 'calendario:calendario' %}">Calendario</a>
+    {% if request.user.rol in 'administrador gestor' %}
+    <a class="btn-new-item" href="{% url 'eventos:crear' %}">Nuevo evento</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="filter-bar-wrapper">
+  <form method="get" class="filter-bar-form">
+    <div class="filter-group">
+      <label for="q">Buscar</label>
+      <input type="text" name="q" id="q" value="{{ q }}" placeholder="Título o descripción">
+    </div>
+    <div class="filter-group">
+      <label for="desde">Desde</label>
+      <input type="date" name="desde" id="desde" value="{{ desde }}">
+    </div>
+    <div class="filter-group">
+      <label for="hasta">Hasta</label>
+      <input type="date" name="hasta" id="hasta" value="{{ hasta }}">
+    </div>
+    <div class="filter-group filter-actions">
+      <button type="submit" class="btn-save" style="background-color:#0d6efd">Filtrar</button>
+      <a class="btn-cancel" href="{% url 'eventos:lista' %}">Limpiar</a>
+    </div>
+  </form>
+</div>
+
+<div class="table-wrapper">
+  <div class="table-responsive-wrapper">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Organizador</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for evento in eventos %}
+        <tr>
+          <td>{{ evento.titulo }}</td>
+          <td>{{ evento.organizador|default:'-' }}</td>
+          <td>{{ evento.fecha_inicio|date:'Y-m-d H:i' }}</td>
+          <td>{{ evento.fecha_fin|date:'Y-m-d H:i'|default:'-' }}</td>
+          <td class="table-actions">
+            {% if request.user.rol in 'administrador gestor' %}
+            <a class="btn btn-sm btn-primary" href="{% url 'eventos:editar' evento.id %}">Editar</a>
+            {% endif %}
+            {% if request.user.rol == 'administrador' %}
+            <a class="btn btn-sm btn-danger" href="{% url 'eventos:eliminar' evento.id %}">Eliminar</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center">Sin eventos registrados</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

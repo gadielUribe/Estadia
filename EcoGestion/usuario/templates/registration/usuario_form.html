@@ -17,10 +17,24 @@
       <h2>{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} usuario</h2>
     </div>
 
-    <form method="post">
+    {% if form.errors %}
+      <div class="alert alert-danger">
+        Por favor completa todos los campos obligatorios y corrige los errores marcados.
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
       {% csrf_token %}
-      
-      {{ form.as_p }}
+      {% for field in form %}
+      <p>
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}
+          <span class="error-text">{{ error }}</span>
+        {% endfor %}
+      </p>
+      {% endfor %}
       
       <div class="form-actions">
         <a href="{% url 'usuario_list' %}" class="btn-cancel">Cancelar</a>

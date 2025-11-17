@@ -1,223 +1,127 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Calendario de Mantenimiento{% endblock %}
+{% block title %}Calendario de actividades{% endblock %}
 
 {% block extra_css %}
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
-  
   <link href="{% static 'css/list_view.css' %}" rel="stylesheet">
   <link href="{% static 'css/calendar_view.css' %}" rel="stylesheet">
 {% endblock %}
 
-
 {% block content %}
-
 <div class="list-header">
-  <h2>Calendario de Mantenimiento</h2>
+  <h2>Calendario de actividades</h2>
 </div>
-
 <div class="calendar-wrapper">
   <div id="calendar"></div>
 </div>
-
 <div id="day-modal" class="calendar-modal hidden">
   <div class="calendar-modal-content">
-    
     <div class="calendar-modal-header">
-      <h5 id="day-title">Tareas del día</h5>
+      <h5 id="day-title">Actividades del día</h5>
       <button id="day-close" class="modal-close-btn">×</button>
     </div>
-    
-    <div id="day-body" class="calendar-modal-body">
-      </div>
-    
+    <div id="day-body" class="calendar-modal-body"></div>
     <div class="calendar-modal-footer">
       <a id="add-tarea" class="btn-save" href="#">Añadir tarea</a>
     </div>
-    
   </div>
 </div>
 {% endblock %}
 
-
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-
 <script>
-  // Variables de Django (sin cambios)
-  const USER_ROLE = "{{ user_role }}";
-  const CAN_EDIT = {{ can_edit|yesno:"true,false" }};
-  const CAN_MARK_DONE = {{ can_mark_done|yesno:"true,false" }};
+const USER_ROLE = "{{ user_role }}";
+const CAN_EDIT = {{ can_edit|yesno:"true,false" }};
+const CAN_MARK_DONE = {{ can_mark_done|yesno:"true,false" }};
+function getCookie(name){let c=null;if(document.cookie&&document.cookie!==""){const cookies=document.cookie.split(';');for(let i=0;i<cookies.length;i++){const cookie=cookies[i].trim();if(cookie.substring(0,name.length+1)===(name+'=')){c=decodeURIComponent(cookie.substring(name.length+1));break;}}}return c;}
+function pad(n){return (n<10?'0':'')+n;}
+function ymdLocal(d){try{return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}catch(e){return ''}}
+function hhmm(d){try{return pad(d.getHours())+":"+pad(d.getMinutes());}catch(e){return ''}}
 
-  // getCookie (sin cambios)
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
+document.addEventListener('DOMContentLoaded', function(){
+  const calendarEl=document.getElementById('calendar');
+  const modal=document.getElementById('day-modal');
+  const modalClose=document.getElementById('day-close');
+  const modalContent=modal.querySelector('.calendar-modal-content');
+  modalClose.addEventListener('click',()=>{modal.classList.add('hidden');document.body.style.overflow='';});
+  modal.addEventListener('click',()=>{modal.classList.add('hidden');document.body.style.overflow='';});
+  modalContent.addEventListener('click',e=>e.stopPropagation());
+
+  const calendar=new FullCalendar.Calendar(calendarEl,{
+    initialView:'dayGridMonth',
+    headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek,timeGridDay,listWeek'},
+    locale:'es',
+    navLinks:true,
+    selectable:false,
+    editable:CAN_EDIT,
+    eventSources:[
+      {url:"{% url 'calendario:tareas_feed' %}",method:'GET'},
+      {url:"{% url 'eventos:feed' %}",method:'GET'}
+    ],
+    dateClick:function(info){
+      const dateStr=info.dateStr;
+      const events=calendar.getEvents().filter(ev=>ev.start && ymdLocal(ev.start)===dateStr);
+      const body=document.getElementById('day-body');
+      body.innerHTML='';
+      document.getElementById('day-title').textContent='Actividades del '+dateStr;
+      const tareas=events.filter(ev=>{const props=ev.extendedProps||{};return props.category!=='evento';});
+      const eventosDia=events.filter(ev=>{const props=ev.extendedProps||{};return props.category==='evento';});
+      if(!tareas.length && !eventosDia.length){body.innerHTML='<p>No hay actividades programadas.</p>';}
+      if(tareas.length){
+        const h=document.createElement('h4');h.textContent='Tareas de mantenimiento';body.appendChild(h);
+        const ul=document.createElement('ul');ul.className='task-list';
+        tareas.forEach(ev=>{
+          const li=document.createElement('li');li.className='task-item';
+          const p=ev.extendedProps||{};const resp=p.responsable?' - Encargado: '+p.responsable:'';
+          li.textContent=hhmm(ev.start)+' ['+p.tipo+'] '+(p.planta_nombre||ev.title)+resp;
+          if(p.estado==='realizada'){li.classList.add('is-done');}
+          else if(p.vencida){li.classList.add('is-overdue');}
+          if(p.estado==='realizada'){
+            const badge=document.createElement('span');badge.textContent='Realizada';badge.className='badge-task-done';li.appendChild(badge);
+          }else if(p.puedeMarcar){
+            const btn=document.createElement('button');btn.textContent='Marcar realizada';btn.className='btn-cancel';btn.style.marginLeft='8px';
+            const form=document.createElement('div');form.className='task-mark-form hidden';
+            form.innerHTML='<div><label style="display:block;margin-bottom:4px;font-weight:500;">Observaciones (opcional):</label><textarea rows="2"></textarea><div class="task-mark-form-actions"><button class="btn-cancel" type="button">Cancelar</button><button class="btn-save" type="button">Confirmar</button></div></div>';
+            btn.addEventListener('click',()=>{form.classList.remove('hidden');const ta=form.querySelector('textarea');if(ta)ta.focus();});
+            const buttons=form.querySelectorAll('button');
+            buttons[0].addEventListener('click',()=>form.classList.add('hidden'));
+            buttons[1].addEventListener('click',async()=>{
+              const obs=form.querySelector('textarea').value||'';
+              const res=await fetch("{% url 'calendario:tarea_done' 0 %}".replace('/0/','/'+ev.id+'/'),{method:'POST',headers:{'X-CSRFToken':getCookie('csrftoken')},body:new URLSearchParams({observaciones:obs})});
+              if(res.ok){
+                li.classList.remove('is-overdue');li.classList.add('is-done');btn.remove();form.remove();
+                const badge=document.createElement('span');badge.textContent='Realizada';badge.className='badge-task-done';li.appendChild(badge);
+                calendar.refetchEvents();
+              }else{alert('No se pudo marcar');}
+            });
+            li.appendChild(btn);li.appendChild(form);
+          }
+          ul.appendChild(li);
+        });
+        body.appendChild(ul);
       }
-    }
-    return cookieValue;
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const calendarEl = document.getElementById('calendar');
-    
-    // Funciones de ayuda (sin cambios)
-    function pad(n){ return (n<10?'0':'')+n }
-    function ymdLocal(d){
-      try{ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }catch(e){ return '' }
-    }
-    function hhmm(d){
-      try{ return pad(d.getHours())+":"+pad(d.getMinutes()); }catch(e){return ''}
-    }
-
-    // Lógica del Modal (sin cambios, pero ahora apunta a las nuevas clases)
-    const modal = document.getElementById('day-modal');
-    const modalClose = document.getElementById('day-close');
-    const modalContent = modal.querySelector('.calendar-modal-content');
-    
-    modalClose.addEventListener('click', ()=> { modal.classList.add('hidden'); document.body.style.overflow='';});
-    modal.addEventListener('click', ()=> { modal.classList.add('hidden'); document.body.style.overflow='';});
-    modalContent.addEventListener('click', (e)=> { e.stopPropagation(); });
-
-    // Inicialización de FullCalendar (sin cambios)
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-      },
-      locale: 'es',
-      buttonText: { // Textos en español
-        today:    'Hoy',
-        month:    'Mes',
-        week:     'Semana',
-        day:      'Día',
-        list:     'Lista'
-      },
-      navLinks: true,
-      selectable: false,
-      editable: CAN_EDIT,
-      eventSources: [
-        {
-          url: '{% url "calendario:tareas_feed" %}',
-          method: 'GET'
-        }
-      ],
-      
-      // dateClick (Lógica interna actualizada para usar nuevas clases)
-      dateClick: function(info){
-        const dateStr = info.dateStr; // YYYY-MM-DD
-        const events = calendar.getEvents().filter(ev => ev.start && ymdLocal(ev.start) === dateStr);
-        const body = document.getElementById('day-body');
-        body.innerHTML = '';
-        const title = document.getElementById('day-title');
-        title.textContent = `Tareas del ${dateStr}`;
-
-        if (events.length === 0){
-          body.innerHTML = '<p>No hay tareas programadas.</p>';
-        } else {
-          // Usamos la nueva clase de lista
-          const ul = document.createElement('ul');
-          ul.className = 'task-list';
-
-          events.forEach(ev => {
-            const li = document.createElement('li');
-            li.className = 'task-item'; // Nueva clase
-            
-            const p = ev.extendedProps || {};
-            const resp = p.responsable ? ` - Encargado: ${p.responsable}` : '';
-            li.textContent = `${hhmm(ev.start)} [${p.tipo}] ${p.planta_nombre || ev.title}${resp}`;
-            
-            if (p.estado === 'realizada') {
-              li.classList.add('is-done');
-            } else if (p.vencida) {
-              li.classList.add('is-overdue');
-            }
-            
-            if (p.estado === 'realizada'){
-              const done = document.createElement('span');
-              done.textContent = 'Realizada';
-              done.className = 'badge-task-done'; // Nueva clase de insignia
-              li.appendChild(done);
-            } else if (p.puedeMarcar){
-              const btn = document.createElement('button');
-              btn.textContent = 'Marcar realizada';
-              btn.className = 'btn-cancel'; // Reutilizamos estilo de botón
-              btn.style.marginLeft = '8px';
-
-              const formDiv = document.createElement('div');
-              formDiv.className = 'task-mark-form hidden'; // Nueva clase de form
-              formDiv.innerHTML = `
-                <div>
-                  <label style="display:block;margin-bottom:4px;font-weight:500;">Observaciones (opcional):</label>
-                  <textarea rows="2"></textarea>
-                  <div class="task-mark-form-actions">
-                    <button class="btn-cancel" type="button">Cancelar</button>
-                    <button class="btn-save" type="button">Confirmar</button>
-                  </div>
-                </div>`;
-
-              btn.addEventListener('click', ()=>{
-                formDiv.classList.remove('hidden');
-                const ta = formDiv.querySelector('textarea');
-                if (ta) ta.focus();
-              });
-
-              const [cancelBtn, confirmBtn] = formDiv.querySelectorAll('button');
-              cancelBtn.addEventListener('click', ()=>{
-                formDiv.classList.add('hidden');
-              });
-              confirmBtn.addEventListener('click', async ()=>{
-                const obs = formDiv.querySelector('textarea').value || '';
-                const res = await fetch(`{% url 'calendario:tarea_done' 0 %}`.replace('/0/', '/' + ev.id + '/'), {
-                  method: 'POST', headers: {'X-CSRFToken': getCookie('csrftoken')},
-                  body: new URLSearchParams({observaciones: obs})
-                });
-                if (res.ok){
-                  li.classList.remove('is-overdue');
-                  li.classList.add('is-done');
-                  if (btn) btn.remove();
-                  formDiv.remove();
-                  const done = document.createElement('span');
-                  done.textContent = 'Realizada';
-                  done.className = 'badge-task-done';
-                  li.appendChild(done);
-                  calendar.refetchEvents();
-                } else {
-                  alert('No se pudo marcar');
-                }
-              });
-
-              li.appendChild(btn);
-              li.appendChild(formDiv);
-            }
-            ul.appendChild(li);
-          });
-          body.appendChild(ul);
-        }
-
-        // Lógica de "Añadir tarea" (sin cambios)
-        document.getElementById('add-tarea').href = `{% url 'mantenimiento:tarea_create' %}?fecha=${dateStr}`;
-        modal.classList.remove('hidden');
-        document.body.style.overflow='hidden';
-      },
-      
-      // eventClick (sin cambios)
-      eventClick: function(info) {
-        if (info && info.jsEvent) info.jsEvent.preventDefault();
-        return false;
+      if(eventosDia.length){
+        const h=document.createElement('h4');h.textContent='Eventos ambientales';body.appendChild(h);
+        const ul=document.createElement('ul');ul.className='task-list';
+        eventosDia.forEach(ev=>{
+          const li=document.createElement('li');li.className='task-item evento-item';
+          const props=ev.extendedProps||{};const org=props.organizador?'Organiza: '+props.organizador:'';const desc=props.descripcion||'';
+          li.textContent=hhmm(ev.start)+' [Evento] '+ev.title;
+          if(org || desc){const extra=document.createElement('div');extra.className='evento-detalle';extra.textContent=org+(org&&desc?' - ':'')+desc;li.appendChild(extra);} 
+          ul.appendChild(li);
+        });
+        body.appendChild(ul);
       }
-    });
-    calendar.render();
+      document.getElementById('add-tarea').href="{% url 'mantenimiento:tarea_create' %}?fecha="+dateStr;
+      modal.classList.remove('hidden');
+      document.body.style.overflow='hidden';
+    },
+    eventClick:function(info){if(info && info.jsEvent) info.jsEvent.preventDefault();return false;}
   });
+  calendar.render();
+});
 </script>
 {% endblock %}

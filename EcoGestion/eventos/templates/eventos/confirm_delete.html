@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Eliminar evento{% endblock %}
+{% block content %}
+<div class="form-container">
+  <div class="form-wrapper">
+    <div class="form-header">
+      <h2>Eliminar evento</h2>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <p>¿Eliminar el evento <strong>{{ evento.titulo }}</strong> programado para {{ evento.fecha_inicio|date:'Y-m-d H:i' }}?</p>
+      <div class="form-actions">
+        <a class="btn-cancel" href="{% url 'eventos:lista' %}">Cancelar</a>
+        <button class="btn-save" style="background-color:#c0392b" type="submit">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
