@@ -97,3 +97,47 @@
   padding: 15px;
   text-align: center;
 }
+
+.login-container form p {
+  display: flex;
+  flex-direction: column; /* Apila la etiqueta encima del input */
+  gap: 8px; /* Espacio entre la etiqueta y el input */
+  margin-bottom: 20px;
+}
+
+/* Esto asegura que el <label> dentro del <p> se vea bien.
+*/
+.login-container form p label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0; /* Resetea el margen */
+  display: block;
+}
+
+
+.login-container form p input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Importante */
+}
+
+/* Estilo de :focus para el input de correo */
+.login-container form p input:focus {
+  outline: none;
+  border-color: #e85d04; /* Color naranja al seleccionar */
+  box-shadow: 0 0 0 2px rgba(232, 93, 4, 0.2);
+}
+
+.login-success-icon {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.login-success-icon svg {
+  width: 60px;
+  height: 60px;
+  color: #28a745; /* Color verde de éxito */
+}
