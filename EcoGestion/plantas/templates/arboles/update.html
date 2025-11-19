@@ -72,7 +72,7 @@
         </p>
         
         <p style="display: none;">{{ form.lat }}</p>
-        <p style."display: none;">{{ form.lng }}</p>
+        <p style="display: none;">{{ form.lng }}</p>
 
 
         <div class="map-label">Actualiza la ubicación en el mapa:</div>
@@ -93,17 +93,24 @@
     const latInput = document.getElementById('id_lat');
     const lngInput = document.getElementById('id_lng');
 
-    const map = L.map('map').setView([18.889647, -99.1397134], 17);
+    const latVal = parseFloat(latInput.value);
+    const lngVal = parseFloat(lngInput.value);
+
+    const defaultCenter = [18.889647, -99.1397134];
+    const hasCoords = Number.isFinite(latVal) && Number.isFinite(lngVal);
+
+    const map = L.map('map').setView(hasCoords ? [latVal, lngVal] : defaultCenter, hasCoords ? 18 : 17);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19, attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
     let marker = null;
+
     function placeMarker(latlng) {
       if (!marker) {
-        marker = L.marker(latlng, {draggable:true}).addTo(map);
+        marker = L.marker(latlng, { draggable: true }).addTo(map);
         marker.on('dragend', e => {
-          const {lat, lng} = e.target.getLatLng();
+          const { lat, lng } = e.target.getLatLng();
           latInput.value = lat.toFixed(6);
           lngInput.value = lng.toFixed(6);
         });
@@ -112,6 +119,10 @@
       }
       latInput.value = latlng.lat.toFixed(6);
       lngInput.value = latlng.lng.toFixed(6);
+    }
+
+    if (hasCoords) {
+      placeMarker({ lat: latVal, lng: lngVal });
     }
 
     map.on('click', e => placeMarker(e.latlng));

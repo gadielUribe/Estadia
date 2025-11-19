@@ -10,4 +10,4 @@ class SaludForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['planta'].queryset = plantaArbol.objects.filter(registro_salud__isnull=True)
+        self.fields['planta'].queryset = plantaArbol.objects.filter(registro_salud__isnull=False)

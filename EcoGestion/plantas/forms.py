@@ -1,6 +1,8 @@
 from django import forms
 from .models import plantaArbol
 
+FMT = '%Y-%m-%d'
+
 class plantaForm(forms.ModelForm):
     class Meta:
         model = plantaArbol
@@ -17,7 +19,7 @@ class plantaForm(forms.ModelForm):
             'lng',
         ]
         widgets = {
-            'fecha_plantacion': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_plantacion': forms.DateInput(attrs={'type': 'date'}, format=FMT),
             'lat': forms.HiddenInput(),
             'lng': forms.HiddenInput(),
             'imagen_url': forms.FileInput(),

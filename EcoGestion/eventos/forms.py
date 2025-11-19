@@ -4,14 +4,16 @@ from django.utils import timezone
 from .models import EventoAmbiental
 from usuario.models import Usuario
 
+FMT = '%Y-%m-%dT%H:%M'
+
 
 class EventoForm(forms.ModelForm):
     class Meta:
         model = EventoAmbiental
         fields = ["titulo", "descripcion", "fecha_inicio", "fecha_fin", "organizador"]
         widgets = {
-            "fecha_inicio": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "fecha_fin": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "fecha_inicio": forms.DateTimeInput(attrs={"type": "datetime-local"}, format=FMT),
+            "fecha_fin": forms.DateTimeInput(attrs={"type": "datetime-local"}, format=FMT),
         }
 
     def __init__(self, *args, **kwargs):
