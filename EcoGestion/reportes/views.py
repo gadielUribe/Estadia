@@ -534,6 +534,8 @@ def reporte_mantenimiento(request):
 
         # Exportar a Excel
     if "excel" in request.GET:
+        if not usuario_id:
+            return HttpResponseBadRequest("Debe seleccionar un usuario antes de generar un reporte.")
         from openpyxl.drawing.image import Image as XLImage
         from openpyxl.chart import BarChart, Reference
         from openpyxl.utils import get_column_letter
@@ -641,6 +643,8 @@ def reporte_mantenimiento(request):
 
     # Exportar a PDF
     if "pdf" in request.GET:
+        if not usuario_id:
+            return HttpResponseBadRequest("Debe seleccionar un usuario antes de generar un reporte.")
         buffer = BytesIO()
         doc = SimpleDocTemplate(
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
@@ -778,11 +782,15 @@ def reportes_cumplimiento_usuarios(request):
     f_ini = parse_date(request.GET.get("f_ini")) if request.GET.get("f_ini") else None
     f_fin = parse_date(request.GET.get("f_fin")) if request.GET.get("f_fin") else None
     
+    user_ids = []
     if q:
-        qs = qs.filter(
-            Q(usuario_responsable__nombre_completo__icontains=q)
-            | Q(usuario_responsable__matricula__icontains=q)
-            | Q(usuario_responsable__email__icontains=q)
+        user_ids = list(
+            User.objects.filter(
+                Q(nombre_completo__icontains=q)
+                | Q(matricula__icontains=q)
+                | Q(email__icontains=q)
+            )
+            .values_list("id_usuario", flat=True)
         )
     if f_ini:
         qs = qs.filter(fecha_programada__date__gte=f_ini)
@@ -808,6 +816,7 @@ def reportes_cumplimiento_usuarios(request):
     )
 
     filas = []
+    filtered_filas = []
     for r in agregados:
         total_u = r["total"] or 0
         realizadas_u = r["realizadas"] or 0
@@ -820,7 +829,9 @@ def reportes_cumplimiento_usuarios(request):
             or r["usuario_responsable__email"]
             or "Sin nombre"
         )
-        
+        include = True
+        if q and user_ids:
+            include = r["usuario_responsable__id_usuario"] in user_ids
         filas.append({
             "id": r["usuario_responsable__id_usuario"], "nombre": nombre,
             "matricula": r["usuario_responsable__matricula"],
@@ -828,6 +839,9 @@ def reportes_cumplimiento_usuarios(request):
             "total": total_u, "realizadas": realizadas_u,
             "pendientes": pendientes_u, "porcentaje": pct,
         })
+        if include:
+            filtered_filas.append(filas[-1])
+    filas = filtered_filas if q and user_ids else filas
 
     # Datos para gráficas
     chart1_labels = [f["nombre"] for f in filas]
@@ -1064,6 +1078,8 @@ def reporte_actividades_usuario(request):
     )
     if usuario_id:
         qs = qs.filter(usuario_responsable__id_usuario=usuario_id)
+    else:
+        qs = qs.none()
     if tipo_accion == "realizada":
         qs = qs.filter(estado=TareaMantenimiento.ESTADO_REALIZADA)
     elif tipo_accion == "pendiente":
@@ -1107,6 +1123,12 @@ def reporte_actividades_usuario(request):
     realizadas = qs.filter(estado=TareaMantenimiento.ESTADO_REALIZADA).count()
     pendientes = qs.filter(estado=TareaMantenimiento.ESTADO_PENDIENTE).count()
     cumplimiento = round(realizadas * 100 / total_acciones, 2) if total_acciones > 0 else 0.0
+
+    tipo_counts = {"riego": 0, "poda": 0, "fumigacion": 0}
+    if usuario_id:
+        tipo_counts["riego"] = qs.filter(tipo=TareaMantenimiento.TIPO_RIEGO, estado=TareaMantenimiento.ESTADO_REALIZADA).count()
+        tipo_counts["poda"] = qs.filter(tipo=TareaMantenimiento.TIPO_PODA, estado=TareaMantenimiento.ESTADO_REALIZADA).count()
+        tipo_counts["fumigacion"] = qs.filter(tipo=TareaMantenimiento.TIPO_FUMIGACION, estado=TareaMantenimiento.ESTADO_REALIZADA).count()
 
     # Exportar a Excel
     if "excel" in request.GET:
@@ -1159,35 +1181,28 @@ def reporte_actividades_usuario(request):
                 sheet.column_dimensions[get_column_letter(idx)].width = adjusted_width
             
             # Hoja de gráficas
-            sheet2 = workbook.create_sheet(title="Gráficas")
-            
-            # Top 20 usuarios con más actividades
-            from collections import Counter
-            usuarios_count = Counter([f["usuario"] for f in filas])
-            top_usuarios = usuarios_count.most_common(20)
-            
-            sheet2["A1"] = "Usuario"
-            sheet2["B1"] = "Acciones"
-            for i, (name, count) in enumerate(top_usuarios, start=2):
-                sheet2[f"A{i}"] = name
-                sheet2[f"B{i}"] = count
-            
-            # Ajustar columnas
-            sheet2.column_dimensions['A'].width = 35
-            
-            # Gráfica
-            if top_usuarios:
-                bar_chart = BarChart()
-                bar_chart.title = "Top 20 usuarios con más actividades"
-                bar_chart.y_axis.title = "Cantidad de actividades"
-                bar_chart.x_axis.title = "Usuario"
-                data_ref = Reference(sheet2, min_col=2, min_row=1, max_row=1 + len(top_usuarios))
-                cats_ref = Reference(sheet2, min_col=1, min_row=2, max_row=1 + len(top_usuarios))
-                bar_chart.add_data(data_ref, titles_from_data=True)
-                bar_chart.set_categories(cats_ref)
-                bar_chart.width = 20
-                bar_chart.height = 12
-                sheet2.add_chart(bar_chart, "A10")
+            if usuario_id:
+                sheet2 = workbook.create_sheet(title="Gráficas")
+                sheet2["A1"] = "Tipo"
+                sheet2["B1"] = "Realizadas"
+                sheet2["A2"] = "Riego"
+                sheet2["B2"] = tipo_counts["riego"]
+                sheet2["A3"] = "Poda"
+                sheet2["B3"] = tipo_counts["poda"]
+                sheet2["A4"] = "Fumigación"
+                sheet2["B4"] = tipo_counts["fumigacion"]
+                sheet2.column_dimensions["A"].width = 20
+                chart = BarChart()
+                chart.title = "Tareas realizadas por tipo"
+                chart.y_axis.title = "Cantidad"
+                chart.x_axis.title = "Tipo"
+                data_ref = Reference(sheet2, min_col=2, min_row=1, max_row=4)
+                cats_ref = Reference(sheet2, min_col=1, min_row=2, max_row=4)
+                chart.add_data(data_ref, titles_from_data=True)
+                chart.set_categories(cats_ref)
+                chart.width = 18
+                chart.height = 10
+                sheet2.add_chart(chart, "D2")
         
         response = HttpResponse(
             output.getvalue(),
@@ -1255,16 +1270,11 @@ def reporte_actividades_usuario(request):
         story.append(Paragraph("Análisis Gráfico", styles["Heading2"]))
         story.append(Spacer(1, 12))
         
-        # Gráfica de top usuarios
-        from collections import Counter
-        usuarios_count = Counter([f["usuario"] for f in filas])
-        top_usuarios = usuarios_count.most_common(10)
-        
-        if top_usuarios:
+        if usuario_id:
             chart1 = _create_bar_chart(
-                "Top 10 usuarios con más actividades",
-                [count for _, count in top_usuarios],
-                [name for name, _ in top_usuarios]
+                "Tareas realizadas por tipo",
+                [tipo_counts["riego"], tipo_counts["poda"], tipo_counts["fumigacion"]],
+                ["Riego", "Poda", "Fumigación"],
             )
             story.append(chart1)
         
@@ -1278,11 +1288,16 @@ def reporte_actividades_usuario(request):
     # Render HTML
     context = {
         "usuarios_mantenimiento": usuarios_mantenimiento,
-        "usuario_id": usuario_id or "", "tipo_accion": tipo_accion,
-        "f_ini": request.GET.get("f_ini", ""), "f_fin": request.GET.get("f_fin", ""),
-        "total_acciones": total_acciones, "realizadas": realizadas,
-        "pendientes": pendientes, "cumplimiento": cumplimiento,
+        "usuario_id": usuario_id or "",
+        "tipo_accion": tipo_accion,
+        "f_ini": request.GET.get("f_ini", ""),
+        "f_fin": request.GET.get("f_fin", ""),
+        "total_acciones": total_acciones,
+        "realizadas": realizadas,
+        "pendientes": pendientes,
+        "cumplimiento": cumplimiento,
         "actividades": filas,
+        "tipo_counts": tipo_counts,
     }
     return render(request, "reportes/reportes_actividades_usuario.html", context)
 

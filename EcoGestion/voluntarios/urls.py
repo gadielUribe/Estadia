@@ -10,7 +10,5 @@ urlpatterns = [
     path('eliminar/<int:pk>/', views.voluntario_delete, name='voluntario_delete'),
 
     path('asignaciones/', views.asignacion_list, name='asignacion_list'),
-    path('asignar/', views.asignar_voluntario, name='asignar_voluntario'),
     path('asignaciones/eliminar/<int:pk>/', views.asignacion_delete, name='asignacion_delete'),
 ]
-

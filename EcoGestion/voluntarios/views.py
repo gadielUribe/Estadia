@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Voluntario, AsignacionVoluntario
-from .forms import VoluntarioForm, AsignacionVoluntarioForm
+from .forms import VoluntarioForm
 
 
 def _is_admin(user):
@@ -60,21 +60,6 @@ def voluntario_delete(request, pk):
         voluntario.delete()
         return redirect('voluntarios:voluntario_list')
     return redirect('voluntarios:voluntario_list')
-
-
-@login_required
-@user_passes_test(_is_gestor)
-def asignar_voluntario(request):
-    if request.method == 'POST':
-        form = AsignacionVoluntarioForm(request.POST)
-        if form.is_valid():
-            asign = form.save(commit=False)
-            asign.asignado_por = request.user
-            asign.save()
-            return redirect('voluntarios:asignacion_list')
-    else:
-        form = AsignacionVoluntarioForm()
-    return render(request, 'voluntarios/asignar.html', {'form': form, 'section': 'voluntarios'})
 
 
 @login_required

@@ -16,19 +16,25 @@
   <h2>Reporte de actividades</h2>
   
   <div class="export-actions">
-    <a href="?{% if usuario_id %}usuario={{ usuario_id }}&{% endif %}{% if tipo_accion %}tipo={{ tipo_accion }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}excel=1"
-       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px;">
-       Excel
-    </a>
-    <a href="?{% if usuario_id %}usuario={{ usuario_id }}&{% endif %}{% if tipo_accion %}tipo={{ tipo_accion }}&{% endif %}{% if f_ini %}f_ini={{ f_ini }}&{% endif %}{% if f_fin %}f_fin={{ f_fin }}&{% endif %}pdf=1"
-       class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
-       PDF
-    </a>
+    {% if usuario_id %}
+      <a href="?usuario={{ usuario_id }}{% if tipo_accion %}&tipo={{ tipo_accion }}{% endif %}{% if f_ini %}&f_ini={{ f_ini }}{% endif %}{% if f_fin %}&f_fin={{ f_fin }}{% endif %}&excel=1"
+         class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px;">
+         Excel
+      </a>
+      <a href="?usuario={{ usuario_id }}{% if tipo_accion %}&tipo={{ tipo_accion }}{% endif %}{% if f_ini %}&f_ini={{ f_ini }}{% endif %}{% if f_fin %}&f_fin={{ f_fin }}{% endif %}&pdf=1"
+         class="btn-secondary-pill" style="font-size: 0.85rem; padding: 8px 15px; border-color: #dc3545; color: #dc3545;">
+         PDF
+      </a>
+    {% else %}
+      <button type="button" class="btn-secondary-pill" style="font-size:0.85rem;padding:8px 15px;" disabled>Excel</button>
+      <button type="button" class="btn-secondary-pill" style="font-size:0.85rem;padding:8px 15px;border-color:#dc3545;color:#dc3545;" disabled>PDF</button>
+    {% endif %}
   </div>
 </div>
 
 <p class="text-muted mb-4" style="margin-top: -20px;">
   Muestra las acciones relacionadas con tareas de mantenimiento realizadas por usuarios.
+  {% if not usuario_id %}<br><strong>Selecciona un usuario para generar el reporte.</strong>{% endif %}
 </p>
 
 <div class="filter-bar-wrapper">
@@ -36,8 +42,8 @@
     
     <div class="filter-group" style="flex-grow: 2;">
       <label>Usuario</label>
-      <select name="usuario">
-        <option value="">-- Todos los usuarios --</option>
+      <select name="usuario" required>
+        <option value="" disabled {% if not usuario_id %}selected{% endif %}>Selecciona un usuario</option>
         {% for u in usuarios_mantenimiento %}
         <option value="{{ u.id_usuario }}" {% if usuario_id|default:'' == u.id_usuario|stringformat:"s" %}selected{% endif %}>
           {{ u.nombre_completo }} ({{ u.matricula }})
@@ -87,6 +93,20 @@
     <span class="stat-label">% Cumplimiento</span>
     <span class="stat-value">{{ cumplimiento }}%</span>
   </div>
+  {% if usuario_id %}
+  <div class="stat-card">
+    <span class="stat-label">Riegos realizados</span>
+    <span class="stat-value">{{ tipo_counts.riego }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Podas realizadas</span>
+    <span class="stat-value">{{ tipo_counts.poda }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Fumigaciones realizadas</span>
+    <span class="stat-value">{{ tipo_counts.fumigacion }}</span>
+  </div>
+  {% endif %}
 </div>
 
 <div class="table-wrapper">

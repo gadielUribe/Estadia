@@ -26,6 +26,11 @@
       {% csrf_token %}
 
       <p>
+        <label for="{{ form.planta.id_for_label }}">Planta</label>
+        {{ form.planta }}
+        {% for error in form.planta.errors %}<span class="error-text">{{ error }}</span>{% endfor %}
+      </p>
+      <p>
         <label for="{{ form.tipo.id_for_label }}">Tipo</label>
         {{ form.tipo }}
         {% for error in form.tipo.errors %}<span class="error-text">{{ error }}</span>{% endfor %}

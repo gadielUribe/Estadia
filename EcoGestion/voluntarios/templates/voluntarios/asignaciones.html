@@ -15,9 +15,6 @@
   <h2>Asignaciones de voluntarios</h2>
   <div class="list-header-actions">
     <a href="{% url 'voluntarios:voluntario_list' %}" class="btn-secondary-pill">Volver a voluntarios</a>
-    {% if request.user.rol in 'administrador gestor' %}
-    <a href="{% url 'voluntarios:asignar_voluntario' %}" class="btn-new-item">Nueva asignación</a>
-    {% endif %}
   </div>
 </div>
  
