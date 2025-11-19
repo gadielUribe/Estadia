@@ -23,7 +23,7 @@ from reportlab.platypus import (
 )
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.graphics.shapes import Drawing, String
 from reportlab.graphics.charts.barcharts import VerticalBarChart
@@ -33,6 +33,14 @@ from plantas.models import plantaArbol
 from mantenimiento.models import TareaMantenimiento
 from herramientas.models import Herramienta
 from productos.models import Producto, AsignacionProducto
+
+
+def _format_datetime(dt):
+    if not dt:
+        return ""
+    if timezone.is_aware(dt):
+        dt = timezone.localtime(dt)
+    return dt.strftime("%Y-%m-%d %H:%M")
 
 
 # --------- 1) Página principal de reportes ---------
@@ -337,6 +345,22 @@ def reporte_especies(request):
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
         )
         styles = getSampleStyleSheet()
+        cell_style = ParagraphStyle(
+            "table-cell",
+            parent=styles["Normal"],
+            fontSize=8,
+            leading=10,
+            spaceAfter=0,
+            spaceBefore=0,
+        )
+        header_style = ParagraphStyle(
+            "table-header",
+            parent=styles["Heading5"],
+            fontSize=9,
+            leading=11,
+            alignment=1,
+            textColor=colors.whitesmoke,
+        )
         story = []
         
         # Membrete
@@ -437,9 +461,8 @@ def reporte_mantenimiento(request):
         qs = qs.filter(
             Q(planta__nombre_comun__icontains=q)
             | Q(planta__nombre_cientifico__icontains=q)
-            | Q(usuario_responsable__matricula__icontains=q)
-            | Q(usuario_responsable__nombre_completo__icontains=q)
             | Q(observaciones__icontains=q)
+            | Q(tipo__icontains=q)
         )
     if f_ini:
         qs = qs.filter(fecha_programada__date__gte=f_ini)
@@ -453,43 +476,42 @@ def reporte_mantenimiento(request):
     # Datos tabulares
     filas = []
     for t in qs:
-        usuario_nombre = ""
-        if t.usuario_responsable:
-            usuario_nombre = (
-                t.usuario_responsable.nombre_completo
-                or t.usuario_responsable.matricula
-                or t.usuario_responsable.email
-            )
-        
         filas.append({
             "especie": t.planta.nombre_comun if t.planta else "",
             "tipo": t.get_tipo_display(),
             "fecha_programada": t.fecha_programada,
             "fecha_realizacion": t.fecha_realizacion,
             "estado": t.get_estado_display(),
-            "usuario": usuario_nombre,
             "observaciones": t.observaciones or "",
         })
 
-    # Datos para gráficas
-    # Por usuario
-    por_usuario = qs.values(
-        "usuario_responsable__nombre_completo", "usuario_responsable__matricula"
-    ).annotate(
-        total=Count("id"),
-        realizadas=Count("id", filter=Q(estado=TareaMantenimiento.ESTADO_REALIZADA)),
-    )
-    chart1_labels = []
-    chart1_data = []
-    for r in por_usuario:
-        nombre = r["usuario_responsable__nombre_completo"] or r["usuario_responsable__matricula"] or "Sin asignar"
-        total_u = r["total"] or 0
-        realizadas_u = r["realizadas"] or 0
-        pct = round(realizadas_u * 100 / total_u, 2) if total_u > 0 else 0.0
-        chart1_labels.append(nombre)
-        chart1_data.append(pct)
-    
-    # Por especie
+    # Resumen por tipo de tarea
+    tipos_stats = []
+    chart_tipo_labels = []
+    chart_tipo_data = []
+    for tipo_code, tipo_label in TareaMantenimiento.TIPOS:
+        total_tipo = qs.filter(tipo=tipo_code).count()
+        realizadas_tipo = qs.filter(tipo=tipo_code, estado=TareaMantenimiento.ESTADO_REALIZADA).count()
+        pendientes_tipo = total_tipo - realizadas_tipo
+        pct_tipo = round(realizadas_tipo * 100 / total_tipo, 2) if total_tipo > 0 else 0.0
+        tipos_stats.append(
+            {
+                "tipo_codigo": tipo_code,
+                "tipo": tipo_label,
+                "total": total_tipo,
+                "realizadas": realizadas_tipo,
+                "pendientes": pendientes_tipo,
+                "porcentaje": pct_tipo,
+            }
+        )
+        if total_tipo > 0:
+            chart_tipo_labels.append(tipo_label)
+            chart_tipo_data.append(pct_tipo)
+
+    chart1_labels = chart_tipo_labels
+    chart1_data = chart_tipo_data
+
+    # Por especie (se mantiene para análisis opcional)
     por_especie = (
         qs.values("planta__nombre_comun")
         .annotate(
@@ -498,15 +520,17 @@ def reporte_mantenimiento(request):
         )
         .order_by("-total")[:10]
     )
-    chart2_labels = []
-    chart2_data = []
+    chart_especie_labels = []
+    chart_especie_data = []
     for r in por_especie:
         nombre_e = r["planta__nombre_comun"] or "Sin especie"
         total_e = r["total"] or 0
         realizadas_e = r["realizadas"] or 0
         pct_e = round(realizadas_e * 100 / total_e, 2) if total_e > 0 else 0.0
-        chart2_labels.append(nombre_e)
-        chart2_data.append(pct_e)
+        chart_especie_labels.append(nombre_e)
+        chart_especie_data.append(pct_e)
+    chart2_labels = chart_especie_labels
+    chart2_data = chart_especie_data
 
         # Exportar a Excel
     if "excel" in request.GET:
@@ -519,17 +543,8 @@ def reporte_mantenimiento(request):
         filas_excel = []
         for f in filas:
             row = f.copy()
-
             for campo_fecha in ("fecha_programada", "fecha_realizacion"):
-                v = row.get(campo_fecha)
-                if v:
-                    # Si es aware, la pasamos a localtime y luego a string
-                    if timezone.is_aware(v):
-                        v = timezone.localtime(v)
-                    row[campo_fecha] = v.strftime("%Y-%m-%d %H:%M")
-                else:
-                    row[campo_fecha] = ""
-
+                row[campo_fecha] = _format_datetime(row.get(campo_fecha))
             filas_excel.append(row)
 
         # Usamos filas_excel en lugar de filas
@@ -567,48 +582,54 @@ def reporte_mantenimiento(request):
                 adjusted_width = min(max_length + 2, 50)
                 sheet.column_dimensions[get_column_letter(idx)].width = adjusted_width
             
-            # Hoja de gráficas (lo de siempre...)
-            sheet2 = workbook.create_sheet(title="Gráficas")
-            sheet2["A1"] = "Usuario"
-            sheet2["B1"] = "% Cumplimiento"
-            for i, (lbl, val) in enumerate(zip(chart1_labels, chart1_data), start=2):
-                sheet2[f"A{i}"] = lbl
-                sheet2[f"B{i}"] = float(val)
-            
-            sheet2["D1"] = "Especie"
+            # Hoja de resumen por tipo
+            sheet2 = workbook.create_sheet(title="Resumen tipos")
+            sheet2["A1"] = "Tipo"
+            sheet2["B1"] = "Total"
+            sheet2["C1"] = "Realizadas"
+            sheet2["D1"] = "Pendientes"
             sheet2["E1"] = "% Cumplimiento"
-            for i, (lbl, val) in enumerate(zip(chart2_labels, chart2_data), start=2):
-                sheet2[f"D{i}"] = lbl
-                sheet2[f"E{i}"] = float(val)
+            for idx, stat in enumerate(tipos_stats, start=2):
+                sheet2[f"A{idx}"] = stat["tipo"]
+                sheet2[f"B{idx}"] = stat["total"]
+                sheet2[f"C{idx}"] = stat["realizadas"]
+                sheet2[f"D{idx}"] = stat["pendientes"]
+                sheet2[f"E{idx}"] = stat["porcentaje"]
+            sheet2.column_dimensions["A"].width = 18
+            sheet2.column_dimensions["E"].width = 15
             
-            sheet2.column_dimensions['A'].width = 30
-            sheet2.column_dimensions['D'].width = 25
-            
-            if chart1_labels:
+            if chart_tipo_labels:
                 bar1 = BarChart()
-                bar1.title = "Cumplimiento por usuario (%)"
+                bar1.title = "Cumplimiento por tipo (%)"
                 bar1.y_axis.title = "% Cumplimiento"
-                bar1.x_axis.title = "Usuario"
-                data_ref1 = Reference(sheet2, min_col=2, min_row=1, max_row=1 + len(chart1_data))
-                cats_ref1 = Reference(sheet2, min_col=1, min_row=2, max_row=1 + len(chart1_data))
+                bar1.x_axis.title = "Tipo"
+                data_ref1 = Reference(sheet2, min_col=5, min_row=1, max_row=1 + len(chart_tipo_labels))
+                cats_ref1 = Reference(sheet2, min_col=1, min_row=2, max_row=1 + len(chart_tipo_labels))
                 bar1.add_data(data_ref1, titles_from_data=True)
                 bar1.set_categories(cats_ref1)
-                bar1.width = 20
-                bar1.height = 12
-                sheet2.add_chart(bar1, "A10")
+                bar1.width = 18
+                bar1.height = 10
+                sheet2.add_chart(bar1, "G2")
             
-            if chart2_labels:
+            if chart_especie_labels:
+                sheet3 = workbook.create_sheet(title="Top especies")
+                sheet3["A1"] = "Especie"
+                sheet3["B1"] = "% Cumplimiento"
+                for idx, (lbl, val) in enumerate(zip(chart_especie_labels, chart_especie_data), start=2):
+                    sheet3[f"A{idx}"] = lbl
+                    sheet3[f"B{idx}"] = float(val)
+                sheet3.column_dimensions["A"].width = 30
                 bar2 = BarChart()
                 bar2.title = "Cumplimiento por especie (%)"
                 bar2.y_axis.title = "% Cumplimiento"
                 bar2.x_axis.title = "Especie"
-                data_ref2 = Reference(sheet2, min_col=5, min_row=1, max_row=1 + len(chart2_data))
-                cats_ref2 = Reference(sheet2, min_col=4, min_row=2, max_row=1 + len(chart2_data))
+                data_ref2 = Reference(sheet3, min_col=2, min_row=1, max_row=1 + len(chart_especie_data))
+                cats_ref2 = Reference(sheet3, min_col=1, min_row=2, max_row=1 + len(chart_especie_data))
                 bar2.add_data(data_ref2, titles_from_data=True)
                 bar2.set_categories(cats_ref2)
-                bar2.width = 20
-                bar2.height = 12
-                sheet2.add_chart(bar2, "J10")
+                bar2.width = 18
+                bar2.height = 10
+                sheet3.add_chart(bar2, "D2")
         
         response = HttpResponse(
             output.getvalue(),
@@ -625,6 +646,22 @@ def reporte_mantenimiento(request):
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
         )
         styles = getSampleStyleSheet()
+        cell_style = ParagraphStyle(
+            "table-cell",
+            parent=styles["Normal"],
+            fontSize=8,
+            leading=10,
+            spaceAfter=0,
+            spaceBefore=0,
+        )
+        header_style = ParagraphStyle(
+            "table-header",
+            parent=styles["Heading5"],
+            fontSize=9,
+            leading=11,
+            alignment=1,
+            textColor=colors.whitesmoke,
+        )
         story = []
         
         # Membrete
@@ -641,24 +678,41 @@ def reporte_mantenimiento(request):
         # Tabla de tareas - ANCHOS AJUSTADOS PARA TÍTULOS COMPLETOS
         headers = [
             "Especie", "Tipo", "Fecha programada", "Fecha realización",
-            "Estado", "Usuario responsable", "Observaciones",
+            "Estado", "Observaciones",
         ]
-        data = [headers]
+        data = [[Paragraph(h, header_style) for h in headers]]
         for f in filas[:300]:
             data.append([
-                f["especie"],
-                f["tipo"],
-                str(f["fecha_programada"] or ""),
-                str(f["fecha_realizacion"] or ""),
-                f["estado"],
-                f["usuario"],
-                f["observaciones"],
+                Paragraph(f["especie"] or "-", cell_style),
+                Paragraph(f["tipo"] or "-", cell_style),
+                Paragraph(_format_datetime(f["fecha_programada"]), cell_style),
+                Paragraph(_format_datetime(f["fecha_realizacion"]), cell_style),
+                Paragraph(f["estado"] or "-", cell_style),
+                Paragraph(f["observaciones"] or "-", cell_style),
             ])
         
-        # ANCHOS OPTIMIZADOS: más espacio para "Usuario responsable" y "Observaciones"
-        table = Table(data, repeatRows=1, colWidths=[60, 45, 65, 65, 40, 75, 110])
+        table = Table(data, repeatRows=1, colWidths=[65, 60, 75, 75, 55, 160])
         table.setStyle(_get_default_table_style())
         story.append(table)
+
+        # Resumen por tipo
+        story.append(Spacer(1, 18))
+        story.append(Paragraph("Resumen de cumplimiento por tipo", styles["Heading3"]))
+        resumen_headers = ["Tipo", "Total", "Realizadas", "Pendientes", "% Cumplimiento"]
+        resumen_data = [[Paragraph(h, header_style) for h in resumen_headers]]
+        for stat in tipos_stats:
+            resumen_data.append(
+                [
+                    Paragraph(stat["tipo"], cell_style),
+                    Paragraph(str(stat["total"]), cell_style),
+                    Paragraph(str(stat["realizadas"]), cell_style),
+                    Paragraph(str(stat["pendientes"]), cell_style),
+                    Paragraph(f'{stat["porcentaje"]:.2f}', cell_style),
+                ]
+            )
+        resumen_table = Table(resumen_data, repeatRows=1, colWidths=[90, 50, 60, 60, 70])
+        resumen_table.setStyle(_get_default_table_style("#4a69bd"))
+        story.append(resumen_table)
         
         # Nueva página para gráficas
         story.append(PageBreak())
@@ -669,7 +723,7 @@ def reporte_mantenimiento(request):
         # Gráfica 1
         if chart1_labels:
             chart1 = _create_bar_chart(
-                "Cumplimiento por usuario (%)",
+                "Cumplimiento por tipo (%)",
                 chart1_data,
                 chart1_labels
             )
@@ -694,9 +748,14 @@ def reporte_mantenimiento(request):
 
     # Render HTML
     context = {
-        "total_tareas": total_tareas, "realizadas": realizadas,
-        "cumplimiento_global": cumplimiento_global, "tareas": filas,
-        "q": q, "f_ini": request.GET.get("f_ini", ""), "f_fin": request.GET.get("f_fin", ""),
+        "total_tareas": total_tareas,
+        "realizadas": realizadas,
+        "cumplimiento_global": cumplimiento_global,
+        "tareas": filas,
+        "tipos_stats": tipos_stats,
+        "q": q,
+        "f_ini": request.GET.get("f_ini", ""),
+        "f_fin": request.GET.get("f_fin", ""),
     }
     return render(request, "reportes/reportes_mantenimiento.html", context)
 
@@ -782,7 +841,20 @@ def reportes_cumplimiento_usuarios(request):
         from openpyxl.chart import BarChart, PieChart, Reference
         from openpyxl.utils import get_column_letter
         
-        df = pd.DataFrame(filas)
+        filas_excel = []
+        for fila in filas:
+            row = fila.copy()
+            fh = row.get("fecha_hora")
+            if fh:
+                if timezone.is_aware(fh):
+                    fh = timezone.localtime(fh)
+                fh = fh.strftime("%Y-%m-%d %H:%M")
+            else:
+                fh = ""
+            row["fecha_hora"] = fh
+            filas_excel.append(row)
+
+        df = pd.DataFrame(filas_excel)
         output = BytesIO()
         
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -874,6 +946,22 @@ def reportes_cumplimiento_usuarios(request):
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
         )
         styles = getSampleStyleSheet()
+        cell_style = ParagraphStyle(
+            "table-cell",
+            parent=styles["Normal"],
+            fontSize=8,
+            leading=10,
+            spaceAfter=0,
+            spaceBefore=0,
+        )
+        header_style = ParagraphStyle(
+            "table-header",
+            parent=styles["Heading5"],
+            fontSize=9,
+            leading=11,
+            alignment=1,
+            textColor=colors.whitesmoke,
+        )
         story = []
         
         # Membrete
@@ -892,15 +980,20 @@ def reportes_cumplimiento_usuarios(request):
             "Usuario", "Matrícula", "Email",
             "Tareas programadas", "Realizadas", "Pendientes", "% Cumplimiento",
         ]
-        data = [headers]
+        data = [[Paragraph(h, header_style) for h in headers]]
         for f in filas[:300]:
             data.append([
-                f["nombre"], f["matricula"], f["email"],
-                f["total"], f["realizadas"], f["pendientes"], f["porcentaje"],
+                Paragraph(f["nombre"] or "-", cell_style),
+                Paragraph(f["matricula"] or "-", cell_style),
+                Paragraph(f["email"] or "-", cell_style),
+                Paragraph(str(f["total"]), cell_style),
+                Paragraph(str(f["realizadas"]), cell_style),
+                Paragraph(str(f["pendientes"]), cell_style),
+                Paragraph(f'{f["porcentaje"]:.2f}', cell_style),
             ])
         
         # ANCHOS OPTIMIZADOS: más espacio para "Tareas programadas" y "Email"
-        table = Table(data, repeatRows=1, colWidths=[75, 55, 90, 60, 55, 55, 50])
+        table = Table(data, repeatRows=1, colWidths=[85, 60, 120, 70, 55, 55, 60])
         table.setStyle(_get_default_table_style())
         story.append(table)
         
@@ -1021,7 +1114,13 @@ def reporte_actividades_usuario(request):
         from openpyxl.chart import BarChart, Reference
         from openpyxl.utils import get_column_letter
         
-        df = pd.DataFrame(filas)
+        filas_excel = []
+        for fila in filas:
+            row = fila.copy()
+            row["fecha_hora"] = _format_datetime(row.get("fecha_hora"))
+            filas_excel.append(row)
+
+        df = pd.DataFrame(filas_excel)
         output = BytesIO()
         
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -1104,6 +1203,22 @@ def reporte_actividades_usuario(request):
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
         )
         styles = getSampleStyleSheet()
+        cell_style = ParagraphStyle(
+            "table-cell",
+            parent=styles["Normal"],
+            fontSize=8,
+            leading=10,
+            spaceBefore=0,
+            spaceAfter=0,
+        )
+        header_style = ParagraphStyle(
+            "table-header",
+            parent=styles["Heading5"],
+            fontSize=9,
+            leading=11,
+            alignment=1,
+            textColor=colors.whitesmoke,
+        )
         story = []
         
         # Membrete
@@ -1119,16 +1234,18 @@ def reporte_actividades_usuario(request):
         
         # Tabla de actividades - ANCHOS AJUSTADOS PARA TÍTULOS COMPLETOS
         headers = ["Usuario", "Rol", "Tipo de acción", "Fecha y hora", "Detalle"]
-        data = [headers]
+        data = [[Paragraph(h, header_style) for h in headers]]
         for f in filas[:500]:
             data.append([
-                f["usuario"], f["rol"], f["tipo_accion"],
-                f["fecha_hora"].strftime("%Y-%m-%d %H:%M") if f["fecha_hora"] else "",
-                f["detalle"],
+                Paragraph(f["usuario"] or "-", cell_style),
+                Paragraph(f["rol"] or "-", cell_style),
+                Paragraph(f["tipo_accion"] or "-", cell_style),
+                Paragraph(_format_datetime(f["fecha_hora"]), cell_style),
+                Paragraph(f["detalle"] or "-", cell_style),
             ])
         
         # ANCHOS OPTIMIZADOS: más espacio para "Detalle" y "Tipo de acción"
-        table = Table(data, repeatRows=1, colWidths=[65, 40, 75, 60, 230])
+        table = Table(data, repeatRows=1, colWidths=[75, 45, 90, 70, 220])
         table.setStyle(_get_default_table_style())
         story.append(table)
         
