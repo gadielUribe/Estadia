@@ -18,14 +18,6 @@
 
     <form method="post">
       {% csrf_token %}
-      
-      <p>
-        <label for="{{ form.planta.id_for_label }}">Planta</label>
-        {{ form.planta }}
-        {% for error in form.planta.errors %}
-          <small class="text-danger">{{ error }}</small>
-        {% endfor %}
-      </p>
 
       <p>
         <label for="{{ form.estado_salud.id_for_label }}">Estado</label>

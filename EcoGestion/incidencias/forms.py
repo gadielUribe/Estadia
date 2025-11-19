@@ -1,6 +1,8 @@
 from django import forms
 from .models import incidenciaAmbiental
 
+FMT = '%Y-%m-%dT%H:%M'
+
 class incidenciaForm(forms.ModelForm):
     class Meta:
         model = incidenciaAmbiental
@@ -14,10 +16,10 @@ class incidenciaForm(forms.ModelForm):
             'id_usuario',
         ]
         widgets = {
-            'fecha_reporte': forms.DateTimeInput(attrs={
-                'type': 'datetime-local',
-                'class': 'form-control'
-            }, format='%Y-%m-%dT%H:%M'),
+            'fecha_reporte': forms.DateTimeInput(
+                attrs={"type": "datetime-local", "step": "900"}, 
+                format=FMT,
+            ),
         }
 
     def __init__(self, *args, **kwargs):

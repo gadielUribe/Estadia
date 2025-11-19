@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib import messages
 from django.db import transaction
 
 from .models import Producto, AsignacionProducto
@@ -36,7 +35,6 @@ def producto_create(request):
         form = ProductoForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Producto creado correctamente.')
             return redirect('productos:producto_list')
     else:
         form = ProductoForm()
@@ -51,7 +49,6 @@ def producto_update(request, pk):
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Producto actualizado.')
             return redirect('productos:producto_list')
     else:
         form = ProductoForm(instance=producto)
@@ -64,7 +61,6 @@ def producto_delete(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
         producto.delete()
-        messages.success(request, 'Producto eliminado.')
         return redirect('productos:producto_list')
     return render(request, 'productos/confirm_delete.html', {'producto': producto, 'section': 'productos'})
 
@@ -79,7 +75,6 @@ def producto_stock_update(request, pk):
         form = StockUpdateForm(request.POST, instance=existencia)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Existencias actualizadas.')
             return redirect('productos:producto_list')
     else:
         form = StockUpdateForm(instance=existencia)
@@ -104,7 +99,6 @@ def asignar_producto(request):
                 existencia.cantidad -= asignacion.cantidad
                 existencia.save()
                 asignacion.save()
-                messages.success(request, 'Producto asignado y existencias descontadas.')
                 return redirect('productos:asignacion_list')
     else:
         form = AsignacionProductoForm()
@@ -132,7 +126,6 @@ def asignacion_delete(request, pk):
         existencia.save()
         
         asignacion.delete()
-        messages.success(request, 'Asignación eliminada y existencias restituidas.')
         return redirect('productos:asignacion_list')
 
     # --- ESTE ES EL CAMBIO ---

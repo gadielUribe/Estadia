@@ -3,6 +3,7 @@ from django.contrib.auth.forms import PasswordResetForm
 
 from .models import Usuario
 
+SENTINELA = "********"
 
 class LoginForm(forms.Form):
     matricula = forms.CharField(
@@ -39,8 +40,9 @@ class UsuarioForm(forms.ModelForm):
     contrasena = forms.CharField(
         label="Contraseña",
         widget=forms.PasswordInput(
+            render_value=True,
             attrs={
-                "placeholder": "Ingresa una contraseña",
+                "placeholder": "Deja '********' para mantener la actual", 
                 "data-required-msg": "La contraseña es obligatoria.",
             }
         ),
@@ -70,6 +72,8 @@ class UsuarioForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.initial.setdefault("contrasena", SENTINELA)
         for name, field in self.fields.items():
             if field.required:
                 field.widget.attrs.setdefault("required", "required")
@@ -78,9 +82,14 @@ class UsuarioForm(forms.ModelForm):
                 )
 
     def clean_contrasena(self):
-        data = self.cleaned_data.get("contrasena")
+        data = (self.cleaned_data.get("contrasena") or "").strip()
         if not self.instance.pk and not data:
             raise forms.ValidationError("La contraseña es obligatoria para nuevos usuarios.")
+        
+        if self.instance.pk:
+            if data == SENTINELA or data == "":
+                return None
+
         return data
 
     def save(self, commit=True):

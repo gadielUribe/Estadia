@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.utils.timezone import localtime
 
 from voluntarios.models import Voluntario, AsignacionVoluntario
 
 from .models import TareaMantenimiento
+
+FMT = '%Y-%m-%dT%H:%M'
 
 
 class TareaForm(forms.ModelForm):
@@ -41,11 +44,17 @@ class TareaForm(forms.ModelForm):
             "observaciones",
         ]
         widgets = {
-            "fecha_programada": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "fecha_programada": forms.DateTimeInput(
+                attrs={"type": "datetime-local", "step": "900"}, 
+                format=FMT,
+            ),
         }
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["planta"].disabled = True   
+            self.fields["planta"].required = False 
+            self.fields["planta"].widget.attrs.update({"readonly": "readonly"})
         User = get_user_model()
         self.fields["usuario_responsable"].required = False
         self.fields["usuario_responsable"].queryset = User.objects.filter(rol="mantenimiento")

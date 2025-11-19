@@ -1,16 +1,32 @@
 from django import forms
+from django.utils import timezone
 from .models import Producto, AsignacionProducto, Existencia
 
+FMT = "%Y-%m-%d"
 
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['nombre', 'descripcion', 'fecha_llegada']
+        fields = ["nombre", "descripcion", "fecha_llegada"]
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'fecha_llegada': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            "nombre": forms.TextInput(attrs={"class": "form-control"}),
+            "descripcion": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+            "fecha_llegada": forms.DateInput(attrs={"class": "form-control", "type": "date"}, format=FMT),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["fecha_llegada"].input_formats = [FMT]
+
+    def clean_fecha_llegada(self):
+        fecha = self.cleaned_data.get("fecha_llegada")
+        if not fecha:
+            return fecha
+        hoy = timezone.localdate()
+        if fecha > hoy:
+            raise forms.ValidationError("La fecha de llegada no puede ser posterior a hoy.")
+        return fecha
+
 
 
 class StockUpdateForm(forms.ModelForm):
