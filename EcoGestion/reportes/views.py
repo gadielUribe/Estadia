@@ -534,8 +534,6 @@ def reporte_mantenimiento(request):
 
         # Exportar a Excel
     if "excel" in request.GET:
-        if not usuario_id:
-            return HttpResponseBadRequest("Debe seleccionar un usuario antes de generar un reporte.")
         from openpyxl.drawing.image import Image as XLImage
         from openpyxl.chart import BarChart, Reference
         from openpyxl.utils import get_column_letter
@@ -643,8 +641,6 @@ def reporte_mantenimiento(request):
 
     # Exportar a PDF
     if "pdf" in request.GET:
-        if not usuario_id:
-            return HttpResponseBadRequest("Debe seleccionar un usuario antes de generar un reporte.")
         buffer = BytesIO()
         doc = SimpleDocTemplate(
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
