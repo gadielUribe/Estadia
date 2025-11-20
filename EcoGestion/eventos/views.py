@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -68,7 +67,6 @@ def evento_create(request):
         form = EventoForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Evento creado")
             return redirect("eventos:lista")
     else:
         form = EventoForm(initial={"organizador": request.user.pk})
@@ -83,7 +81,6 @@ def evento_update(request, pk: int):
         form = EventoForm(request.POST, instance=evento)
         if form.is_valid():
             form.save()
-            messages.success(request, "Evento actualizado")
             return redirect("eventos:lista")
     else:
         form = EventoForm(instance=evento)
@@ -96,7 +93,6 @@ def evento_delete(request, pk: int):
     evento = get_object_or_404(EventoAmbiental, pk=pk)
     if request.method == "POST":
         evento.delete()
-        messages.success(request, "Evento eliminado")
         return redirect("eventos:lista")
     return render(request, "eventos/confirm_delete.html", {"evento": evento})
 
