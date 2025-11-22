@@ -58,7 +58,9 @@
         {% if request.user.is_authenticated %}
         <ul>
           <li><a href="{% url 'dashboard' %}">Inicio</a></li>
-          <li><a href="{% url 'reportes_inicio' %}">Reportes</a></li>
+          {% if request.user.rol != "mantenimiento" %}
+            <li><a href="{% url 'reportes_inicio' %}">Reportes</a></li>
+          {% endif %}
           <li><a href="{% url 'chat_general' %}">Chat General</a></li>
           <li><a href="{% url 'chat_privado' request.user.id_usuario %}">Chat Privado</a></li>
           <li><a href="{% url 'calendario:calendario' %}">Calendario</a></li>

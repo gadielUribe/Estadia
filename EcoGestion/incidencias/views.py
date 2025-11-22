@@ -7,7 +7,8 @@ from .forms import incidenciaForm
 from .models import incidenciaAmbiental
 
 def es_privilegio(user):
-    return user.is_authenticated and getattr(user, "rol", None) in ["administrador"]
+    # Administrador y gestor pueden gestionar incidencias completas
+    return user.is_authenticated and getattr(user, "rol", None) in ["administrador", "gestor"]
 
 # Pagina de Incio para incidencias ambientales
 @login_required

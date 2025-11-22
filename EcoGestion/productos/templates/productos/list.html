@@ -15,7 +15,7 @@
 <div class="list-header">
   <h2>Productos</h2>
   <div class="list-header-actions">
-    {% if request.user.rol in 'administrador gestor' %}
+    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
     <a href="{% url 'productos:producto_create' %}" class="btn-new-item">Nuevo producto</a>
     {% endif %}
   </div>
@@ -50,11 +50,11 @@
           <td>{{ p.descripcion|default:'—' }}</td>
           <td class="text-center">{{ p.existencia.cantidad|default:0 }}</td>
           <td>{{ p.fecha_llegada|default:'—' }}</td>
-          <td class="table-actions"> {% if request.user.rol in 'administrador gestor' %}
+          <td class="table-actions"> {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
               <a class="btn btn-sm btn-primary" href="{% url 'productos:producto_update' p.pk %}">Editar</a>
               <a class="btn btn-sm btn-secondary" href="{% url 'productos:producto_stock_update' p.pk %}">Existencias</a>
             {% endif %}
-            {% if request.user.rol == 'administrador' %}
+            {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
               
               <button type="button" class="btn btn-sm btn-danger"
                       data-bs-toggle="modal" 

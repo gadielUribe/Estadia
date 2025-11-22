@@ -21,6 +21,10 @@ def _user_role(user) -> str:
     return getattr(user, "rol", "mantenimiento")
 
 
+def _es_privilegio(user) -> bool:
+    return _user_role(user) in {"administrador", "gestor"}
+
+
 def _horizon_days() -> int:
     return 60
 
@@ -93,6 +97,8 @@ def ensure_future_tasks(horizon_days: int | None = None):
 @login_required
 def inicio(request):
     role = _user_role(request.user)
+    if role == "mantenimiento":
+        return redirect("calendario:calendario")
     return render(request, "mantenimiento/inicio.html", {"role": role})
 
 
@@ -100,10 +106,11 @@ def inicio(request):
 
 @login_required
 def tareas_list(request):
-    qs = TareaMantenimiento.objects.select_related("planta", "usuario_responsable").all()
     role = _user_role(request.user)
     if role == "mantenimiento":
-        qs = qs.filter(usuario_responsable=request.user)
+        return HttpResponseForbidden("Sin permisos")
+
+    qs = TareaMantenimiento.objects.select_related("planta", "usuario_responsable").all()
     # filtros simples opcionales
     tipo = request.GET.get("tipo")
     if tipo in {t[0] for t in TareaMantenimiento.TIPOS}:

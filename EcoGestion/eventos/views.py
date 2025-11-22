@@ -15,7 +15,7 @@ def _rol(user):
 
 
 def _is_admin(user):
-    return _rol(user) == "administrador"
+    return _rol(user) in {"administrador", "gestor"}
 
 
 def _can_manage(user):
@@ -88,7 +88,7 @@ def evento_update(request, pk: int):
 
 
 @login_required
-@user_passes_test(_is_admin)
+@user_passes_test(_can_manage)
 def evento_delete(request, pk: int):
     evento = get_object_or_404(EventoAmbiental, pk=pk)
     if request.method == "POST":

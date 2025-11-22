@@ -6,7 +6,8 @@ from mantenimiento.models import TareaMantenimiento
 
 
 def _is_admin(user):
-    return user.is_authenticated and getattr(user, 'rol', '') == 'administrador'
+    # Para este módulo, administrador y gestor tienen permisos completos
+    return user.is_authenticated and getattr(user, 'rol', '') in ('administrador', 'gestor')
 
 
 def _is_registrador(user):

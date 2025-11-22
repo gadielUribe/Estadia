@@ -12,7 +12,7 @@
   <h2>Eventos ambientales</h2>
   <div class="list-header-actions">
     <a class="btn-secondary-pill" href="{% url 'calendario:calendario' %}">Calendario</a>
-    {% if request.user.rol in 'administrador gestor' %}
+    {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
     <a class="btn-new-item" href="{% url 'eventos:crear' %}">Nuevo evento</a>
     {% endif %}
   </div>
@@ -59,10 +59,10 @@
           <td>{{ evento.fecha_inicio|date:'Y-m-d H:i' }}</td>
           <td>{{ evento.fecha_fin|date:'Y-m-d H:i'|default:'-' }}</td>
           <td class="table-actions">
-            {% if request.user.rol in 'administrador gestor' %}
+            {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
             <a class="btn btn-sm btn-primary" href="{% url 'eventos:editar' evento.id %}">Editar</a>
             {% endif %}
-            {% if request.user.rol == 'administrador' %}
+            {% if request.user.rol == 'administrador' or request.user.rol == 'gestor' %}
             <a class="btn btn-sm btn-danger" href="{% url 'eventos:eliminar' evento.id %}">Eliminar</a>
             {% endif %}
           </td>

@@ -100,6 +100,24 @@
       </div>
       <span class="card-label">Gestión de especies</span>
     </a>
+    <a href="{% url 'salud_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container">
+        <img src="{% static 'img/health.png' %}" alt="">
+      </div>
+      <span class="card-label">Monitoreo y Salud</span>
+    </a>
+    <a href="{% url 'incidencia_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-4">
+        <img src="{% static 'img/incident.png' %}" alt="">
+      </div>
+      <span class="card-label">Incidencias ambientales</span>
+    </a>
+    <a href="{% url 'herramientas:herramienta_list' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-6">
+        <img src="{% static 'img/tools.png' %}" alt="">
+      </div>
+      <span class="card-label">Herramientas</span>
+    </a>
     <a href="{% url 'productos:producto_list' %}" class="dashboard-card">
       <div class="card-icon-container card-color-7">
         <img src="{% static 'img/products.png' %}" alt="">
@@ -114,16 +132,28 @@
     </a>
     <a href="{% url 'eventos:lista' %}" class="dashboard-card">
       <div class="card-icon-container card-color-4">
-        <img src="{% static 'img/calendar.png' %}" alt="">
+        <img src="{% static 'img/eventos.png' %}" alt="Eventos ambientales">
       </div>
       <span class="card-label">Eventos ambientales</span>
     </a>
 {% elif request.user.rol == 'mantenimiento' %}
-    <a href="{% url 'mantenimiento:inicio' %}" class="dashboard-card">
-      <div class="card-icon-container card-color-3">
-        <img src="{% static 'img/maintenance.png' %}" alt="">
+    <a href="{% url 'planta_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-2">
+        <img src="{% static 'img/species.png' %}" alt="">
       </div>
-      <span class="card-label">Tareas de mantenimiento</span>
+      <span class="card-label">Mapa de especies</span>
+    </a>
+    <a href="{% url 'incidencia_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container card-color-4">
+        <img src="{% static 'img/incident.png' %}" alt="">
+      </div>
+      <span class="card-label">Incidencias ambientales</span>
+    </a>
+    <a href="{% url 'salud_inicio' %}" class="dashboard-card">
+      <div class="card-icon-container">
+        <img src="{% static 'img/health.png' %}" alt="">
+      </div>
+      <span class="card-label">Salud de ejemplares</span>
     </a>
 {% endif %}
 

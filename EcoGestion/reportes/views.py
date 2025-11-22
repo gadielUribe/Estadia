@@ -598,13 +598,14 @@ def reporte_mantenimiento(request):
             sheet2.column_dimensions["A"].width = 18
             sheet2.column_dimensions["E"].width = 15
             
-            if chart_tipo_labels:
+            if tipos_stats:
                 bar1 = BarChart()
                 bar1.title = "Cumplimiento por tipo (%)"
                 bar1.y_axis.title = "% Cumplimiento"
                 bar1.x_axis.title = "Tipo"
-                data_ref1 = Reference(sheet2, min_col=5, min_row=1, max_row=1 + len(chart_tipo_labels))
-                cats_ref1 = Reference(sheet2, min_col=1, min_row=2, max_row=1 + len(chart_tipo_labels))
+                last_row = 1 + len(tipos_stats)
+                data_ref1 = Reference(sheet2, min_col=5, min_row=1, max_row=last_row)
+                cats_ref1 = Reference(sheet2, min_col=1, min_row=2, max_row=last_row)
                 bar1.add_data(data_ref1, titles_from_data=True)
                 bar1.set_categories(cats_ref1)
                 bar1.width = 18
@@ -1382,7 +1383,15 @@ def reporte_uso_herramientas(request):
         from openpyxl.utils import get_column_letter
         
         df = pd.DataFrame(filas)
-        df_hist = pd.DataFrame(historial)
+        # Normalizar fechas de historial a texto sin TZ
+        def _normalize_hist(row):
+            row = row.copy()
+            for campo in ("fecha_programada",):
+                val = row.get(campo)
+                row[campo] = _format_datetime(val)
+            return row
+
+        df_hist = pd.DataFrame([_normalize_hist(h) for h in historial]) if historial else pd.DataFrame()
         output = BytesIO()
         
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
