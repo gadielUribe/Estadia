@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
+from django.urls import reverse
 
 from .models import Producto, AsignacionProducto
 from .forms import ProductoForm, StockUpdateForm, AsignacionProductoForm
@@ -129,7 +130,7 @@ def asignacion_delete(request, pk):
         asignacion.delete()
         return redirect('productos:asignacion_list')
 
-    # --- ESTE ES EL CAMBIO ---
+
     # Si la petición es GET, ya no mostramos una página.
     # Simplemente redirigimos a la lista, porque el modal se encarga de la confirmación.
     return redirect('productos:asignacion_list')
@@ -152,3 +153,9 @@ def producto_tareas(request, pk):
             'section': 'productos',
         },
     )
+
+
+@login_required
+def reporte_productos_inventario_redirect(request):
+    # Acceso directo al reporte de inventario/movimientos desde el módulo de productos
+    return redirect(reverse("reporte_productos_inventario"))

@@ -1458,6 +1458,22 @@ def reporte_uso_herramientas(request):
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
         )
         styles = getSampleStyleSheet()
+        cell_style = ParagraphStyle(
+            "table-cell",
+            parent=styles["Normal"],
+            fontSize=8,
+            leading=10,
+            spaceBefore=0,
+            spaceAfter=0,
+        )
+        header_style = ParagraphStyle(
+            "table-header",
+            parent=styles["Heading5"],
+            fontSize=9,
+            leading=11,
+            alignment=1,
+            textColor=colors.whitesmoke,
+        )
         story = []
         
         # Membrete
@@ -1566,13 +1582,20 @@ def reporte_productos_inventario(request):
     # Movimientos
     movimientos = []
     producto_ids = [p["id"] for p in productos]
-    mov_qs = AsignacionProducto.objects.filter(producto_id__in=producto_ids)
+    mov_qs = AsignacionProducto.objects.select_related("producto", "asignado_por").all()
+    # Filtrar por productos visibles si hay lista; si no, mostrar todos los movimientos
+    if producto_ids:
+        mov_qs = mov_qs.filter(producto_id__in=producto_ids)
+    if q:
+        mov_qs = mov_qs.filter(
+            Q(producto__nombre__icontains=q) | Q(producto__descripcion__icontains=q)
+        )
     if f_ini:
         mov_qs = mov_qs.filter(fecha_asignacion__date__gte=f_ini)
     if f_fin:
         mov_qs = mov_qs.filter(fecha_asignacion__date__lte=f_fin)
     
-    for m in mov_qs.select_related("producto", "asignado_por").order_by("-fecha_asignacion")[:1000]:
+    for m in mov_qs.order_by("-fecha_asignacion")[:1000]:
         movimientos.append({
             "producto": m.producto.nombre if m.producto else "",
             "cantidad": m.cantidad, "tipo": "Salida",
@@ -1584,6 +1607,34 @@ def reporte_productos_inventario(request):
             ),
         })
 
+    # Fallback: si no hay AsignacionProducto, tomar tareas con producto asignado
+    if not movimientos:
+        tareas_mov = TareaMantenimiento.objects.select_related("producto", "usuario_responsable").all()
+        if producto_ids:
+            tareas_mov = tareas_mov.filter(producto_id__in=producto_ids)
+        if q:
+            tareas_mov = tareas_mov.filter(
+                Q(producto__nombre__icontains=q) | Q(producto__descripcion__icontains=q)
+            )
+        if f_ini:
+            tareas_mov = tareas_mov.filter(fecha_programada__date__gte=f_ini)
+        if f_fin:
+            tareas_mov = tareas_mov.filter(fecha_programada__date__lte=f_fin)
+
+        for t in tareas_mov.order_by("-fecha_programada")[:1000]:
+            movimientos.append({
+                "producto": t.producto.nombre if t.producto else "",
+                "cantidad": 1,
+                "tipo": "Salida",
+                "fecha": t.fecha_realizacion or t.fecha_programada,
+                "tarea_id": t.id,
+                "asignado_por": (
+                    t.usuario_responsable.nombre_completo
+                    if t.usuario_responsable and getattr(t.usuario_responsable, "nombre_completo", None)
+                    else (t.usuario_responsable.matricula if t.usuario_responsable else "")
+                ),
+            })
+
     # Exportar a Excel
     if "excel" in request.GET:
         if rol == "mantenimiento":
@@ -1592,8 +1643,14 @@ def reporte_productos_inventario(request):
         from openpyxl.drawing.image import Image as XLImage
         from openpyxl.utils import get_column_letter
         
+        # Normalizar fechas a texto sin TZ antes de exportar
+        def _normalize_mov(row):
+            row = row.copy()
+            row["fecha"] = _format_datetime(row.get("fecha"))
+            return row
+
         df_prod = pd.DataFrame(productos)
-        df_mov = pd.DataFrame(movimientos)
+        df_mov = pd.DataFrame([_normalize_mov(m) for m in movimientos]) if movimientos else pd.DataFrame()
         output = BytesIO()
         
         with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -1664,6 +1721,22 @@ def reporte_productos_inventario(request):
             buffer, pagesize=A4, topMargin=36, leftMargin=36, rightMargin=36, bottomMargin=36
         )
         styles = getSampleStyleSheet()
+        cell_style = ParagraphStyle(
+            "table-cell",
+            parent=styles["Normal"],
+            fontSize=8,
+            leading=10,
+            spaceBefore=0,
+            spaceAfter=0,
+        )
+        header_style = ParagraphStyle(
+            "table-header",
+            parent=styles["Heading5"],
+            fontSize=9,
+            leading=11,
+            alignment=1,
+            textColor=colors.whitesmoke,
+        )
         story = []
         
         # Membrete
@@ -1683,8 +1756,13 @@ def reporte_productos_inventario(request):
         data = [headers]
         for p in productos[:300]:
             data.append([
-                p["nombre"], p["descripcion"], p["existencias"],
-                p["fecha_llegada"].strftime("%Y-%m-%d") if p["fecha_llegada"] else "",
+                Paragraph(p["nombre"] or "-", cell_style),
+                Paragraph(p["descripcion"] or "-", cell_style),
+                p["existencias"],
+                Paragraph(
+                    p["fecha_llegada"].strftime("%Y-%m-%d") if p["fecha_llegada"] else "",
+                    cell_style,
+                ),
                 p["dias_inventario"] if p["dias_inventario"] is not None else "",
             ])
         
@@ -1697,16 +1775,19 @@ def reporte_productos_inventario(request):
         # Movimientos (si hay)
         if movimientos:
             story.append(Paragraph("Movimientos de existencias (salidas a tareas)", styles["Heading3"]))
-            data_mov = [["Producto", "Cantidad", "Tipo", "Fecha", "Tarea", "Asignado por"]]
+            data_mov = [[Paragraph(h, header_style) for h in ["Producto", "Cantidad", "Tipo", "Fecha", "Tarea", "Asignado por"]]]
             for m in movimientos[:300]:
                 data_mov.append([
-                    m["producto"], m["cantidad"], m["tipo"],
-                    m["fecha"].strftime("%Y-%m-%d %H:%M") if m["fecha"] else "",
-                    m["tarea_id"], m["asignado_por"],
+                    Paragraph(m["producto"] or "-", cell_style),
+                    m["cantidad"],
+                    Paragraph(m["tipo"] or "-", cell_style),
+                    Paragraph(_format_datetime(m["fecha"]), cell_style),
+                    m["tarea_id"],
+                    Paragraph(m["asignado_por"] or "-", cell_style),
                 ])
             
             # ANCHOS PARA MOVIMIENTOS
-            tabla_mov = Table(data_mov, repeatRows=1, colWidths=[70, 45, 45, 60, 45, 70])
+            tabla_mov = Table(data_mov, repeatRows=1, colWidths=[70, 45, 45, 70, 45, 80])
             tabla_mov.setStyle(_get_default_table_style(header_color="#4a5c6a"))
             story.append(tabla_mov)
         
