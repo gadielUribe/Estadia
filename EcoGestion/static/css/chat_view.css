@@ -74,3 +74,66 @@
 .btn-chat-send:hover {
   background-color: #5552a0; /* Tono más oscuro */
 }
+
+/* ===========================
+   TABLET (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+  .chat-log-wrapper {
+    height: 420px;          /* Un poco menos alta para pantallas medianas */
+    padding: 16px;
+  }
+
+  .chat-log-wrapper p {
+    font-size: 0.95rem;
+  }
+
+  .chat-input-area {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .chat-input {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .btn-chat-send {
+    padding: 9px 16px;
+    font-size: 0.88rem;
+  }
+}
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+  .chat-log-wrapper {
+    height: 350px;          /* Menos altura para dejar espacio al teclado */
+    padding: 12px;
+  }
+
+  .chat-log-wrapper p {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .chat-input-area {
+    flex-direction: column; /* Input arriba, botón abajo */
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .chat-input {
+    font-size: 0.9rem;
+    padding: 9px 11px;
+  }
+
+  .btn-chat-send {
+    width: 100%;            /* Botón full width en móvil */
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.9rem;
+  }
+}

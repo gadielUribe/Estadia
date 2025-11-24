@@ -97,23 +97,88 @@
   flex-shrink: 0; /* Evita que el input se encoja */
 }
 
-/* --- 4. Diseño Responsivo --- */
-@media (max-width: 900px) {
+/* ===========================
+   TABLET (≤ 992px)
+   =========================== */
+@media (max-width: 992px) {
   .chat-page-layout {
-    grid-template-columns: 220px 1fr; /* Sidebar más pequeño */
+    grid-template-columns: 230px 1fr; /* Sidebar un poco más estrecha */
+    gap: 20px;
+    height: 70vh;
+  }
+
+  .chat-user-list-wrapper {
+    padding: 16px;
+  }
+
+  .chat-user-link {
+    font-size: 0.95rem;
+    padding: 9px 10px;
+  }
+
+  .chat-main-area .list-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .chat-main-area .chat-input-area {
+    padding: 14px 18px;
   }
 }
-@media (max-width: 768px) {
-  /* Apila la lista de usuarios encima del chat */
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+
+  /* Cambiar layout a UNA sola columna */
   .chat-page-layout {
-    grid-template-columns: 1fr; 
-    height: auto; /* Altura automática */
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 15px;
   }
+
+  /* Sidebar ahora ocupa toda la pantalla arriba */
   .chat-user-list-wrapper {
     height: auto;
-    margin-bottom: 20px;
+    max-height: 240px;  /* Para evitar que tape todo en móviles */
+    padding: 16px;
   }
+
+  .chat-user-list-wrapper h4 {
+    font-size: 1.1rem;
+  }
+
+  .chat-user-link {
+    font-size: 0.9rem;
+    padding: 8px 10px;
+  }
+
+  /* Área principal del chat ocupa 100% debajo */
   .chat-main-area {
-     height: 70vh; /* Le da una altura fija al chat en móvil */
+    height: auto;
+  }
+
+  .chat-main-area .list-header {
+    padding: 16px 18px;
+  }
+
+  .chat-main-area .list-header h2 {
+    font-size: 1.35rem;
+  }
+
+  /* Chat-log más pequeño (teclado móvil ocupa mucho espacio) */
+  .chat-main-area .chat-log-wrapper {
+    max-height: 300px;
+    padding: 14px;
+  }
+
+  .chat-main-area .chat-input-area {
+    padding: 12px 15px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chat-main-area .chat-input-area .btn-chat-send {
+    width: 100%;
   }
 }

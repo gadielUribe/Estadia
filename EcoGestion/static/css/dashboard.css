@@ -193,3 +193,94 @@ justify-items: center; /* Centra las tarjetas dentro de su celda de grid */
     font-size: 0.9rem;
 }
 }
+
+/* === Responsivo adicional: TABLET (≤ 992px) === */
+@media (max-width: 992px) {
+    main {
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 2rem;
+    }
+
+    .dashboard-header p {
+        font-size: 0.95rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 22px;
+    }
+
+    .dashboard-card {
+        width: 150px;
+    }
+
+    .card-icon-container {
+        width: 135px;
+        height: 135px;
+    }
+
+    .card-icon-container img {
+        width: 70px;
+        height: 65px;
+    }
+
+    .card-label {
+        font-size: 0.95rem;
+    }
+}
+
+/* === Responsivo adicional: MÓVIL PEQUEÑO (≤ 480px) === */
+@media (max-width: 480px) {
+    main {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .dashboard-header h2 {
+        font-size: 1.7rem;
+    }
+
+    .dashboard-header p {
+        font-size: 0.9rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 16px;
+    }
+
+    .dashboard-card {
+        width: 130px;
+    }
+
+    .card-icon-container {
+        width: 110px;
+        height: 110px;
+        margin-bottom: 12px;
+    }
+
+    .card-icon-container img {
+        width: 55px;
+        height: 55px;
+    }
+
+    .card-label {
+        font-size: 0.85rem;
+    }
+
+    .btn-agregar-usuario {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 9px 18px;
+    }
+}

@@ -43,3 +43,41 @@
   font-size: 0.9rem;
   color: #555;
 }
+
+/* === Responsivo: tablet === */
+@media (max-width: 768px) {
+  /* Ajustamos un poco las insignias para que ocupen menos */
+  .status-badge {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+  }
+
+  /* Que la columna de observaciones no sea tan ancha */
+  .cell-pre-wrap {
+    max-width: 260px;
+    font-size: 0.85rem;
+  }
+}
+
+/* === Responsivo: móviles pequeños === */
+@media (max-width: 480px) {
+  /* En pantallas muy pequeñas, dejamos que el texto fluya más */
+  .plant-cell strong {
+    white-space: normal; /* Permite salto de línea en el nombre */
+  }
+
+  .plant-cell small {
+    display: block;      /* Pasa el texto pequeño a la línea de abajo */
+    margin-top: 2px;
+  }
+
+  .cell-pre-wrap {
+    max-width: 200px;    /* Más compacto todavía */
+    font-size: 0.8rem;
+  }
+
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 2px 7px;
+  }
+}

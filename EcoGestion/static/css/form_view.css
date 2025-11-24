@@ -345,3 +345,104 @@ p small {
   display: block;
   margin-top: 4px;
 }
+
+/* ===========================
+   TABLET (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+  .form-container {
+    max-width: 100%;
+    padding: 0 20px; /* Respirito lateral en tablet */
+  }
+
+  .form-header,
+  .form-wrapper form {
+    padding: 20px;
+  }
+
+  .form-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .form-wrapper form p {
+    margin-bottom: 18px;
+  }
+
+  .form-row {
+    gap: 16px;
+  }
+
+  .form-row .form-group {
+    min-width: 180px;
+  }
+
+  .file-preview-container img {
+    max-width: 220px;
+  }
+
+  .form-actions {
+    gap: 10px;
+  }
+
+  .btn-save,
+  .btn-cancel {
+    padding: 9px 18px;
+    font-size: 0.88rem;
+  }
+}
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0 15px;
+  }
+
+  .form-header,
+  .form-wrapper form {
+    padding: 16px;
+  }
+
+  .form-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .form-wrapper form p {
+    margin-bottom: 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .form-row .form-group {
+    min-width: 100%; /* Cada campo toma todo el ancho */
+  }
+
+  .custom-file-upload-wrapper {
+    padding: 12px;
+  }
+
+  .file-preview-container img {
+    max-width: 100%; /* Que no se salga del ancho del móvil */
+  }
+
+  .repeat-toggle {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
+}
