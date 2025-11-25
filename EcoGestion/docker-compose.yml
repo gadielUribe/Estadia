@@ -54,11 +54,10 @@ services:
   scheduler:
     build: .
     command: >
-      sh -c "python manage.py migrate --noinput && \
-             while true; do \
-               python manage.py enviar_recordatorios || true; \
-               sleep 900; \
-             done"
+      sh -c "while true; do
+             python manage.py enviar_recordatorios || true;
+             sleep 900;
+           done"
     volumes:
       - .:/app
     environment:
