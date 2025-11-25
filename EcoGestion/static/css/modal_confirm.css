@@ -33,3 +33,66 @@
     display: flex;
     justify-content: flex-end;
 }
+
+/* ===========================
+   TABLET (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+  /* Modal: ajustamos paddings */
+  .modal-confirm-delete .modal-header {
+    padding: 14px 18px;
+  }
+
+  .modal-confirm-delete .modal-body {
+    padding: 18px;
+  }
+
+  .modal-confirm-delete .modal-body-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+  }
+
+  .modal-confirm-delete .modal-body p {
+    font-size: 1rem;
+  }
+
+  .modal-confirm-delete .modal-footer {
+    padding: 14px 18px;
+  }
+}
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+
+  /* Modal más compacto */
+  .modal-confirm-delete .modal-header,
+  .modal-confirm-delete .modal-body,
+  .modal-confirm-delete .modal-footer {
+    padding: 12px 14px;
+  }
+
+  /* Título y texto */
+  .modal-confirm-delete .modal-body-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+
+  .modal-confirm-delete .modal-body p {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  /* Botones en columna en pantallas pequeñas */
+  .modal-confirm-delete .modal-footer {
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .modal-confirm-delete .modal-footer .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

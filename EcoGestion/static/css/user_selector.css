@@ -59,3 +59,40 @@
   padding-top: 20px;
   border-top: 1px solid #f0f0f0; /* Separador sutil */
 }
+
+/* === Responsivo: tablet === */
+@media (max-width: 768px) {
+  .user-grid {
+    /* Un poco más compacta en tablet */
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .user-card {
+    padding: 18px;
+    height: auto; /* Permitimos que la tarjeta crezca si el texto es más grande */
+  }
+
+  .user-card-name {
+    font-size: 0.95rem;
+  }
+}
+
+/* === Responsivo: móviles pequeños === */
+@media (max-width: 480px) {
+  .user-grid {
+    /* Forzamos una sola columna para que se vea tipo lista */
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .user-card {
+    padding: 16px;
+    height: auto;
+  }
+
+  .chat-fallback-links {
+    flex-direction: column;  /* Enlaces uno debajo del otro */
+    align-items: stretch;
+  }
+}

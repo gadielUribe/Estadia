@@ -106,3 +106,61 @@
   color: #333;
 }
 
+/* ===========================
+   Responsivo: Tablet (≤ 992px)
+   =========================== */
+@media (max-width: 992px) {
+  .report-card .card-body {
+    padding: 20px;
+  }
+
+  .report-card .card-title {
+    font-size: 1.15rem;
+  }
+
+  .report-card .card-text {
+    font-size: 0.9rem;
+  }
+
+  .report-card .btn {
+    padding: 9px 18px;
+    font-size: 0.88rem;
+  }
+}
+
+/* ===========================
+   Responsivo: Móvil (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+  .report-card {
+    /* Que no se vea tan “pesada” en pantallas pequeñas */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+  }
+
+  .report-card .card-body {
+    padding: 18px;
+  }
+
+  .report-card .card-title {
+    font-size: 1.05rem;
+    text-align: center;
+  }
+
+  .report-card .card-text {
+    font-size: 0.88rem;
+    text-align: center;
+  }
+
+  /* Botones en columna y de ancho completo en móvil */
+  .report-card .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 9px 0;
+    font-size: 0.86rem;
+  }
+
+  .report-card .btn + .btn {
+    margin-top: 8px; /* Separación entre botones apilados */
+  }
+}

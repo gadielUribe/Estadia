@@ -212,3 +212,133 @@
   border-radius: 15px; /* Píldora pequeña */
   font-weight: 500;
 }
+
+@media (max-width: 992px) {
+
+  .list-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .list-header-actions {
+    gap: 12px;
+  }
+
+  .btn-new-item,
+  .btn-secondary-pill {
+    padding: 8px 18px;
+    font-size: 0.85rem;
+  }
+
+  .list-total-count {
+    font-size: 0.9rem;
+    margin-top: -10px;
+  }
+
+  .table-wrapper .table th,
+  .table-wrapper .table td {
+    padding: 12px 14px;
+  }
+
+  .notif-pills {
+    gap: 8px;
+  }
+
+  .notif-pills .nav-link {
+    padding: 7px 14px;
+    font-size: 0.85rem;
+  }
+
+  .notif-batch-actions .btn-sm {
+    padding: 4px 10px;
+  }
+
+  .table-responsive-wrapper {
+    overflow-x: auto;
+  }
+}
+
+
+/* ============================================================
+   RESPONSIVO PARA MÓVILES (≤ 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+
+  /* Encabezado */
+  .list-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .list-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .list-header h2 small {
+    font-size: 1rem;
+  }
+
+  .btn-new-item {
+    width: 100%;
+    text-align: center;
+    padding: 9px 0;
+  }
+
+  .btn-secondary-pill {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Contador */
+  .list-total-count {
+    margin-top: -5px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  /* Tabla */
+  .table-wrapper .table th,
+  .table-wrapper .table td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .table-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .table-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Píldoras */
+  .notif-pills {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .notif-pills .nav-link {
+    width: 100%;
+    text-align: center;
+    padding: 8px 14px;
+  }
+
+  /* Acciones por lotes */
+  .notif-batch-actions {
+    flex-direction: column;
+  }
+
+  .notif-batch-actions .btn-sm {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Botón de marcar como leído */
+  .notif-actions .btn-toggle-read {
+    width: 30px;
+    height: 30px;
+  }
+}

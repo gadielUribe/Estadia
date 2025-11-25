@@ -45,3 +45,64 @@
   color: #b45309; /* Texto oscuro para el nombre */
   font-weight: 700;
 }
+
+/* ===========================
+   TABLET (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+
+  /* Filtro de checkbox mejor alineado en tablet */
+  .filter-group-checkbox {
+    min-width: 140px;
+    padding-bottom: 6px;
+  }
+
+  .filter-group-checkbox .form-check-label {
+    font-size: 0.9rem;
+  }
+
+  .filter-group-checkbox .form-check-input {
+    width: 1em;
+    height: 1em;
+  }
+
+  /* Sub-encabezado */
+  .list-subheader {
+    font-size: 1.4rem;
+    margin-top: 30px;
+  }
+}
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+
+  /* Checkbox ocupa toda la fila */
+  .filter-group-checkbox {
+    width: 100%;
+    padding-bottom: 0;
+    margin-bottom: 12px;
+  }
+
+  .filter-group-checkbox .form-check-label {
+    font-size: 0.85rem;
+  }
+
+  /* Sub-encabezado más compacto en móviles */
+  .list-subheader {
+    font-size: 1.2rem;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  /* Resaltado de bajo stock se mantiene pero con un toque más suave */
+  .table-wrapper .table tr.row-low-stock {
+    background-color: #fffdee; /* Un tono muy suave */
+  }
+
+  .table-wrapper .table tr.row-low-stock td:first-child {
+    font-size: 0.95rem;
+  }
+}

@@ -54,3 +54,64 @@
   display: flex;
   gap: 10px;
 }
+
+/* ===========================
+   TABLET (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-card {
+    padding: 18px;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  .stat-value {
+    font-size: 1.6rem;
+  }
+
+  .export-actions {
+    gap: 8px;
+  }
+}
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr; /* Una card por fila */
+    gap: 14px;
+  }
+
+  .stat-card {
+    padding: 16px;
+    align-items: center;    /* Centrado visual agradable en móvil */
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+  }
+
+  .export-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .export-actions a,
+  .export-actions button {
+    width: 100%;
+    text-align: center;
+  }
+}

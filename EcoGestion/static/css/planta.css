@@ -91,7 +91,7 @@
 /* Reemplaza tu regla ".map-container .folium-map" con esta: */
 .map-container .map-folium {
   width: 100%;     /* Ocupa el 100% del ANCHO de su caja */
-  height: 35rem;    /* Define una ALTURA fija (ajusta 400px si lo quieres más pequeño) */
+  height: 100%;    /* Define una ALTURA fija (ajusta 400px si lo quieres más pequeño) */
   overflow: hidden; /* Oculta cualquier desbordamiento */
   border-radius: 8px; /* Redondea las esquinas del mapa */
 }
@@ -125,4 +125,119 @@
 #map {
   height: 450px; 
   width: 100%;
+}
+
+/* ===========================
+   TABLET (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+  .filter-bar-form {
+    gap: 16px;
+  }
+
+  .filter-group {
+    flex-basis: 45%;       /* Dos columnas de filtros cuando se pueda */
+    min-width: 200px;
+  }
+
+  .filter-group input[type="text"],
+  .filter-group input[type="date"],
+  .filter-group select {
+    min-width: 0;          /* Permite que se ajusten mejor */
+  }
+
+  .filter-actions {
+    align-items: flex-end;
+  }
+
+  .table-plant-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .map-container {
+    margin-left: 25px;
+    margin-right: 25px;
+    padding: 18px;
+  }
+
+  .map-container .map-folium {
+    height: 100%;  /* Un poco más bajo en tablet */
+  }
+
+  #map {
+    height: 380px;
+  }
+}
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+  .filter-bar-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filter-group {
+    flex-basis: 100%;
+    min-width: 100%;
+  }
+
+  .filter-group input[type="text"],
+  .filter-group input[type="date"],
+  .filter-group select {
+    width: 100%;
+    min-width: 100%;
+    font-size: 0.9rem;
+    padding: 9px 12px;
+  }
+
+  .filter-group input#buscarInput {
+    background-position: left 10px center;
+    padding-left: 34px; /* ajustamos por el icono */
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 0;
+  }
+
+  .filter-actions .btn,
+  .filter-actions button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .table-plant-image {
+    width: 48px;
+    height: 48px;
+  }
+
+  .map-container {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 14px;
+    margin-top: 20px;
+  }
+
+  .map-container h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+
+  .map-container .map-folium {
+    height: 100%;
+  }
+
+  #map {
+    height: 320px;
+  }
+
+  .leaflet-map-container {
+    margin-bottom: 20px;
+  }
 }

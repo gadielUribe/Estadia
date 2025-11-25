@@ -99,3 +99,88 @@
   display: block;    /* Necesario para que max-height funcione en un <td> */
   white-space: pre-wrap; /* Mantiene los saltos de línea */
 }
+
+/* ===========================
+   TABLET (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+  .action-card {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .action-bar {
+    gap: 12px;
+  }
+
+  .upload-group {
+    gap: 8px;
+  }
+
+  .upload-group .form-control {
+    font-size: 0.9rem;
+    max-width: 260px;
+  }
+
+  .btn-restore,
+  .btn-upload {
+    padding: 9px 18px;
+    font-size: 0.88rem;
+  }
+
+  .table--1 {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+  }
+
+  .log-cell {
+    max-height: 90px;
+  }
+}
+
+/* ===========================
+   MÓVIL (≤ 480px)
+   =========================== */
+@media (max-width: 480px) {
+  .action-card {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .action-bar form {
+    width: 100%;
+  }
+
+  .upload-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .upload-group .form-control {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .btn-restore,
+  .btn-upload {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .table--1 {
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+  }
+
+  .log-cell {
+    max-height: 80px;
+    font-size: 0.8rem;
+  }
+}
