@@ -11,7 +11,6 @@ def _is_admin(user):
 
 
 def _is_registrador(user):
-    # Usa 'gestor' como registrador por ahora
     return user.is_authenticated and getattr(user, 'rol', '') in ('administrador', 'gestor')
 
 
@@ -84,7 +83,6 @@ def asignacion_list(request):
 def asignacion_delete(request, pk):
     asignacion = get_object_or_404(AsignacionHerramienta, pk=pk)
     
-    # El modal SÓLO envía peticiones POST
     if request.method == 'POST':
         asignacion.delete()
         return redirect('herramientas:herramienta_list')

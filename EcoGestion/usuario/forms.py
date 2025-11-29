@@ -89,7 +89,7 @@ class UsuarioForm(forms.ModelForm):
                 f"Deja '{SENTINELA}' para mantener la actual"
             )
         else:
-            # En creación, limpiar cualquier valor inicial y usar placeholder genérico
+            
             self.initial.pop("contrasena", None)
             self.fields["contrasena"].widget.attrs["placeholder"] = "Ingresa la contraseña"
 

@@ -9,7 +9,5 @@ urlpatterns = [
     path('editar/<int:pk>/', views.producto_update, name='producto_update'),
     path('eliminar/<int:pk>/', views.producto_delete, name='producto_delete'),
     path('existencias/<int:pk>/', views.producto_stock_update, name='producto_stock_update'),
-    # Se eliminan rutas de asignaciones para simplificar flujo
-    # Ver tareas que usan un producto específico
     path('<int:pk>/tareas/', views.producto_tareas, name='producto_tareas'),
 ]

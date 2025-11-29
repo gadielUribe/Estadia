@@ -15,7 +15,6 @@ def serialize_general(m):
     }
 
 def serialize_privado(m):
-    # Usado dentro de funciones síncronas (history) con select_related('emisor') aplicado
     return {
         "id": m.id_chat,
         "mensaje": m.mensaje,

@@ -18,7 +18,6 @@ class incidenciaAmbiental(models.Model):
     class Meta:
         db_table = 'IncidenciaAmbiental'
 
-    # Representación en cadena del objetoz
     def __str__(self):
         texto = "{0} - {1}"
         return texto.format(self.id_incidencia, self.titulo)

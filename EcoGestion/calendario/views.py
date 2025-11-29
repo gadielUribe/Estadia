@@ -79,7 +79,7 @@ def tareas_feed(request):
     # Importante: no autogenerar tareas aquí para evitar que reaparezcan
     # después de que el usuario las elimine manualmente desde el CRUD.
     # La generación automática se hace al crear/editar (opcional) o
-    # mediante una tarea programada/management command si se desea.
+    # mediante una tarea programada si se desea.
 
     start_str = request.GET.get("start")
     end_str = request.GET.get("end")
