@@ -12,14 +12,21 @@ from mantenimiento.models import TareaMantenimiento
 from eventos.models import EventoAmbiental
 
 
+# _user_role(user): devuelve el rol del usuario autenticado o mantenimiento por defecto.
+# Entrada: user (objeto User). Salida: cadena con el rol.
 def _user_role(user) -> str:
     return getattr(user, "rol", "mantenimiento")
 
 
+# _horizon_days(): define cuántos días hacia adelante se generan tareas automáticas.
+# Entrada: ninguna. Salida: entero con días de horizonte.
 def _horizon_days() -> int:
     return 60
 
 
+# ensure_future_tasks(horizon_days=None): genera tareas de mantenimiento futuras si faltan.
+# Entrada: horizon_days opcional para limitar la proyección.
+# Salida: crea tareas programadas según periodicidades de cada planta.
 def ensure_future_tasks(horizon_days: int | None = None):
     horizon_days = horizon_days or _horizon_days()
     now = timezone.now()
@@ -64,6 +71,8 @@ def ensure_future_tasks(horizon_days: int | None = None):
 
 
 @login_required
+# calendario_view(request): muestra la vista principal del calendario.
+# Entrada: request (HttpRequest). Salida: HttpResponse con la plantilla del calendario y permisos de usuario.
 def calendario_view(request):
     role = _user_role(request.user)
     context = {
@@ -75,6 +84,8 @@ def calendario_view(request):
 
 
 @login_required
+# tareas_feed(request): devuelve los eventos de tareas en formato JSON para el calendario.
+# Entrada: request (HttpRequest con rango start/end). Salida: JsonResponse con lista de eventos o error.
 def tareas_feed(request):
     # Importante: no autogenerar tareas aquí para evitar que reaparezcan
     # después de que el usuario las elimine manualmente desde el CRUD.
@@ -135,6 +146,8 @@ def tareas_feed(request):
     return JsonResponse(events, safe=False)
 
 
+# _color_for_tipo(tipo, estado): asigna un color para mostrar cada tarea según tipo/estado.
+# Entrada: tipo de tarea y estado actual. Salida: código de color hex.
 def _color_for_tipo(tipo: str, estado: str) -> str:
     base = {"riego": "#2D9CDB", "poda": "#27AE60", "fumigacion": "#F2994A"}.get(tipo, "#7f8c8d")
     if estado == TareaMantenimiento.ESTADO_REALIZADA:
@@ -143,6 +156,9 @@ def _color_for_tipo(tipo: str, estado: str) -> str:
 
 
 @login_required
+# tarea_marcar_realizada(request, tarea_id): marca una tarea como realizada.
+# Entrada: request (HttpRequest) y tarea_id (identificador de la tarea).
+# Salida: JsonResponse confirmando el cambio o errores de permiso/validación.
 def tarea_marcar_realizada(request, tarea_id: int):
     if request.method != "POST":
         return HttpResponseBadRequest("Método inválido")
@@ -156,6 +172,8 @@ def tarea_marcar_realizada(request, tarea_id: int):
 
 
 @login_required
+# tarea_actualizar(request, tarea_id): actualiza campos básicos de una tarea.
+# Entrada: request (HttpRequest) y tarea_id. Salida: JsonResponse con resultado o errores.
 def tarea_actualizar(request, tarea_id: int):
     if request.method != "POST":
         return HttpResponseBadRequest("Método inválido")

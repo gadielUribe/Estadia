@@ -10,19 +10,27 @@ from .forms import EventoForm
 from .models import EventoAmbiental
 
 
+# _rol(user): obtiene el rol del usuario autenticado.
+# Entrada: user (objeto User). Salida: cadena con el rol o 'mantenimiento'.
 def _rol(user):
     return getattr(user, "rol", "mantenimiento")
 
 
+# _is_admin(user): verifica si el usuario es administrador o gestor.
+# Entrada: user. Salida: True si tiene permisos de administrador/gestor.
 def _is_admin(user):
     return _rol(user) in {"administrador", "gestor"}
 
 
+# _can_manage(user): alias para validar permisos de gestión de eventos.
+# Entrada: user. Salida: True si puede crear/editar eventos.
 def _can_manage(user):
     return _rol(user) in {"administrador", "gestor"}
 
 
 @login_required
+# evento_list(request): lista eventos con filtros por texto, fechas y organizador.
+# Entrada: request (HttpRequest). Salida: HttpResponse con la plantilla de lista.
 def evento_list(request):
     qs = EventoAmbiental.objects.select_related("organizador")
     q = (request.GET.get("q") or "").strip()
@@ -62,6 +70,8 @@ def evento_list(request):
 
 @login_required
 @user_passes_test(_can_manage)
+# evento_create(request): crea un evento ambiental.
+# Entrada: request (HttpRequest). Salida: redirección a lista o formulario con errores.
 def evento_create(request):
     if request.method == "POST":
         form = EventoForm(request.POST)
@@ -75,6 +85,8 @@ def evento_create(request):
 
 @login_required
 @user_passes_test(_can_manage)
+# evento_update(request, pk): edita un evento existente.
+# Entrada: request (HttpRequest), pk (id del evento). Salida: redirección o recarga de formulario.
 def evento_update(request, pk: int):
     evento = get_object_or_404(EventoAmbiental, pk=pk)
     if request.method == "POST":
@@ -89,6 +101,8 @@ def evento_update(request, pk: int):
 
 @login_required
 @user_passes_test(_can_manage)
+# evento_delete(request, pk): elimina un evento seleccionado.
+# Entrada: request (HttpRequest), pk (id del evento). Salida: redirección tras eliminar.
 def evento_delete(request, pk: int):
     evento = get_object_or_404(EventoAmbiental, pk=pk)
     if request.method == "POST":
@@ -98,6 +112,8 @@ def evento_delete(request, pk: int):
 
 
 @login_required
+# eventos_feed(request): entrega eventos en formato JSON para el calendario.
+# Entrada: request con parámetros start/end ISO. Salida: JsonResponse con eventos.
 def eventos_feed(request):
     start = request.GET.get("start")
     end = request.GET.get("end")

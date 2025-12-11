@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 
 
+# Producto: modelo que representa insumos o materiales administrados.
+# Campos principales: nombre, descripcion y fecha de llegada.
 class Producto(models.Model):
     id_producto = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=120)
@@ -12,9 +14,12 @@ class Producto(models.Model):
         db_table = 'Producto'
         ordering = ['nombre']
 
+    # __str__(): devuelve el nombre del producto para listados y relaciones.
     def __str__(self):
         return self.nombre
 
+    # existencias_actuales: propiedad calculada para conocer las unidades disponibles.
+    # Entrada: ninguna. Salida: entero con la cantidad o 0 si no hay registro de existencia.
     @property
     def existencias_actuales(self) -> int:
         try:
@@ -23,6 +28,8 @@ class Producto(models.Model):
             return 0
 
 
+# Existencia: modelo que almacena el stock actual de un producto.
+# Campos principales: producto relacionado, cantidad y fecha de registro.
 class Existencia(models.Model):
     id_existencia = models.AutoField(primary_key=True)
     producto = models.OneToOneField(Producto, on_delete=models.CASCADE, db_column='id_producto', related_name='existencia')
@@ -33,6 +40,8 @@ class Existencia(models.Model):
         db_table = 'Existencia'
 
 
+# AsignacionProducto: relaciona productos con tareas de mantenimiento.
+# Campos principales: producto, id de tarea, cantidad y usuario que asigna.
 class AsignacionProducto(models.Model):
     id_asignacion = models.AutoField(primary_key=True)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='asignaciones')
@@ -45,5 +54,6 @@ class AsignacionProducto(models.Model):
         db_table = 'AsignacionProducto'
         ordering = ['-fecha_asignacion']
 
+    # __str__(): retorna un resumen con producto, cantidad y tarea asignada.
     def __str__(self):
         return f"{self.producto} x{self.cantidad} -> Tarea {self.tarea_id}"

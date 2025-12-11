@@ -1,11 +1,10 @@
 # EcoGestion/asgi.py
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "EcoGestion.settings")  # 1) primero settings
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "EcoGestion.settings")  
 
 from django.core.asgi import get_asgi_application
-django_asgi_app = get_asgi_application()  # 2) carga Django y las apps
+django_asgi_app = get_asgi_application() 
 
-# 3) ya es seguro importar Channels y tu routing (que importa consumidores/modelos)
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 import chat.routing

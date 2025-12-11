@@ -1,7 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
+# UsuarioManager: manejador personalizado para crear usuarios y superusuarios.
 class UsuarioManager(BaseUserManager):
+    # create_user(matricula, email, nombre_completo, password=None, rol='mantenimiento'):
+    # Crea un usuario regular con matricula, correo, nombre y rol.
+    # Entrada: datos de registro y contrasena opcional. Salida: instancia de Usuario guardada.
     def create_user(self, matricula, email, nombre_completo, password=None, rol='mantenimiento'):
         if not matricula or not email:
             raise ValueError('El usuario debe tener matrícula y correo')
@@ -15,6 +19,9 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    # create_superuser(matricula, email, nombre_completo, password):
+    # Crea un superusuario con permisos administrativos completos.
+    # Entrada: datos requeridos y contrasena. Salida: instancia de Usuario con is_staff/is_superuser.
     def create_superuser(self, matricula, email, nombre_completo, password):
         user = self.create_user(
             matricula=matricula,
@@ -28,6 +35,8 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+# Usuario: modelo de usuario personalizado con roles para la aplicacion.
+# Campos principales: matricula como USERNAME_FIELD, email, nombre completo, rol y flags de estado.
 class Usuario(AbstractBaseUser, PermissionsMixin):
     ROLES = (
         ('administrador', 'Administrador'),
@@ -48,5 +57,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'matricula'
     REQUIRED_FIELDS = ['email', 'nombre_completo']
 
+    # __str__(): devuelve el nombre completo para representar al usuario.
     def __str__(self):
         return self.nombre_completo

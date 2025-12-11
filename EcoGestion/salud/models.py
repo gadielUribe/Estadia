@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+# SaludRegistro: modelo que guarda el estado de salud actual de una planta o arbol.
+# Campos principales: planta relacionada, estado, usuario responsable y observaciones.
 class SaludRegistro(models.Model):
     ESTADOS = [('verde','Verde'),('amarillo','Amarillo'),('rojo','Rojo')]
 
@@ -23,10 +25,13 @@ class SaludRegistro(models.Model):
         indexes = [models.Index(fields=['planta','fecha_actualizacion']),
                    models.Index(fields=['estado_salud'])]
 
+    # __str__(): devuelve un resumen con fecha, planta, estado y usuario que registra.
     def __str__(self):
         u = f"{self.usuario.matricula}" if self.usuario else "sistema"
         return f"[{self.fecha_actualizacion:%Y-%m-%d %H:%M}] {self.planta_id} → {self.estado_salud} @ {u}"
 
+# SaludHistorial: almacena cada cambio historico en la salud de una planta.
+# Campos principales: planta, usuario, fecha del evento, estado y observaciones registradas.
 class SaludHistorial(models.Model):
     id_historial = models.AutoField(primary_key=True)
     planta = models.ForeignKey('plantas.plantaArbol', on_delete=models.CASCADE, related_name='historial_salud')
@@ -43,5 +48,6 @@ class SaludHistorial(models.Model):
         db_table = 'SaludHistorial'
         ordering = ['-fecha_evento', '-id_historial']
 
+    # __str__(): retorna una cadena legible con planta, estado y fecha del registro.
     def __str__(self):
         return f"{self.planta.nombre_comun} - {self.estado_salud} ({self.fecha_evento:%Y-%m-%d %H:%M})"

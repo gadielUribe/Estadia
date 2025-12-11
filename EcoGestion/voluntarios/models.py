@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 
 
+# Voluntario: modelo que almacena la informacion de cada voluntario inscrito.
+# Campos principales: nombre, apellido, datos de contacto y tipo de participacion.
 class Voluntario(models.Model):
     TIPO_PARTICIPACION = (
         ('estudiante', 'Estudiante'),
@@ -21,10 +23,13 @@ class Voluntario(models.Model):
         db_table = 'Voluntario'
         ordering = ['apellido', 'nombre']
 
+    # __str__(): devuelve el nombre completo formateado para mostrar en listas y relaciones.
     def __str__(self):
         return f"{self.apellido}, {self.nombre}"
 
 
+# AsignacionVoluntario: guarda las asignaciones de voluntarios a tareas o eventos.
+# Campos principales: voluntario, id de tarea/actividad, datos del evento y usuario asignador.
 class AsignacionVoluntario(models.Model):
     id_asignacion = models.AutoField(primary_key=True)
     voluntario = models.ForeignKey(Voluntario, on_delete=models.CASCADE, related_name='asignaciones')
@@ -39,6 +44,6 @@ class AsignacionVoluntario(models.Model):
         db_table = 'AsignacionVoluntario'
         ordering = ['-fecha_asignacion']
 
+    # __str__(): devuelve un resumen legible de la asignacion para uso administrativo.
     def __str__(self):
         return f"{self.voluntario} -> tarea {self.tarea_id}"
-

@@ -8,16 +8,22 @@ from .forms import ProductoForm, StockUpdateForm, AsignacionProductoForm
 from mantenimiento.models import TareaMantenimiento
 
 
+# _is_admin(user): valida si el usuario es administrador o gestor.
+# Entrada: user (objeto User). Salida: True si tiene permisos de eliminación.
 def _is_admin(user):
     # Para este módulo, administrador y gestor tienen permisos completos
     return user.is_authenticated and getattr(user, 'rol', '') in ('administrador', 'gestor')
 
 
+# _is_registrador(user): verifica si el usuario puede crear/editar productos.
+# Entrada: user (objeto User). Salida: True si es admin o gestor.
 def _is_registrador(user):
     return user.is_authenticated and getattr(user, 'rol', '') in ('administrador', 'gestor')
 
 
 @login_required
+# producto_list(request): lista productos con filtro por nombre.
+# Entrada: request (HttpRequest). Salida: HttpResponse con la tabla de productos.
 def producto_list(request):
     q = request.GET.get('q', '').strip()
     productos = Producto.objects.all()
@@ -32,6 +38,8 @@ def producto_list(request):
 
 @login_required
 @user_passes_test(_is_registrador)
+# producto_create(request): registra un nuevo producto.
+# Entrada: request (HttpRequest). Salida: redirección al listado o formulario con errores.
 def producto_create(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST)
@@ -45,6 +53,8 @@ def producto_create(request):
 
 @login_required
 @user_passes_test(_is_registrador)
+# producto_update(request, pk): edita un producto existente.
+# Entrada: request (HttpRequest), pk (id del producto). Salida: redirección o recarga del formulario.
 def producto_update(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -59,6 +69,8 @@ def producto_update(request, pk):
 
 @login_required
 @user_passes_test(_is_admin)
+# producto_delete(request, pk): elimina un producto.
+# Entrada: request (HttpRequest), pk (id del producto). Salida: redirección tras borrar.
 def producto_delete(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
@@ -69,6 +81,8 @@ def producto_delete(request, pk):
 
 @login_required
 @user_passes_test(_is_registrador)
+# producto_stock_update(request, pk): actualiza existencias de un producto.
+# Entrada: request (HttpRequest), pk (id del producto). Salida: redirección o formulario con errores.
 def producto_stock_update(request, pk):
     from .models import Existencia
     producto = get_object_or_404(Producto, pk=pk)
@@ -86,6 +100,8 @@ def producto_stock_update(request, pk):
 @login_required
 @user_passes_test(_is_registrador)
 @transaction.atomic
+# asignar_producto(request): asigna productos a una tarea descontando existencias.
+# Entrada: request (HttpRequest). Salida: redirección a lista de asignaciones o formulario con errores.
 def asignar_producto(request):
     if request.method == 'POST':
         form = AsignacionProductoForm(request.POST)
@@ -108,6 +124,8 @@ def asignar_producto(request):
 
 
 @login_required
+# asignacion_list(request): lista las asignaciones de productos a tareas.
+# Entrada: request (HttpRequest). Salida: HttpResponse con la tabla de asignaciones.
 def asignacion_list(request):
     asignaciones = AsignacionProducto.objects.select_related('producto', 'asignado_por').all()
     return render(request, 'productos/asignaciones.html', {'asignaciones': asignaciones, 'section': 'productos'})
@@ -116,6 +134,8 @@ def asignacion_list(request):
 @login_required
 @user_passes_test(_is_registrador)
 @transaction.atomic
+# asignacion_delete(request, pk): elimina una asignación y devuelve existencias al stock.
+# Entrada: request (HttpRequest), pk (id de la asignación). Salida: redirección.
 def asignacion_delete(request, pk):
     asignacion = get_object_or_404(AsignacionProducto, pk=pk)
     
@@ -137,6 +157,8 @@ def asignacion_delete(request, pk):
 
 
 @login_required
+# producto_tareas(request, pk): muestra las tareas donde se usa un producto.
+# Entrada: request (HttpRequest), pk (id del producto). Salida: HttpResponse con la lista de tareas.
 def producto_tareas(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     tareas = (
@@ -157,5 +179,6 @@ def producto_tareas(request, pk):
 
 @login_required
 def reporte_productos_inventario_redirect(request):
+    # Acceso directo al reporte de inventario/movimientos desde el módulo de productos
     # Acceso directo al reporte de inventario/movimientos desde el módulo de productos
     return redirect(reverse("reporte_productos_inventario"))

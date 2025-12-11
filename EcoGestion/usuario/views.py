@@ -65,6 +65,9 @@ def usuario_create(request):
     return render(request, 'registration/usuario_form.html', {'form': form}) 
 
 @user_passes_test(es_administrador)
+# usuario_update(request, pk): actualiza los datos de un usuario existente.
+# Entrada: request (HttpRequest), pk (clave primaria del usuario a editar).
+# Salida: redirección a la lista de usuarios o recarga del formulario con errores.
 def usuario_update(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     if request.method == 'POST':
@@ -77,6 +80,9 @@ def usuario_update(request, pk):
     return render(request, 'registration/usuario_form.html', {'form': form})
 
 @user_passes_test(es_administrador)
+# usuario_delete(request, pk): elimina un usuario seleccionado.
+# Entrada: request (HttpRequest), pk (clave primaria del usuario a eliminar).
+# Salida: redirección a la lista de usuarios después de la eliminación.
 def usuario_delete(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     if request.method == 'POST':

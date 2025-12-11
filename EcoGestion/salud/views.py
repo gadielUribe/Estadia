@@ -40,14 +40,20 @@ from .forms import SaludForm
 #  HELPER DE ROLES / FECHAS
 # =========================
 
+# es_admin_o_gestor(user): valida si el usuario tiene rol de administrador o gestor.
+# Entrada: user (objeto User). Salida: True si tiene permisos elevados.
 def es_admin_o_gestor(user):
     return user.is_authenticated and getattr(user, "rol", None) in ["administrador", "gestor"]
 
 
+# es_admin_gestor_mantenimiento(user): permite acceso a admin, gestor y mantenimiento.
+# Entrada: user (objeto User). Salida: True si está en alguno de los roles permitidos.
 def es_admin_gestor_mantenimiento(user):
     return user.is_authenticated and getattr(user, "rol", None) in ["administrador", "gestor", "mantenimiento"]
 
 
+# _parse_date(s): convierte una cadena YYYY-MM-DD a objeto date.
+# Entrada: s (texto). Salida: date o None si falla el parseo.
 def _parse_date(s):
     try:
         return datetime.strptime(s, "%Y-%m-%d").date()
@@ -59,6 +65,8 @@ def _parse_date(s):
 #  HELPERS DE DISEÑO (Membrete + Tablas + Gráficas)
 # =========================
 
+# _get_membrete_path(): devuelve la ruta del logo para incrustar en exportes.
+# Entrada: ninguna. Salida: ruta absoluta o None si no existe.
 def _get_membrete_path():
     """
     Devuelve la ruta absoluta del logo/membrete de UPEMOR.
@@ -79,6 +87,8 @@ def _get_membrete_path():
     return None
 
 
+# _add_membrete_to_story(story, width, height): agrega el logo al PDF si está disponible.
+# Entrada: story (lista de flowables) y dimensiones. Salida: modifica la lista en sitio.
 def _add_membrete_to_story(story, width=120, height=60):
     """
     Inserta el logo en el PDF (si existe) y deja un pequeño espacio.
@@ -97,6 +107,8 @@ def _add_membrete_to_story(story, width=120, height=60):
         story.append(Spacer(1, 20))
 
 
+# _get_default_table_style(header_color): retorna estilo de tabla reutilizable para PDFs.
+# Entrada: color opcional para encabezado. Salida: objeto TableStyle configurado.
 def _get_default_table_style(header_color="#6a67c8"):
     """
     Estilo de tabla reutilizable para PDFs.
@@ -123,6 +135,8 @@ def _get_default_table_style(header_color="#6a67c8"):
     )
 
 
+# _create_bar_chart(title_text, data_list, labels_list): crea gráfico de barras para PDF.
+# Entrada: título, datos numéricos y etiquetas. Salida: objeto Drawing listo.
 def _create_bar_chart(title_text, data_list, labels_list):
     """
     Crea un gráfico de barras con título integrado.
@@ -166,6 +180,8 @@ def _create_bar_chart(title_text, data_list, labels_list):
     return drawing
 
 
+# _create_pie_chart(title_text, data_list, labels_list): genera gráfico de pastel con título.
+# Entrada: título, datos numéricos y etiquetas. Salida: objeto Drawing listo para usar.
 def _create_pie_chart(title_text, data_list, labels_list):
     """
     Crea un gráfico de pastel con título integrado.
@@ -207,6 +223,8 @@ def _create_pie_chart(title_text, data_list, labels_list):
 
 @login_required
 @user_passes_test(es_admin_gestor_mantenimiento)
+# inicio(request): lista registros de salud con filtros y acceso según rol.
+# Entrada: request (HttpRequest con filtros). Salida: render de la tabla de registros.
 def inicio(request):
     qs = SaludRegistro.objects.select_related('planta', 'usuario')
 
@@ -248,6 +266,8 @@ def inicio(request):
 
 @login_required
 @user_passes_test(es_admin_o_gestor)
+# crear(request): registra un nuevo estado de salud para una planta.
+# Entrada: request (HttpRequest). Salida: redirección a inicio o formulario con errores.
 def crear(request):
     if request.method == 'POST':
         form = SaludForm(request.POST)
@@ -273,6 +293,8 @@ def crear(request):
 
 @login_required
 @user_passes_test(es_admin_o_gestor)
+# editar(request, id_registro): actualiza un registro de salud existente.
+# Entrada: request (HttpRequest), id_registro (ID del registro). Salida: redirección o recarga del formulario.
 def editar(request, id_registro):
     reg = get_object_or_404(SaludRegistro, pk=id_registro)
     if request.method == 'POST':
@@ -305,6 +327,8 @@ def editar(request, id_registro):
 
 @login_required
 @user_passes_test(es_admin_o_gestor)
+# eliminar(request, id_registro): elimina un registro de salud.
+# Entrada: request (HttpRequest), id_registro (ID a eliminar). Salida: redirección a inicio.
 def eliminar(request, id_registro):
     registro = get_object_or_404(SaludRegistro, pk=id_registro)
 
@@ -315,6 +339,8 @@ def eliminar(request, id_registro):
     return redirect('salud_inicio')
 
 
+# _notificar_si_riesgo(reg): envía notificación a administradores si el estado es de riesgo.
+# Entrada: reg (SaludRegistro recién creado/actualizado). Salida: notificaciones generadas o no.
 def _notificar_si_riesgo(reg: SaludRegistro):
     # solo notificamos si es amarillo o rojo
     if reg.estado_salud not in ('amarillo', 'rojo'):
@@ -349,6 +375,8 @@ def _notificar_si_riesgo(reg: SaludRegistro):
 
 @login_required
 @user_passes_test(es_admin_gestor_mantenimiento)
+# historial_planta(request, planta_id): muestra historial y exportes de salud para una planta.
+# Entrada: request (HttpRequest), planta_id (ID de planta). Salida: HTML o archivos exportados.
 def historial_planta(request, planta_id):
     from plantas.models import plantaArbol
     planta = get_object_or_404(plantaArbol, pk=planta_id)

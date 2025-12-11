@@ -1,7 +1,8 @@
 from django.db import models
 from notificaciones.utils.models import AbstractNotificacion
 
-# Create your models here.
+# Notificacion: implementacion concreta del modelo abstracto de notificaciones.
+# Hereda todo el comportamiento de AbstractNotificacion sin agregar campos nuevos.
 class Notificacion(AbstractNotificacion):
     pass
 

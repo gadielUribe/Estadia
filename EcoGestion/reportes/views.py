@@ -35,6 +35,8 @@ from herramientas.models import Herramienta
 from productos.models import Producto, AsignacionProducto
 
 
+# _format_datetime(dt): formatea datetime con zona local si aplica.
+# Entrada: dt (datetime o None). Salida: cadena YYYY-MM-DD HH:MM o vacio.
 def _format_datetime(dt):
     if not dt:
         return ""
@@ -45,11 +47,15 @@ def _format_datetime(dt):
 
 # --------- 1) Página principal de reportes ---------
 @login_required
+# reportes_inicio(request): muestra la pantalla de inicio de reportes.
+# Entrada: request (HttpRequest). Salida: HttpResponse con menú de reportes.
 def reportes_inicio(request):
     return render(request, "reportes/inicio_reportes.html")
 
 
 # --------- 2) Helper para obtener rol ---------
+# _rol(user): obtiene el rol normalizado del usuario.
+# Entrada: user (objeto User). Salida: cadena con rol en minúsculas.
 def _rol(user) -> str:
     r = getattr(user, "rol", None) or getattr(user, "tipo_usuario", None) or ""
     return str(r).lower()
@@ -57,6 +63,8 @@ def _rol(user) -> str:
 
 # --------- HELPERS DE DISEÑO MEJORADOS ---------
 
+# _get_membrete_path(): busca la ruta del logo/membrete en disco o estáticos.
+# Entrada: ninguna. Salida: ruta absoluta o None si no existe.
 def _get_membrete_path():
     """Obtiene la ruta del membrete/logo de forma robusta"""
     path_absoluto = os.path.join(settings.BASE_DIR, "static", "img", "upemor-logo.png")
@@ -75,6 +83,8 @@ def _get_membrete_path():
     return None
 
 
+# _add_membrete_to_story(story, width=120, height=60): inserta el logo en un PDF.
+# Entrada: story (lista de elementos reportlab) y dimensiones. Salida: modifica la lista en sitio.
 def _add_membrete_to_story(story, width=120, height=60):
     """Agrega el membrete al PDF con manejo de errores"""
     membrete_path = _get_membrete_path()
@@ -88,6 +98,8 @@ def _add_membrete_to_story(story, width=120, height=60):
             story.append(Spacer(1, 30))
 
 
+# _get_default_table_style(header_color): genera estilo de tabla estándar para PDFs.
+# Entrada: header_color (color hex). Salida: objeto TableStyle configurado.
 def _get_default_table_style(header_color="#6a67c8"):
     """
     Devuelve un estilo de tabla profesional con ajuste de texto
@@ -116,6 +128,8 @@ def _get_default_table_style(header_color="#6a67c8"):
     )
 
 
+# _create_bar_chart(title_text, data_list, labels_list): arma un gráfico de barras reportlab.
+# Entrada: título, datos y etiquetas. Salida: objeto Drawing listo para agregar al PDF.
 def _create_bar_chart(title_text, data_list, labels_list):
     """Crea un gráfico de barras con título integrado"""
     drawing = Drawing(450, 220)
@@ -152,6 +166,8 @@ def _create_bar_chart(title_text, data_list, labels_list):
     return drawing
 
 
+# _create_pie_chart(title_text, data_list, labels_list): arma un gráfico de pastel.
+# Entrada: título, datos y etiquetas. Salida: objeto Drawing con la gráfica.
 def _create_pie_chart(title_text, data_list, labels_list):
     """Crea un gráfico de pastel con título integrado"""
     drawing = Drawing(450, 220)
@@ -187,6 +203,9 @@ def _create_pie_chart(title_text, data_list, labels_list):
 
 # --------- 3) REPORTE DE ESPECIES ---------
 @login_required
+# reporte_especies(request): genera reportes de especies en HTML, Excel o PDF.
+# Entrada: request (HttpRequest con filtros y flags de exportación).
+# Salida: HttpResponse renderizado o archivo descargable.
 def reporte_especies(request):
     usuario = request.user
     rol = _rol(usuario)
@@ -434,6 +453,8 @@ def reporte_especies(request):
 
 # --------- 4) REPORTE DE MANTENIMIENTO ---------
 @login_required
+# reporte_mantenimiento(request): reporta tareas de mantenimiento con filtros y exportes.
+# Entrada: request (HttpRequest). Salida: vista HTML o archivos Excel/PDF según parámetros.
 def reporte_mantenimiento(request):
     usuario = request.user
     rol = _rol(usuario)
@@ -763,6 +784,8 @@ def reporte_mantenimiento(request):
 
 # --------- 5) REPORTE DE CUMPLIMIENTO ---------
 @login_required
+# reportes_cumplimiento_usuarios(request): calcula cumplimiento de tareas por usuario de mantenimiento.
+# Entrada: request (HttpRequest). Salida: vista HTML o exporte según parámetros.
 def reportes_cumplimiento_usuarios(request):
     usuario = request.user
     rol = _rol(usuario)
@@ -1053,6 +1076,8 @@ def reportes_cumplimiento_usuarios(request):
 
 # --------- 6) REPORTE DE ACTIVIDADES ---------
 @login_required
+# reporte_actividades_usuario(request): lista actividades realizadas por usuarios de mantenimiento.
+# Entrada: request (HttpRequest). Salida: HTML o exportes segun filtros de usuario, tipo y fecha.
 def reporte_actividades_usuario(request):
     usuario = request.user
     rol = _rol(usuario)
@@ -1301,6 +1326,8 @@ def reporte_actividades_usuario(request):
 
 # --------- 7) REPORTE USO HERRAMIENTAS ---------
 @login_required
+# reporte_uso_herramientas(request): analiza uso y disponibilidad de herramientas.
+# Entrada: request (HttpRequest). Salida: render de HTML o exportes PDF/Excel con filtros aplicados.
 def reporte_uso_herramientas(request):
     usuario = request.user
     rol = _rol(usuario)
@@ -1538,6 +1565,9 @@ def reporte_uso_herramientas(request):
 
 # --------- 8) REPORTE DE PRODUCTOS ---------
 @login_required
+# reporte_productos_inventario(request): genera reporte de inventario y movimientos de productos.
+# Entrada: request (HttpRequest con filtros y opciones de exportación).
+# Salida: vista HTML o archivos descargables según parámetros.
 def reporte_productos_inventario(request):
     usuario = request.user
     rol = _rol(usuario)

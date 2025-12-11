@@ -5,6 +5,8 @@ from django.db import models
 from django.utils import timezone
 
 
+# TareaMantenimiento: tareas programadas para riego, poda o fumigacion de plantas.
+# Campos principales: planta, tipo de tarea, fechas, estado, recursos asociados y responsables.
 class TareaMantenimiento(models.Model):
     TIPO_RIEGO = "riego"
     TIPO_PODA = "poda"
@@ -54,9 +56,12 @@ class TareaMantenimiento(models.Model):
         db_table = "TareaMantenimiento"
         ordering = ["fecha_programada"]
 
+    # __str__(): devuelve una descripcion corta con tipo, planta y fecha programada.
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.planta.nombre_comun} ({self.fecha_programada.date()})"
 
+    # marcar_realizada(by_user=None, observaciones=None): marca la tarea como completada.
+    # Entrada: usuario que marca y observaciones opcionales. Salida: guarda cambios en BD.
     def marcar_realizada(self, by_user=None, observaciones: str | None = None):
         self.estado = self.ESTADO_REALIZADA
         self.fecha_realizacion = timezone.now()
@@ -67,6 +72,8 @@ class TareaMantenimiento(models.Model):
             self.modificado_por = by_user
         self.save(update_fields=["estado", "fecha_realizacion", "observaciones", "modificado_por", "actualizado_en"])
 
+    # save(*args, **kwargs): reestablece banderas de recordatorio si se reprograma la tarea pendiente.
+    # Entrada: argumentos de guardado normales. Salida: persiste la tarea y banderas actualizadas.
     def save(self, *args, **kwargs):
         # Rehabilitar recordatorios/notificaciones si se reprograma mientras sigue pendiente
         try:

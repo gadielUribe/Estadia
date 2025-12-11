@@ -16,25 +16,34 @@ except Exception:  # pragma: no cover
         return _apps.get_model(app_label, model_name)
 
 
+# NotificacionQuerySet: utilidades de filtrado y marcado para las notificaciones.
 class NotificacionQuerySet(models.QuerySet):
+    # leidas(include_deleted=False): retorna las notificaciones marcadas como leidas.
+    # Entrada: include_deleted (bool para incluir eliminadas). Salida: QuerySet filtrado.
     def leidas(self, include_deleted=False):
         qs = self.filter(no_leido=False)
         if not include_deleted:
             qs = qs.filter(eliminar=False)
         return qs
 
+    # no_leidas(include_deleted=False): retorna las notificaciones pendientes.
+    # Entrada: include_deleted (bool para incluir eliminadas). Salida: QuerySet filtrado.
     def no_leidas(self, include_deleted=False):
         qs = self.filter(no_leido=True)
         if not include_deleted:
             qs = qs.filter(eliminar=False)
         return qs
 
+    # marcar_todo_como_leido(destino=None): marca como leidas todas las no leidas del destino.
+    # Entrada: destino (usuario opcional). Salida: numero de registros actualizados.
     def marcar_todo_como_leido(self, destino=None):
         qs = self.no_leidas(include_deleted=True)
         if destino is not None:
             qs = qs.filter(destiny=destino)
         return qs.update(no_leido=False)
 
+    # marcar_todo_como_no_leido(destino=None): revierte notificaciones a estado no leido.
+    # Entrada: destino (usuario opcional). Salida: numero de registros actualizados.
     def marcar_todo_como_no_leido(self, destino=None):
         qs = self.leidas(include_deleted=True)
         if destino is not None:
@@ -42,6 +51,8 @@ class NotificacionQuerySet(models.QuerySet):
         return qs.update(no_leido=True)
 
 
+# AbstractNotificacion: modelo base abstracto para almacenar notificaciones genericas.
+# Campos principales: nivel, destino, actor, target, verbo, estado de lectura y timestamp.
 class AbstractNotificacion(models.Model):
 
     class Levels(models.TextChoices):
@@ -101,6 +112,9 @@ class AbstractNotificacion(models.Model):
         ordering = ['-timestamp']
 
 
+# notify_signals(sender, **kwargs): receptor del signal personalizado 'notificar'.
+# Entrada: sender (modelo que dispara) y kwargs con destiny, verbo, target, etc.
+# Salida: lista de notificaciones creadas o None si falta informacion.
 def notify_signals(sender, **kwargs):
     """
     Receiver del signal `notificar`.

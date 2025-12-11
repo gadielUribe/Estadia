@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 
 
+# Herramienta: modelo que representa cada herramienta disponible en inventario.
+# Campos principales: nombre, descripcion y estado operativo.
 class Herramienta(models.Model):
     ESTADO_DISPONIBLE = "disponible"
     ESTADO_EN_USO = "en_uso"
@@ -27,10 +29,13 @@ class Herramienta(models.Model):
         db_table = 'Herramienta'
         ordering = ['nombre']
 
+    # __str__(): retorna el nombre de la herramienta para mostrar en listados y relaciones.
     def __str__(self):
         return self.nombre
 
 
+# AsignacionHerramienta: guarda cada asignacion de herramienta a una tarea de mantenimiento.
+# Campos principales: herramienta, id de tarea, descripcion y usuario que asigna.
 class AsignacionHerramienta(models.Model):
     id_asignacion = models.AutoField(primary_key=True)
     herramienta = models.ForeignKey(Herramienta, on_delete=models.CASCADE, related_name='asignaciones')
@@ -44,6 +49,6 @@ class AsignacionHerramienta(models.Model):
         db_table = 'AsignacionHerramienta'
         ordering = ['-fecha_asignacion']
 
+    # __str__(): devuelve un resumen legible de la relacion herramienta-tarea.
     def __str__(self):
         return f"{self.herramienta} -> Tarea {self.tarea_id}"
-

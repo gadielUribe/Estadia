@@ -16,23 +16,33 @@ from .models import TareaMantenimiento
 from .forms import TareaForm
 
 
+# _user_role(user): devuelve el rol del usuario autenticado o 'mantenimiento' por defecto.
+# Entrada: user (objeto User). Salida: cadena con rol.
 def _user_role(user) -> str:
-    # Custom user model has `rol`: 'administrador', 'gestor', 'mantenimiento'
+    
     return getattr(user, "rol", "mantenimiento")
 
 
+# _es_privilegio(user): verifica si el rol permite gestión (admin o gestor).
+# Entrada: user. Salida: True si tiene privilegios.
 def _es_privilegio(user) -> bool:
     return _user_role(user) in {"administrador", "gestor"}
 
 
+# _horizon_days(): define cuántos días hacia adelante se generan tareas automáticas.
+# Entrada: ninguna. Salida: entero con el horizonte.
 def _horizon_days() -> int:
     return 60
 
 
+# _actividad_descripcion(tarea): cadena corta con tipo y planta para etiquetar asignaciones.
+# Entrada: tarea (TareaMantenimiento). Salida: texto descriptivo.
 def _actividad_descripcion(tarea: TareaMantenimiento) -> str:
     return f"{tarea.get_tipo_display()} - {tarea.planta.nombre_comun}"
 
 
+# _sincronizar_voluntario(tarea, voluntario, asignado_por): crea/actualiza asignación de voluntario.
+# Entrada: tarea, voluntario opcional, asignado_por (usuario). Salida: relación actualizada o eliminada.
 def _sincronizar_voluntario(tarea: TareaMantenimiento, voluntario, asignado_por):
     queryset = AsignacionVoluntario.objects.filter(tarea_id=tarea.id)
     if voluntario:
@@ -95,6 +105,8 @@ def ensure_future_tasks(horizon_days: int | None = None):
 
 
 @login_required
+# inicio(request): redirige a calendario para mantenimiento o muestra dashboard de tareas.
+# Entrada: request (HttpRequest). Salida: redirección o plantilla de inicio.
 def inicio(request):
     role = _user_role(request.user)
     if role == "mantenimiento":
@@ -105,6 +117,8 @@ def inicio(request):
 # ------- CRUD unificado ---------
 
 @login_required
+# tareas_list(request): lista tareas de mantenimiento para administradores/gestores con filtros.
+# Entrada: request (HttpRequest). Salida: HttpResponse con la tabla de tareas.
 def tareas_list(request):
     role = _user_role(request.user)
     if role == "mantenimiento":
@@ -140,6 +154,8 @@ def tareas_list(request):
 
 
 @login_required
+# tarea_create(request): crea una nueva tarea de mantenimiento.
+# Entrada: request (HttpRequest). Salida: redirección al listado o formulario con errores.
 def tarea_create(request):
     role = _user_role(request.user)
     if role not in {"administrador", "gestor"}:
@@ -172,6 +188,8 @@ def tarea_create(request):
 
 
 @login_required
+# tarea_update(request, pk): edita una tarea existente y opcionalmente genera repetidas.
+# Entrada: request (HttpRequest), pk (id de la tarea). Salida: redirección o recarga del formulario.
 def tarea_update(request, pk: int):
     # Para editar desde listado: detectamos tipo por parámetro GET
     tarea = get_object_or_404(TareaMantenimiento, pk=pk)
@@ -203,6 +221,8 @@ def tarea_update(request, pk: int):
 
 
 @login_required
+# tarea_delete(request, pk): elimina una tarea de mantenimiento.
+# Entrada: request (HttpRequest), pk (id de la tarea). Salida: redirección o JsonResponse según petición.
 def tarea_delete(request, pk: int):
     tarea = get_object_or_404(TareaMantenimiento, **{"id": pk})
     role = _user_role(request.user)
@@ -219,6 +239,7 @@ def tarea_delete(request, pk: int):
 
 
 def _generar_repetidas(tarea: TareaMantenimiento, cada_dias: int, repeticiones: int, voluntario=None, asignado_por=None):
+    """Genera copias futuras de una tarea según frecuencia indicada."""
     start = tarea.fecha_programada
     for i in range(1, repeticiones + 1):
         cur = start + timedelta(days=cada_dias * i)

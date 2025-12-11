@@ -17,6 +17,8 @@ from django.views.decorators.http import require_POST
 from .models import BackupAudit
 
 
+# _backup_dir(): obtiene la ruta donde se almacenan los respaldos .sql.
+# Entrada: ninguna. Salida: Path al directorio configurado o carpeta backups por defecto.
 def _backup_dir() -> Path:
     opts = getattr(settings, 'DBBACKUP_STORAGE_OPTIONS', None)
     if isinstance(opts, dict) and 'location' in opts:
@@ -29,6 +31,8 @@ def _backup_dir() -> Path:
     return Path(settings.BASE_DIR) / 'backups'
 
 
+# _list_backups(): devuelve la lista de archivos .sql ordenados por fecha de modificación.
+# Entrada: ninguna. Salida: lista de objetos Path.
 def _list_backups():
     d = _backup_dir()
     if not d.exists():
@@ -42,6 +46,8 @@ def _is_staff(user):
     return user.is_authenticated and getattr(user, "rol", None) in ["administrador"]
 
 
+# _db_conf(): extrae configuración de la base de datos para comandos externos.
+# Entrada: ninguna. Salida: diccionario con credenciales y bandera IS_MYSQL.
 def _db_conf():
     cfg = settings.DATABASES['default']
     NAME = cfg.get('NAME')
@@ -54,6 +60,8 @@ def _db_conf():
     return {'NAME': NAME, 'USER': USER, 'PASSWORD': PASSWORD, 'HOST': HOST, 'PORT': PORT, 'IS_MYSQL': is_mysql}
 
 
+# _maybe_ssl_flag_for_mysql(): define flags seguros de SSL para cliente mysql/mysqldump.
+# Entrada: ninguna. Salida: lista de flags (vacía por compatibilidad).
 def _maybe_ssl_flag_for_mysql():
     """
     Evita romper si el cliente no reconoce --ssl-mode.
@@ -66,6 +74,8 @@ def _maybe_ssl_flag_for_mysql():
 
 @login_required
 @user_passes_test(_is_staff)
+# panel_respaldos(request): muestra el panel con respaldos disponibles y auditoría.
+# Entrada: request (HttpRequest). Salida: HttpResponse con la plantilla principal.
 def panel_respaldos(request):
     files_info = []
     for f in _list_backups():
@@ -91,6 +101,8 @@ def panel_respaldos(request):
 @login_required
 @user_passes_test(_is_staff)
 @require_POST
+# backup_now(request): genera un respaldo inmediato usando mysqldump o dbbackup.
+# Entrada: request (HttpRequest). Salida: redirección al panel de respaldos.
 def backup_now(request):
     """
     Genera archivo .sql con mysqldump (para MySQL/MariaDB).
@@ -169,6 +181,8 @@ def backup_now(request):
 @login_required
 @user_passes_test(_is_staff)
 @require_POST
+# restore_latest(request): restaura el respaldo más reciente disponible.
+# Entrada: request (HttpRequest). Salida: redirección al panel tras ejecutar.
 def restore_latest(request):
     files = _list_backups()
     if not files:
@@ -181,10 +195,14 @@ def restore_latest(request):
 @login_required
 @user_passes_test(_is_staff)
 @require_POST
+# restore_file(request, filename): restaura un respaldo específico por nombre.
+# Entrada: request (HttpRequest), filename (nombre del archivo). Salida: redirección.
 def restore_file(request, filename):
     return _restore_common(request, filename)
 
 
+# _restore_common(request, filename): lógica compartida para restaurar respaldos.
+# Entrada: request, filename. Salida: redirección con mensajes de éxito/error.
 def _restore_common(request, filename: str):
     cfg = _db_conf()
     path = _backup_dir() / filename
@@ -256,6 +274,8 @@ def _restore_common(request, filename: str):
 
 @login_required
 @user_passes_test(_is_staff)
+# download_backup(request, filename): permite descargar un respaldo existente.
+# Entrada: request (HttpRequest), filename. Salida: FileResponse o 404.
 def download_backup(request, filename):
     path = _backup_dir() / filename
     if not (path.exists() and path.is_file()):
@@ -273,6 +293,8 @@ def download_backup(request, filename):
 @login_required
 @user_passes_test(_is_staff)
 @require_POST
+# upload_backup(request): sube un archivo .sql al directorio de respaldos.
+# Entrada: request (HttpRequest). Salida: redirección al panel con mensaje.
 def upload_backup(request):
     file = request.FILES.get('file')
     if not file:

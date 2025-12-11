@@ -1,8 +1,7 @@
 from django.db import models
 
-# Create your models here.
-
-# Modelo para plantas y árboles
+# plantaArbol: modelo para registrar plantas y arboles del inventario.
+# Campos principales: nombre comun/cientifico, descripcion, fechas y ubicacion.
 class plantaArbol(models.Model):
     id_planta = models.AutoField(primary_key=True)
     nombre_comun = models.CharField(verbose_name="Nombre Comun", max_length=50, null=False)
@@ -17,11 +16,10 @@ class plantaArbol(models.Model):
     lat = models.FloatField(verbose_name="Latitud", null=True)
     lng = models.FloatField(verbose_name="Longitud", null=True)
 
-    # Información de la tabla
     class Meta:
         db_table = 'PlantaArbol'
 
-    # Representación en cadena del objeto
+    # __str__(): retorna identificador y nombre cientifico para mostrar en listados.
     def __str__(self):
         texto = "{0} - {1}"
         return texto.format(self.id_planta, self.nombre_cientifico)

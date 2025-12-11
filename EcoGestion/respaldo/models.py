@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+# BackupAudit: registra cada accion relacionada con respaldos y restauraciones.
+# Campos principales: tipo de accion, nombre de archivo, usuario ejecutor y bitacora.
 class BackupAudit(models.Model):
     ACTIONS = [
         ('BACKUP', 'Backup generado'),
@@ -17,5 +19,6 @@ class BackupAudit(models.Model):
     class Meta:
         ordering = ['-run_at']
 
+    # __str__(): devuelve un resumen corto con la accion, archivo y fecha de ejecucion.
     def __str__(self):
         return f'{self.action} - {self.filename} - {self.run_at:%Y-%m-%d %H:%M}'

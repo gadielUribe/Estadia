@@ -1,5 +1,7 @@
 from django.db import models
 
+# incidenciaAmbiental: modelo para reportar incidencias ambientales en el campus.
+# Campos principales: titulo, descripcion, fecha de reporte, area, planta relacionada y usuario.
 class incidenciaAmbiental(models.Model):
     ESTADOS = [
         ('pendiente', 'Pendiente'),
@@ -18,6 +20,7 @@ class incidenciaAmbiental(models.Model):
     class Meta:
         db_table = 'IncidenciaAmbiental'
 
+    # __str__(): retorna un texto breve con el identificador y el titulo de la incidencia.
     def __str__(self):
         texto = "{0} - {1}"
         return texto.format(self.id_incidencia, self.titulo)

@@ -15,10 +15,14 @@ from salud.models import SaludRegistro, SaludHistorial
 from salud.views import _notificar_si_riesgo  # ya implementado en tu app salud
 
 
+# es_privilegio(user): valida si el usuario tiene rol administrador o gestor.
+# Entrada: user (objeto User). Salida: True si posee privilegios.
 def es_privilegio(user):
     return user.is_authenticated and getattr(user, "rol", None) in ["administrador", "gestor"]
 
 
+# _parse_date(s): convierte un string en fecha con formato YYYY-MM-DD.
+# Entrada: s (cadena de fecha). Salida: objeto date o None si falla.
 def _parse_date(s):
     try:
         return datetime.strptime(s, "%Y-%m-%d").date()
@@ -26,6 +30,9 @@ def _parse_date(s):
         return None
 
 @login_required
+# inicio(request): lista las plantas con filtros y muestra el mapa.
+# Entrada: request (HttpRequest con filtros opcionales).
+# Salida: HttpResponse con listado o partial si la peticion es AJAX.
 def inicio(request):
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
@@ -97,6 +104,8 @@ def inicio(request):
 # --- CREAR: usa el form con campos de salud y crea SaludRegistro + Historial + Notificación ---
 @login_required
 @user_passes_test(es_privilegio)
+# crear(request): registra una nueva planta y su estado de salud inicial.
+# Entrada: request (HttpRequest). Salida: redireccion al inicio o formulario con errores.
 def crear(request):
     if request.method == 'POST':
         form = PlantaCreateForm(request.POST, request.FILES)
@@ -137,6 +146,9 @@ def crear(request):
 # --- EDITAR: se mantiene sin tocar salud (se edita en módulo salud) ---
 @login_required
 @user_passes_test(es_privilegio)
+# editar(request, id_arbol): actualiza la informacion basica de una planta.
+# Entrada: request (HttpRequest), id_arbol (identificador de la planta).
+# Salida: redireccion al inicio o recarga del formulario.
 def editar(request, id_arbol):
     arbol = get_object_or_404(plantaArbol, pk=id_arbol)
     if request.method == 'POST':
@@ -152,6 +164,9 @@ def editar(request, id_arbol):
 # --- ELIMINAR: sin cambios (usa modal POST) ---
 @login_required
 @user_passes_test(es_privilegio)
+# eliminar(request, id_arbol): elimina una planta seleccionada.
+# Entrada: request (HttpRequest), id_arbol (identificador de la planta).
+# Salida: redireccion al inicio despues de borrar.
 def eliminar(request, id_arbol):
     arbol = get_object_or_404(plantaArbol, pk=id_arbol)
     if request.method == 'POST':

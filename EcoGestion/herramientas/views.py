@@ -5,16 +5,22 @@ from .forms import HerramientaForm, AsignacionHerramientaForm
 from mantenimiento.models import TareaMantenimiento
 
 
+# _is_admin(user): valida si el usuario es administrador o gestor.
+# Entrada: user (objeto User). Salida: True si tiene permisos de administrador.
 def _is_admin(user):
     # Para este módulo, administrador y gestor tienen permisos completos
     return user.is_authenticated and getattr(user, 'rol', '') in ('administrador', 'gestor')
 
 
+# _is_registrador(user): comprueba si el usuario puede registrar/editar herramientas.
+# Entrada: user (objeto User). Salida: True si es admin o gestor.
 def _is_registrador(user):
     return user.is_authenticated and getattr(user, 'rol', '') in ('administrador', 'gestor')
 
 
 @login_required
+# herramienta_list(request): lista todas las herramientas disponibles.
+# Entrada: request (HttpRequest). Salida: HttpResponse con plantilla de listado.
 def herramienta_list(request):
     herramientas = Herramienta.objects.all()
     return render(request, 'herramientas/list.html', {"herramientas": herramientas, "section": "herramientas"})
@@ -22,6 +28,8 @@ def herramienta_list(request):
 
 @login_required
 @user_passes_test(_is_registrador)
+# herramienta_create(request): crea una nueva herramienta en el inventario.
+# Entrada: request (HttpRequest). Salida: redirección al listado o formulario con errores.
 def herramienta_create(request):
     if request.method == 'POST':
         form = HerramientaForm(request.POST)
@@ -35,6 +43,9 @@ def herramienta_create(request):
 
 @login_required
 @user_passes_test(_is_registrador)
+# herramienta_update(request, pk): edita la información de una herramienta existente.
+# Entrada: request (HttpRequest), pk (clave primaria).
+# Salida: redirección al listado o recarga del formulario.
 def herramienta_update(request, pk):
     herramienta = get_object_or_404(Herramienta, pk=pk)
     if request.method == 'POST':
@@ -49,6 +60,9 @@ def herramienta_update(request, pk):
 
 @login_required
 @user_passes_test(_is_admin)
+# herramienta_delete(request, pk): elimina una herramienta seleccionada.
+# Entrada: request (HttpRequest), pk (identificador de la herramienta).
+# Salida: redirección al listado tras confirmar.
 def herramienta_delete(request, pk):
     herramienta = get_object_or_404(Herramienta, pk=pk)
     if request.method == 'POST':
@@ -59,6 +73,8 @@ def herramienta_delete(request, pk):
 
 @login_required
 @user_passes_test(_is_registrador)
+# asignar_herramienta(request): asigna una herramienta a una tarea.
+# Entrada: request (HttpRequest). Salida: redirección a lista de asignaciones o formulario con errores.
 def asignar_herramienta(request):
     if request.method == 'POST':
         form = AsignacionHerramientaForm(request.POST)
@@ -73,6 +89,8 @@ def asignar_herramienta(request):
 
 
 @login_required
+# asignacion_list(request): muestra la lista de asignaciones de herramientas.
+# Entrada: request (HttpRequest). Salida: HttpResponse con la tabla de asignaciones.
 def asignacion_list(request):
     asignaciones = AsignacionHerramienta.objects.select_related('herramienta', 'asignado_por').all()
     return render(request, 'herramientas/asignaciones.html', {"asignaciones": asignaciones, "section": "herramientas"})
@@ -80,6 +98,8 @@ def asignacion_list(request):
 
 @login_required
 @user_passes_test(_is_registrador)
+# asignacion_delete(request, pk): elimina una asignación de herramienta.
+# Entrada: request (HttpRequest), pk (id de la asignación). Salida: redirección.
 def asignacion_delete(request, pk):
     asignacion = get_object_or_404(AsignacionHerramienta, pk=pk)
     
@@ -92,6 +112,8 @@ def asignacion_delete(request, pk):
 
 
 @login_required
+# herramienta_tareas(request, pk): muestra las tareas vinculadas a una herramienta.
+# Entrada: request (HttpRequest), pk (id de la herramienta). Salida: HttpResponse con la lista de tareas.
 def herramienta_tareas(request, pk):
     herramienta = get_object_or_404(Herramienta, pk=pk)
     tareas = (
